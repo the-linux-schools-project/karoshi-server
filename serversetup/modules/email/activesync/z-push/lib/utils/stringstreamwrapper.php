@@ -30,6 +30,7 @@ class StringStreamWrapper {
     private $stringstream;
     private $position;
     private $stringlength;
+    private $truncateHtmlSafe;
 
     /**
      * Opens the stream
@@ -53,9 +54,10 @@ class StringStreamWrapper {
 
         // this is our stream!
         $this->stringstream = $contextOptions[self::PROTOCOL]['string'];
+        $this->truncateHtmlSafe = (isset($contextOptions[self::PROTOCOL]['truncatehtmlsafe'])) ? $contextOptions[self::PROTOCOL]['truncatehtmlsafe'] : false;
 
         $this->stringlength = strlen($this->stringstream);
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("StringStreamWrapper::stream_open(): initialized stream length: %d", $this->stringlength));
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("StringStreamWrapper::stream_open(): initialized stream length: %d - HTML-safe-truncate: %s", $this->stringlength,  Utils::PrintAsString($this->truncateHtmlSafe)));
 
         return true;
     }
@@ -135,12 +137,12 @@ class StringStreamWrapper {
      */
     public function stream_truncate ($new_size) {
         // cut the string!
-        $this->stringstream = Utils::Utf8_truncate($this->stringstream, $new_size);
-        $this->streamlength = strlen($this->stringstream);
+        $this->stringstream = Utils::Utf8_truncate($this->stringstream, $new_size, $this->truncateHtmlSafe);
+        $this->stringlength = strlen($this->stringstream);
 
-        if ($this->position > $this->streamlength) {
-            ZLog::Write(LOGLEVEL_WARN, sprintf("StringStreamWrapper->stream_truncate(): stream position (%d) ahead of new size of %d. Repositioning pointer to end of stream.", $this->position, $this->streamlength));
-            $this->position = $this->streamlength;
+        if ($this->position > $this->stringlength) {
+            ZLog::Write(LOGLEVEL_WARN, sprintf("StringStreamWrapper->stream_truncate(): stream position (%d) ahead of new size of %d. Repositioning pointer to end of stream.", $this->position, $this->stringlength));
+            $this->position = $this->stringlength;
         }
         return true;
     }
@@ -161,13 +163,14 @@ class StringStreamWrapper {
    /**
      * Instantiates a StringStreamWrapper
      *
-     * @param string    $string     The string to be wrapped
+     * @param string    $string             The string to be wrapped
+     * @param boolean   $truncatehtmlsafe   Indicates if a truncation should be done html-safe - default: false
      *
      * @access public
      * @return StringStreamWrapper
      */
-     static public function Open($string) {
-        $context = stream_context_create(array(self::PROTOCOL => array('string' => &$string)));
+     static public function Open($string, $truncatehtmlsafe = false) {
+        $context = stream_context_create(array(self::PROTOCOL => array('string' => &$string, 'truncatehtmlsafe' => $truncatehtmlsafe)));
         return fopen(self::PROTOCOL . "://",'r', false, $context);
     }
 }

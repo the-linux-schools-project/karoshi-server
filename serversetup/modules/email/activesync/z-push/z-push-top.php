@@ -28,15 +28,16 @@
 
 require_once 'vendor/autoload.php';
 
-if (!defined('ZPUSH_CONFIG')) define('ZPUSH_CONFIG', 'config.php');
-include_once(ZPUSH_CONFIG);
-
 /************************************************
  * MAIN
  */
     declare(ticks = 1);
     define('BASE_PATH_CLI',  dirname(__FILE__) ."/");
     set_include_path(get_include_path() . PATH_SEPARATOR . BASE_PATH_CLI);
+
+    if (!defined('ZPUSH_CONFIG')) define('ZPUSH_CONFIG', BASE_PATH_CLI . 'config.php');
+    include_once(ZPUSH_CONFIG);
+
     try {
         ZPush::CheckConfig();
         if (!function_exists("pcntl_signal"))
@@ -50,7 +51,7 @@ include_once(ZPUSH_CONFIG);
         // check if help was requested from CLI
         if (in_array('-h', $argv) || in_array('--help', $argv)) {
             echo $zpt->UsageInstructions();
-            exit(1);
+            exit(0);
         }
 
         if ($zpt->IsAvailable()) {

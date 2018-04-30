@@ -256,7 +256,14 @@ class SyncCollections implements Iterator {
         if (! $spa->HasFolderId())
             return false;
 
-        $this->collections[$spa->GetFolderId()] = $spa;
+        if ($spa->GetKoeGabFolder() === true) {
+            // put KOE GAB at the beginning of the sync
+            $this->collections = [$spa->GetFolderId() => $spa] + $this->collections;
+            ZLog::Write(LOGLEVEL_DEBUG, "SyncCollections->AddCollection(): Prioritizing KOE GAB folder for synchronization");
+        }
+        else {
+            $this->collections[$spa->GetFolderId()] = $spa;
+        }
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("SyncCollections->AddCollection(): Folder id '%s' : ref. PolicyKey '%s', ref. Lifetime '%s', last sync at '%s'", $spa->GetFolderId(), $spa->GetReferencePolicyKey(), $spa->GetReferenceLifetime(), $spa->GetLastSyncTime()));
         if ($spa->HasLastSyncTime() && $spa->GetLastSyncTime() > $this->lastSyncTime) {
@@ -578,6 +585,9 @@ class SyncCollections implements Iterator {
                 ZPush::GetTopCollector()->AnnounceInformation(sprintf("Sink %d/%ds on %s", ($now-$started), $lifetime, $checkClasses));
                 $notifications = ZPush::GetBackend()->ChangesSink($nextInterval);
 
+                // how long are we waiting for changes
+                $this->waitingTime = time()-$started;
+
                 $validNotifications = false;
                 foreach ($notifications as $backendFolderId) {
                     // Check hierarchy notifications
@@ -801,11 +811,22 @@ class SyncCollections implements Iterator {
      * regular export to find changes
      *
      * @access public
-     * @return array
+     * @return boolean
      */
     public function WaitedForChanges() {
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("SyncCollections->WaitedForChanges: waited for %d seconds", $this->waitingTime));
         return ($this->waitingTime > 0);
+    }
+
+    /**
+     * Indicates how many seconds the process did wait in a sink, polling or before running a
+     * regular export to find changes.
+     *
+     * @access public
+     * @return int
+     */
+    public function GetWaitedSeconds() {
+        return $this->waitingTime;
     }
 
     /**

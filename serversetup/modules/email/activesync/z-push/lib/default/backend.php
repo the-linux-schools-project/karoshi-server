@@ -159,7 +159,7 @@ abstract class Backend implements IBackend {
     /**
      * Applies settings to and gets informations from the device
      *
-     * @param SyncObject    $settings (SyncOOF or SyncUserInformation possible)
+     * @param SyncObject    $settings (SyncOOF, SyncUserInformation, SyncRightsManagementTemplates possible)
      *
      * @access public
      * @return SyncObject   $settings
@@ -178,8 +178,24 @@ abstract class Backend implements IBackend {
             }
         }
         if ($settings instanceof SyncUserInformation) {
-            $settings->emailaddresses = array(ZPush::GetBackend()->GetUserDetails(Request::GetAuthUser())['emailaddress']);
             $settings->Status = SYNC_SETTINGSSTATUS_SUCCESS;
+            if (Request::GetProtocolVersion() >= 14.1) {
+                $account = new SyncAccount();
+                $emailaddresses = new SyncEmailAddresses();
+                $emailaddresses->smtpaddress[] = ZPush::GetBackend()->GetUserDetails(Request::GetUser())['emailaddress'];
+                $emailaddresses->primarysmtpaddress = ZPush::GetBackend()->GetUserDetails(Request::GetUser())['emailaddress'];
+                $account->emailaddresses = $emailaddresses;
+                $settings->accounts[] = $account;
+            }
+            else {
+                $settings->emailaddresses = array(ZPush::GetBackend()->GetUserDetails(Request::GetUser())['emailaddress']);
+            }
+
+            $settings->emailaddresses = array(ZPush::GetBackend()->GetUserDetails(Request::GetUser())['emailaddress']);
+
+        }
+        if ($settings instanceof SyncRightsManagementTemplates) {
+            $settings->Status = SYNC_COMMONSTATUS_IRMFEATUREDISABLED;
         }
         return $settings;
     }
@@ -217,7 +233,7 @@ abstract class Backend implements IBackend {
      * @return Array
      */
     public function GetCurrentUsername() {
-        return $this->GetUserDetails(Request::GetAuthUser());
+        return $this->GetUserDetails(Request::GetUser());
     }
 
     /**
@@ -245,6 +261,16 @@ abstract class Backend implements IBackend {
         // As this is not implemented, the value returned will change every hour.
         // This will only be called if HasFolderStats() returns true.
         return "not implemented-".gmdate("Y-m-d-H");
+    }
+
+    /**
+     * Returns a KoeSignatures object.
+     *
+     * @access public
+     * @return KoeSignatures
+     */
+    public function GetKoeSignatures() {
+        return new KoeSignatures();
     }
 
 

@@ -25,7 +25,9 @@
 ************************************************/
 
 class Request {
+    const MAXMEMORYUSAGE = 0.9;     // use max. 90% of allowed memory when synching
     const UNKNOWN = "unknown";
+    const IMPERSONATE_DELIM = '#';
 
     /**
      * self::filterEvilInput() options
@@ -64,9 +66,11 @@ class Request {
     static private $getUser;
     static private $devid;
     static private $devtype;
+    static private $authUserString;
     static private $authUser;
     static private $authDomain;
     static private $authPassword;
+    static private $impersonatedUser;
     static private $asProtocolVersion;
     static private $policykey;
     static private $useragent;
@@ -77,10 +81,13 @@ class Request {
     static private $occurence; //TODO
     static private $saveInSent;
     static private $acceptMultipart;
+    static private $base64QueryDecoded;
     static private $koeVersion;
     static private $koeBuild;
     static private $koeBuildDate;
+    static private $koeCapabilites;
     static private $expectedConnectionTimeout;
+    static private $memoryLimit;
 
     /**
      * Initializes request data
@@ -121,46 +128,46 @@ class Request {
             self::$method = self::filterEvilInput($_SERVER["REQUEST_METHOD"], self::LETTERS_ONLY);
         // TODO check IPv6 addresses
         if(isset($_SERVER["REMOTE_ADDR"]))
-            self::$remoteAddr = self::filterEvilInput($_SERVER["REMOTE_ADDR"], self::NUMBERSDOT_ONLY);
+            self::$remoteAddr = self::filterIP($_SERVER["REMOTE_ADDR"]);
 
         // in protocol version > 14 mobile send these inputs as encoded query string
         if (!isset(self::$command) && !empty($_SERVER['QUERY_STRING']) && Utils::IsBase64String($_SERVER['QUERY_STRING'])) {
-            $query = Utils::DecodeBase64URI($_SERVER['QUERY_STRING']);
-            if (!isset(self::$command) && isset($query['Command']))
-                self::$command = Utils::GetCommandFromCode($query['Command']);
+            self::decodeBase64URI();
+            if (!isset(self::$command) && isset(self::$base64QueryDecoded['Command']))
+                self::$command = Utils::GetCommandFromCode(self::$base64QueryDecoded['Command']);
 
-            if (!isset(self::$getUser) && isset($query[self::COMMANDPARAM_USER])) {
-                self::$getUser = strtolower($query[self::COMMANDPARAM_USER]);
+            if (!isset(self::$getUser) && isset(self::$base64QueryDecoded[self::COMMANDPARAM_USER])) {
+                self::$getUser = strtolower(self::$base64QueryDecoded[self::COMMANDPARAM_USER]);
                 if(defined('USE_FULLEMAIL_FOR_LOGIN') && ! USE_FULLEMAIL_FOR_LOGIN) {
                     self::$getUser = Utils::GetLocalPartFromEmail(self::$getUser);
                 }
             }
 
-            if (!isset(self::$devid) && isset($query['DevID']))
-                self::$devid = strtolower(self::filterEvilInput($query['DevID'], self::WORDCHAR_ONLY));
+            if (!isset(self::$devid) && isset(self::$base64QueryDecoded['DevID']))
+                self::$devid = strtolower(self::filterEvilInput(self::$base64QueryDecoded['DevID'], self::WORDCHAR_ONLY));
 
-            if (!isset(self::$devtype) && isset($query['DevType']))
-                self::$devtype = self::filterEvilInput($query['DevType'], self::LETTERS_ONLY);
+            if (!isset(self::$devtype) && isset(self::$base64QueryDecoded['DevType']))
+                self::$devtype = self::filterEvilInput(self::$base64QueryDecoded['DevType'], self::LETTERS_ONLY);
 
-            if (isset($query['PolKey']))
-                self::$policykey = (int) self::filterEvilInput($query['PolKey'], self::NUMBERS_ONLY);
+            if (isset(self::$base64QueryDecoded['PolKey']))
+                self::$policykey = (int) self::filterEvilInput(self::$base64QueryDecoded['PolKey'], self::NUMBERS_ONLY);
 
-            if (isset($query['ProtVer']))
-                self::$asProtocolVersion = self::filterEvilInput($query['ProtVer'], self::NUMBERS_ONLY) / 10;
+            if (isset(self::$base64QueryDecoded['ProtVer']))
+                self::$asProtocolVersion = self::filterEvilInput(self::$base64QueryDecoded['ProtVer'], self::NUMBERS_ONLY) / 10;
 
-            if (isset($query[self::COMMANDPARAM_ATTACHMENTNAME]))
-                self::$attachmentName = self::filterEvilInput($query[self::COMMANDPARAM_ATTACHMENTNAME], self::HEX_EXTENDED2);
+            if (isset(self::$base64QueryDecoded[self::COMMANDPARAM_ATTACHMENTNAME]))
+                self::$attachmentName = self::filterEvilInput(self::$base64QueryDecoded[self::COMMANDPARAM_ATTACHMENTNAME], self::HEX_EXTENDED2);
 
-            if (isset($query[self::COMMANDPARAM_COLLECTIONID]))
-                self::$collectionId = self::filterEvilInput($query[self::COMMANDPARAM_COLLECTIONID], self::HEX_EXTENDED2);
+            if (isset(self::$base64QueryDecoded[self::COMMANDPARAM_COLLECTIONID]))
+                self::$collectionId = self::filterEvilInput(self::$base64QueryDecoded[self::COMMANDPARAM_COLLECTIONID], self::HEX_EXTENDED2);
 
-            if (isset($query[self::COMMANDPARAM_ITEMID]))
-                self::$itemId = self::filterEvilInput($query[self::COMMANDPARAM_ITEMID], self::HEX_EXTENDED2);
+            if (isset(self::$base64QueryDecoded[self::COMMANDPARAM_ITEMID]))
+                self::$itemId = self::filterEvilInput(self::$base64QueryDecoded[self::COMMANDPARAM_ITEMID], self::HEX_EXTENDED2);
 
-            if (isset($query[self::COMMANDPARAM_OPTIONS]) && (ord($query[self::COMMANDPARAM_OPTIONS]) & self::COMMANDPARAM_OPTIONS_SAVEINSENT))
+            if (isset(self::$base64QueryDecoded[self::COMMANDPARAM_OPTIONS]) && (ord(self::$base64QueryDecoded[self::COMMANDPARAM_OPTIONS]) & self::COMMANDPARAM_OPTIONS_SAVEINSENT))
                 self::$saveInSent = true;
 
-            if (isset($query[self::COMMANDPARAM_OPTIONS]) && (ord($query[self::COMMANDPARAM_OPTIONS]) & self::COMMANDPARAM_OPTIONS_ACCEPTMULTIPART))
+            if (isset(self::$base64QueryDecoded[self::COMMANDPARAM_OPTIONS]) && (ord(self::$base64QueryDecoded[self::COMMANDPARAM_OPTIONS]) & self::COMMANDPARAM_OPTIONS_ACCEPTMULTIPART))
                 self::$acceptMultipart = true;
         }
 
@@ -175,11 +182,32 @@ class Request {
         // authUser & authPassword are unfiltered!
         // split username & domain if received as one
         if (isset($_SERVER['PHP_AUTH_USER'])) {
-            list(self::$authUser, self::$authDomain) = Utils::SplitDomainUser($_SERVER['PHP_AUTH_USER']);
+            list(self::$authUserString, self::$authDomain) = Utils::SplitDomainUser($_SERVER['PHP_AUTH_USER']);
             self::$authPassword = (isset($_SERVER['PHP_AUTH_PW']))?$_SERVER['PHP_AUTH_PW'] : "";
         }
+
+        // process impersonation
+        self::$authUser = self::$authUserString; // auth will fail when impersonating & KOE_CAPABILITY_IMPERSONATE is disabled
+
+        if (defined('KOE_CAPABILITY_IMPERSONATE') && KOE_CAPABILITY_IMPERSONATE && stripos(self::$authUserString, self::IMPERSONATE_DELIM) !== false) {
+            list(self::$authUser, self::$impersonatedUser) = explode(self::IMPERSONATE_DELIM, self::$authUserString);
+        }
+
         if(defined('USE_FULLEMAIL_FOR_LOGIN') && ! USE_FULLEMAIL_FOR_LOGIN) {
             self::$authUser = Utils::GetLocalPartFromEmail(self::$authUser);
+        }
+
+        // get & convert configured memory limit
+        $memoryLimit = ini_get('memory_limit');
+        if ($memoryLimit == -1) {
+            self::$memoryLimit = false;
+        }
+        else {
+            (int)preg_replace_callback('/(\-?\d+)(.?)/',
+                    function ($m) {
+                        self::$memoryLimit = $m[1] * pow(1024, strpos('BKMG', $m[2])) * self::MAXMEMORYUSAGE;
+                    },
+                    strtoupper($memoryLimit));
         }
     }
 
@@ -204,8 +232,8 @@ class Request {
                 self::$policykey = 0;
         }
 
-        if (!empty($_SERVER['QUERY_STRING']) && Utils::IsBase64String($_SERVER['QUERY_STRING'])) {
-            ZLog::Write(LOGLEVEL_DEBUG, "Using data from base64 encoded query string");
+        if (isset(self::$base64QueryDecoded)) {
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("Request::ProcessHeaders(): base64 query string: '%s' (decoded: '%s')", $_SERVER['QUERY_STRING'], http_build_query(self::$base64QueryDecoded, '', ',')));
             if (isset(self::$policykey))
                 self::$headers["x-ms-policykey"] = self::$policykey;
 
@@ -226,11 +254,28 @@ class Request {
             self::$koeBuildDate = strtotime(self::filterEvilInput($buildDate, self::ISO8601));
         }
 
-        if (defined('USE_X_FORWARDED_FOR_HEADER') && USE_X_FORWARDED_FOR_HEADER == true && isset(self::$headers["x-forwarded-for"])) {
-            $forwardedIP = self::filterEvilInput(self::$headers["x-forwarded-for"], self::NUMBERSDOT_ONLY);
-            if ($forwardedIP) {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("'X-Forwarded-for' indicates remote IP: %s - connect is coming from IP: %s", $forwardedIP, self::$remoteAddr));
-                self::$remoteAddr = $forwardedIP;
+        if (isset(self::$headers["x-push-plugin-capabilities"])) {
+            $caps = explode(",", self::$headers["x-push-plugin-capabilities"]);
+            self::$koeCapabilites = array();
+            foreach($caps as $cap) {
+                self::$koeCapabilites[] = strtolower(self::filterEvilInput($cap, self::WORDCHAR_ONLY));
+            }
+        }
+
+        if (defined('USE_CUSTOM_REMOTE_IP_HEADER') && USE_CUSTOM_REMOTE_IP_HEADER !== false) {
+            // make custom header compatible with Apache modphp (see ZP-1332)
+            $header = $apacheHeader = strtolower(USE_CUSTOM_REMOTE_IP_HEADER);
+            if (substr($apacheHeader, 0, 5) === 'http_') {
+                $apacheHeader = substr($apacheHeader, 5);
+            }
+            $apacheHeader = str_replace("_", "-", $apacheHeader);
+            if (isset(self::$headers[$header]) || isset(self::$headers[$apacheHeader])) {
+                $remoteIP = isset(self::$headers[$header]) ? self::$headers[$header] : self::$headers[$apacheHeader];
+                $remoteIP = self::filterIP($remoteIP);
+                if ($remoteIP) {
+                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("Using custom header '%s' to determine remote IP: %s - connect is coming from IP: %s", USE_CUSTOM_REMOTE_IP_HEADER, $remoteIP, self::$remoteAddr));
+                    self::$remoteAddr = $remoteIP;
+                }
             }
         }
 
@@ -374,16 +419,57 @@ class Request {
     }
 
     /**
-     * Returns the authenticated user
+     * Returns user that is synchronizing data.
+     * If impersonation is active it returns the impersonated user,
+     * else the auth user.
+     *
+     * @access public
+     * @return string/boolean       false if not available
+     */
+    static public function GetUser() {
+        if (self::GetImpersonatedUser()) {
+            return self::GetImpersonatedUser();
+        }
+        return self::GetAuthUser();
+    }
+
+    /**
+     * Returns the AuthUser string send by the client.
+     *
+     * @access public
+     * @return string/boolean       false if not available
+     */
+    static public function GetAuthUserString() {
+        if (isset(self::$authUserString)) {
+            return self::$authUserString;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the impersonated user. If not available, returns false.
+     *
+     * @access public
+     * @return string/boolean       false if not available
+     */
+    static public function GetImpersonatedUser() {
+        if (isset(self::$impersonatedUser)) {
+            return self::$impersonatedUser;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the authenticated user.
      *
      * @access public
      * @return string/boolean       false if not available
      */
     static public function GetAuthUser() {
-        if (isset(self::$authUser))
+        if (isset(self::$authUser)) {
             return self::$authUser;
-        else
-            return false;
+        }
+        return false;
     }
 
     /**
@@ -623,31 +709,20 @@ class Request {
     }
 
     /**
-     * Checks the device type if it expects the globalobjid in meeting requests encoded as hex.
-     * If it's not the case, globalobjid will be base64 encoded.
-     *
-     * WindowsOutlook and iOS device since 9.3 (?) version expect globalobjid to be hex encoded.
-     * @see https://jira.z-hub.io/projects/ZP/issues/ZP-1013
+     * Indicates if the memory usage limit is almost reached.
+     * Processing should stop then to prevent hard out-of-memory issues.
+     * The threshold is hardcoded at 90% in Request::MAXMEMORYUSAGE.
      *
      * @access public
      * @return boolean
      */
-    static public function IsGlobalObjIdHexClient() {
-        switch (self::GetDeviceType()) {
-            case "WindowsOutlook":
-                ZLog::Write(LOGLEVEL_DEBUG, "Request->IsGlobalObjIdHexClient(): WindowsOutlook");
-                return true;
-            case "iPod":
-            case "iPad":
-            case "iPhone":
-                $matches = array();
-                if (preg_match("/^Apple-.*?\/(\d{4})\./", self::GetUserAgent(), $matches) && isset($matches[1]) && $matches[1] >= 1305) {
-                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("Request->IsGlobalObjIdHexClient(): %s->%s", self::GetDeviceType(), self::GetUserAgent()));
-                    return true;
-                }
+    static public function IsRequestMemoryLimitReached() {
+        if (self::$memoryLimit === false) {
+            return false;
         }
-        return false;
+        return memory_get_peak_usage(true) >= self::$memoryLimit;
     }
+
     /**----------------------------------------------------------------------------------------------------------
      * Private stuff
      */
@@ -664,16 +739,33 @@ class Request {
      */
     static private function filterEvilInput($input, $filter, $replacevalue = '') {
         $re = false;
-        if ($filter == self::LETTERS_ONLY)            $re = "/[^A-Za-z]/";
-        else if ($filter == self::HEX_ONLY)           $re = "/[^A-Fa-f0-9]/";
-        else if ($filter == self::WORDCHAR_ONLY)      $re = "/[^A-Za-z0-9]/";
-        else if ($filter == self::NUMBERS_ONLY)       $re = "/[^0-9]/";
-        else if ($filter == self::NUMBERSDOT_ONLY)    $re = "/[^0-9\.]/";
-        else if ($filter == self::HEX_EXTENDED)       $re = "/[^A-Fa-f0-9\:]/";
-        else if ($filter == self::HEX_EXTENDED2)      $re = "/[^A-Fa-f0-9\:USG]/"; // Folder origin constants from DeviceManager::FLD_ORIGIN_* (C already hex)
-        else if ($filter == self::ISO8601)            $re = "/[^\d{8}T\d{6}Z]/";
+        if ($filter == self::LETTERS_ONLY)          $re = "/[^A-Za-z]/";
+        elseif ($filter == self::HEX_ONLY)          $re = "/[^A-Fa-f0-9]/";
+        elseif ($filter == self::WORDCHAR_ONLY)     $re = "/[^A-Za-z0-9]/";
+        elseif ($filter == self::NUMBERS_ONLY)      $re = "/[^0-9]/";
+        elseif ($filter == self::NUMBERSDOT_ONLY)   $re = "/[^0-9\.]/";
+        elseif ($filter == self::HEX_EXTENDED)      $re = "/[^A-Fa-f0-9\:\.]/";
+        elseif ($filter == self::HEX_EXTENDED2)     $re = "/[^A-Fa-f0-9\:USGI]/"; // Folder origin constants from DeviceManager::FLD_ORIGIN_* (C already hex)
+        elseif ($filter == self::ISO8601)           $re = "/[^\d{8}T\d{6}Z]/";
 
         return ($re) ? preg_replace($re, $replacevalue, $input) : '';
+    }
+
+    /**
+     * If $input is a valid IPv4 or IPv6 address, returns a valid compact IPv4 or IPv6 address string.
+     * Otherwise, it will strip all characters that are neither numerical or '.' and prefix with "bad-ip".
+     *
+     * @param string	$input	The ipv4/ipv6 address
+     *
+     * @access public
+     * @return string
+     */
+    static private function filterIP($input) {
+      $in_addr = @inet_pton($input);
+      if ($in_addr === false) {
+        return 'badip-' . self::filterEvilInput($input, self::HEX_EXTENDED);
+      }
+      return inet_ntop($in_addr);
     }
 
     /**
@@ -681,14 +773,59 @@ class Request {
      * With POST request (our case), you can open and read
      * multiple times "php://input"
      *
+     * @param int $maxLength   max. length to be returned. Default: return all
+     *
      * @access public
      * @return string - base64 encoded wbxml
      */
-    public static function GetInputAsBase64() {
+    public static function GetInputAsBase64($maxLength = -1) {
         $input = fopen('php://input', 'r');
-        $wbxml = base64_encode(stream_get_contents($input));
+        $wbxml = base64_encode(stream_get_contents($input, $maxLength));
         fclose($input);
         return $wbxml;
+    }
+
+    /**
+     * Decodes base64 encoded query parameters. Based on dw2412 contribution.
+     *
+     * @access private
+     * @return void
+     */
+    static private function decodeBase64URI() {
+        /*
+         * The query string has a following structure. Number in () is position:
+         * 1 byte       - protocoll version (0)
+         * 1 byte       - command code (1)
+         * 2 bytes      - locale (2)
+         * 1 byte       - device ID length (4)
+         * variable     - device ID (4+device ID length)
+         * 1 byte       - policy key length (5+device ID length)
+         * 0 or 4 bytes - policy key (5+device ID length + policy key length)
+         * 1 byte       - device type length (6+device ID length + policy key length)
+         * variable     - device type (6+device ID length + policy key length + device type length)
+         * variable     - command parameters, array which consists of:
+         *                      1 byte      - tag
+         *                      1 byte      - length
+         *                      variable    - value of the parameter
+         *
+         */
+        $decoded = base64_decode($_SERVER['QUERY_STRING']);
+        $devIdLength = ord($decoded[4]); //device ID length
+        $polKeyLength = ord($decoded[5+$devIdLength]); //policy key length
+        $devTypeLength = ord($decoded[6+$devIdLength+$polKeyLength]); //device type length
+        //unpack the decoded query string values
+        self::$base64QueryDecoded = unpack("CProtVer/CCommand/vLocale/CDevIDLen/H".($devIdLength*2)."DevID/CPolKeyLen".($polKeyLength == 4 ? "/VPolKey" : "")."/CDevTypeLen/A".($devTypeLength)."DevType", $decoded);
+
+        //get the command parameters
+        $pos = 7 + $devIdLength + $polKeyLength + $devTypeLength;
+        $decoded = substr($decoded, $pos);
+        while (strlen($decoded) > 0) {
+            $paramLength = ord($decoded[1]);
+            $unpackedParam = unpack("CParamTag/CParamLength/A".$paramLength."ParamValue", $decoded);
+            self::$base64QueryDecoded[ord($decoded[0])] = $unpackedParam['ParamValue'];
+            //remove parameter from decoded query string
+            $decoded = substr($decoded, 2 + $paramLength);
+        }
     }
 
     /**
@@ -738,6 +875,19 @@ class Request {
             return self::$koeBuildDate;
         else
             return self::UNKNOWN;
+    }
+
+    /**
+     * Returns the capabilities of the KOE informed by the capabilities header.
+     *
+     * @access public
+     * @return string
+     */
+    static public function GetKoeCapabilities() {
+        if (isset(self::$koeCapabilites)) {
+            return self::$koeCapabilites;
+        }
+        return array();
     }
 
     /**

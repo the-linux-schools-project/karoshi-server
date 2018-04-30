@@ -28,6 +28,12 @@ class ZPushAdmin {
      * //TODO resync of a foldertype for all users (e.g. Appointment)
      */
 
+    const STATUS_SUCCESS = 0;
+    const STATUS_DEVICE_SYNCED_AFTER_DAYSOLD = 1;
+
+    public static $status = self::STATUS_SUCCESS;
+    public static $devices;
+
     /**
      * List devices known to Z-Push.
      * If no user is given, all devices are listed
@@ -69,16 +75,16 @@ class ZPushAdmin {
      *
      * @param string    $devid      device id
      * @param string    $user       user to be looked up
+     * @param boolean   $withHierarchyCache (opt) includes the HierarchyCache - default: false
      *
      * @return ASDevice object
      * @access public
      */
-    static public function GetDeviceDetails($devid, $user) {
+    static public function GetDeviceDetails($devid, $user, $withHierarchyCache = false) {
 
         try {
             $device = new ASDevice($devid, ASDevice::UNDEFINED, $user, ASDevice::UNDEFINED);
             $device->SetData(ZPush::GetStateMachine()->GetState($devid, IStateMachine::DEVICEDATA), false);
-            $device->StripData();
 
             try {
                 // we need a StateManager for this operation
@@ -128,6 +134,7 @@ class ZPushAdmin {
                     }
                 }
             }
+            $device->StripData(!$withHierarchyCache);
             return $device;
         }
         catch (StateNotFoundException $e) {
@@ -218,11 +225,13 @@ class ZPushAdmin {
      *
      * @param string    $user           (opt) user of the device
      * @param string    $devid          (opt) device id which should be removed
+     * @param int       $daysOld        (opt) devices which haven't synced for $daysOld days
+     * @param int       $time           (opt) unix timestamp to use with $daysOld
      *
      * @return boolean
      * @access public
      */
-    static public function RemoveDevice($user = false, $devid = false) {
+    static public function RemoveDevice($user = false, $devid = false, $daysOld = false, $time = false) {
         if ($user === false && $devid === false)
             return false;
 
@@ -231,7 +240,7 @@ class ZPushAdmin {
             $devicesIds = ZPush::GetStateMachine()->GetAllDevices($user);
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::RemoveDevice(): all '%d' devices for user '%s' found to be removed", count($devicesIds), $user));
             foreach ($devicesIds as $deviceid) {
-                if (!self::RemoveDevice($user, $deviceid)) {
+                if (!self::RemoveDevice($user, $deviceid, $daysOld, $time)) {
                     ZLog::Write(LOGLEVEL_ERROR, sprintf("ZPushAdmin::RemoveDevice(): removing devices failed for device '%s' of user '%s'. Aborting", $deviceid, $user));
                     return false;
                 }
@@ -242,7 +251,7 @@ class ZPushAdmin {
             $users = self::ListUsers($devid);
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::RemoveDevice(): device '%d' is used by '%d' users and will be removed", $devid, count($users)));
             foreach ($users as $aUser) {
-                if (!self::RemoveDevice($aUser, $devid)) {
+                if (!self::RemoveDevice($aUser, $devid, $daysOld, $time)) {
                     ZLog::Write(LOGLEVEL_ERROR, sprintf("ZPushAdmin::RemoveDevice(): removing user '%s' from device '%s' failed. Aborting", $aUser, $devid));
                     return false;
                 }
@@ -259,6 +268,21 @@ class ZPushAdmin {
                 $device->SetData($devicedata, false);
                 if (!isset($devicedata->devices))
                     throw new StateInvalidException("No devicedata stored in ASDevice");
+
+                if ($daysOld) {
+                    if (!$time) {
+                        $time = time();
+                    }
+                    $lastSynced = floor(($time - $device->getLastupdatetime()) / 86400);
+                    if ($daysOld > $lastSynced) {
+                        ZLog::Write(LOGLEVEL_INFO,
+                                sprintf("ZPushAdmin::RemoveDevice(): device '%s' of user '%s' synced %d day(s) ago but only devices which synced more than %d days ago will be removed. Skipping.",
+                                        $devid, $user, $lastSynced, $daysOld));
+                        self::$status = self::STATUS_DEVICE_SYNCED_AFTER_DAYSOLD;
+                        return true;
+                    }
+                }
+
                 $devices = $devicedata->devices;
             }
             catch (StateNotFoundException $e) {
@@ -295,16 +319,76 @@ class ZPushAdmin {
         return true;
     }
 
+    /**
+     * Sets options for a device.
+     * First argument is the FilterType.
+     * This value is superseeded by the globally configured SYNC_FILTERTIME_MAX.
+     * If set to false the value will not be modified in the device.
+     *
+     * @param string    $user           user of the device
+     * @param string    $devid          device id that should be modified
+     * @param int       $filtertype     SYNC_FILTERTYPE_1DAY to SYNC_FILTERTYPE_ALL, false to ignore
+     *
+     * @access public
+     * @return boolean
+     */
+    public static function SetDeviceOptions($user, $devid, $filtertype) {
+        if ($user === false || $devid === false) {
+            ZLog::Write(LOGLEVEL_ERROR, "ZPushAdmin::SetDeviceOptions(): user and device must be specified");
+            return false;
+        }
+
+        if ($filtertype !== false && $filtertype < SYNC_FILTERTYPE_ALL || $filtertype > SYNC_FILTERTYPE_INCOMPLETETASKS) {
+            ZLog::Write(LOGLEVEL_ERROR, sprintf("ZPushAdmin::SetDeviceOptions(): specified FilterType '%s' is out of bounds", $filtertype));
+            return false;
+        }
+
+        // load device data
+        $device = new ASDevice($devid, ASDevice::UNDEFINED, $user, ASDevice::UNDEFINED);
+        try {
+            $device->SetData(ZPush::GetStateMachine()->GetState($devid, IStateMachine::DEVICEDATA), false);
+        }
+        catch (StateNotFoundException $e) {
+            ZLog::Write(LOGLEVEL_ERROR, sprintf("ZPushAdmin::SetDeviceOptions(): device '%s' of user '%s' can not be found", $devid, $user));
+            return false;
+        }
+
+        if ($filtertype !== false) {
+            if ($filtertype === $device->GetSyncFilterType()) {
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::SetDeviceOptions(): device '%s' of user '%s' - device FilterType already at '%s'. Terminating.", $devid, $user, $filtertype));
+            }
+            else {
+                $device->SetSyncFilterType($filtertype);
+            }
+        }
+
+        // save device data
+        if ($device->IsDataChanged()) {
+            try {
+                if ($device->IsNewDevice() || $device->GetData() === false) {
+                    ZLog::Write(LOGLEVEL_ERROR, sprintf("ZPushAdmin::SetDeviceOptions(): data of user '%s' not synchronized on device '%s'. Aborting.", $user, $devid));
+                    return false;
+                }
+                ZPush::GetStateMachine()->SetState($device->GetData(), $devid, IStateMachine::DEVICEDATA);
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::SetDeviceOptions(): device '%s' of user '%s' - device FilterType updated to '%s'", $devid, $user, $filtertype));
+            }
+            catch (StateNotFoundException $e) {
+                ZLog::Write(LOGLEVEL_ERROR, sprintf("ZPushAdmin::SetDeviceOptions(): state for device '%s' of user '%s' can not be saved", $devid, $user));
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
-     * Marks a folder of a device of a user for re-synchronization
+     * Marks a folder of a device of a user for re-synchronization.
      *
      * @param string    $user           user of the device
      * @param string    $devid          device id which should be re-synchronized
      * @param mixed     $folderid       a single folder id or an array of folder ids
      *
-     * @return boolean
      * @access public
+     * @return boolean
      */
     static public function ResyncFolder($user, $devid, $folderid) {
         // load device data
@@ -479,6 +563,9 @@ class ZPushAdmin {
                 return false;
             }
 
+            // init deviceManage with correct device
+            ZPush::GetDeviceManagerWithDevice($device);
+
             // unify the lists saved for the user/device and the staticly configured one
             $new_list = array();
             foreach ($device->GetAdditionalFolders() as $folder) {
@@ -494,11 +581,12 @@ class ZPushAdmin {
                     $new_list[$fid] = array(
                                         'store' => $so->Store,
                                         'folderid' => $fid,
+                                        'parentid' => $so->parentid,
                                         'syncfolderid' => $syncfolderid,
                                         'name' => $so->displayname,
                                         'type' => $so->type,
                                         'origin' => ($syncfolderid !== $fid)?Utils::GetFolderOriginStringFromId($syncfolderid):'unknown',
-                                        'flags' => 0,           // static folders have no flags
+                                        'flags' => $so->Flags,
                                     );
                 }
             }
@@ -521,7 +609,7 @@ class ZPushAdmin {
      * @param string    $add_folderid   the folder id of the additional folder.
      * @param string    $add_name       the name of the additional folder (has to be unique for all folders on the device).
      * @param string    $add_type       AS foldertype of SYNC_FOLDER_TYPE_USER_*
-     * @param int       $add_flags      Additional flags, like DeviceManager::FLD_FLAGS_REPLYASUSER
+     * @param int       $add_flags      Additional flags, like DeviceManager::FLD_FLAGS_SENDASOWNER
      *
      * @access public
      * @return boolean
@@ -564,7 +652,7 @@ class ZPushAdmin {
      * @param string    $devid          device id of where the folder should be updated.
      * @param string    $add_folderid   the folder id of the additional folder.
      * @param string    $add_name       the name of the additional folder (has to be unique for all folders on the device).
-     * @param int       $add_flags      Additional flags, like DeviceManager::FLD_FLAGS_REPLYASUSER
+     * @param int       $add_flags      Additional flags, like DeviceManager::FLD_FLAGS_SENDASOWNER
      *
      * @access public
      * @return boolean
@@ -627,12 +715,6 @@ class ZPushAdmin {
                 return false;
             }
 
-            $static_folders = ZPush::GetAdditionalSyncFolders();
-            if (isset($static_folders[$add_folderid])) {
-                ZLog::Write(LOGLEVEL_ERROR, sprintf("ZPushAdmin::AdditionalFolderRemove(): the folder id '%s' can not be removed as it is a statically configured folder. Aborting.", $add_folderid));
-                return false;
-            }
-
             $status = $device->RemoveAdditionalFolder($add_folderid);
             if ($status && $device->GetData() !== false) {
                 ZPush::GetStateMachine()->SetState($device->GetData(), $devid, IStateMachine::DEVICEDATA);
@@ -660,7 +742,7 @@ class ZPushAdmin {
      *                                  'parentid'  (string) the folderid of the parent folder. If no parent folder is set or the parent folder is not defined, '0' (main folder) is used.
      *                                  'name'      (string) the name of the additional folder (has to be unique for all folders on the device).
      *                                  'type'      (string) AS foldertype of SYNC_FOLDER_TYPE_USER_*
-     *                                  'flags'     (int)    Additional flags, like DeviceManager::FLD_FLAGS_REPLYASUSER
+     *                                  'flags'     (int)    Additional flags, like DeviceManager::FLD_FLAGS_SENDASOWNER
      *
      * @access public
      * @return boolean
@@ -682,7 +764,18 @@ class ZPushAdmin {
                 return false;
             }
 
-            $status = $device->SetAdditionalFolderList($set_store, $set_folders);
+            // check if any of the folders sent is in the statically configured list
+            $set_folders_checked = array();
+            $current_folders = ZPush::GetAdditionalSyncFolders();
+            foreach($set_folders as $f) {
+                if (isset($current_folders[$f['folderid']]) && substr($current_folders[$f['folderid']]->serverid, 0, 1) == DeviceManager::FLD_ORIGIN_CONFIG) {
+                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::AdditionalFolderSetList(): Ignoring folder '%s' id '%s' as it's a statically configured folder", $f['name'], $f['folderid']));
+                    continue;
+                }
+                $set_folders_checked[] = $f;
+            }
+
+            $status = $device->SetAdditionalFolderList($set_store, $set_folders_checked);
             if ($status && $device->GetData() !== false) {
                 ZPush::GetStateMachine()->SetState($device->GetData(), $devid, IStateMachine::DEVICEDATA);
             }
@@ -735,7 +828,7 @@ class ZPushAdmin {
         $dropedUsers = 0;
         $fixedUsers = 0;
 
-        $devices = ZPush::GetStateMachine()->GetAllDevices(false);
+        $devices = self::GetAllDevices();
         foreach ($devices as $devid) {
             $users = self::ListUsers($devid);
             $obsoleteUsers = array();
@@ -804,7 +897,7 @@ class ZPushAdmin {
     static public function FixStatesDeviceToUserLinking() {
         $seen = 0;
         $fixed = 0;
-        $devices = ZPush::GetStateMachine()->GetAllDevices(false);
+        $devices = self::GetAllDevices();
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::FixStatesDeviceToUserLinking(): found %d devices", count($devices)));
 
         foreach ($devices as $devid) {
@@ -830,7 +923,7 @@ class ZPushAdmin {
     static public function FixStatesUserToStatesLinking() {
         $processed = 0;
         $deleted = 0;
-        $devices = ZPush::GetStateMachine()->GetAllDevices(false);
+        $devices = self::GetAllDevices();
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::FixStatesUserToStatesLinking(): found %d devices", count($devices)));
 
         foreach ($devices as $devid) {
@@ -864,7 +957,7 @@ class ZPushAdmin {
             $existingStates = ZPush::GetStateMachine()->GetAllStatesForDevice($devid);
             $processed = count($existingStates);
 
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::FixStatesUserToStatesLinking(): found %d valid uuids and %d states for device device '%s'", count($knownUuids), $processed, $devid));
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::FixStatesUserToStatesLinking(): found %d valid uuids and %d states for device '%s'", count($knownUuids), $processed, $devid));
 
             // remove states for all unknown uuids
             foreach ($existingStates as $obsoleteState) {
@@ -894,7 +987,7 @@ class ZPushAdmin {
         $seen = 0;
         $nouuid = 0;
         $fixed = 0;
-        $asdevices = ZPush::GetStateMachine()->GetAllDevices(false);
+        $asdevices = self::GetAllDevices();
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::FixStatesHierarchyFolderData(): found %d devices", count($asdevices)));
 
         foreach ($asdevices as $devid) {
@@ -970,7 +1063,7 @@ class ZPushAdmin {
         $devices = 0;
         $devicesWithAddFolders = 0;
         $fixed = 0;
-        $asdevices = ZPush::GetStateMachine()->GetAllDevices(false);
+        $asdevices = self::GetAllDevices();
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPushAdmin::FixStatesAdditionalFolders(): found %d devices", count($asdevices)));
 
         foreach ($asdevices as $devid) {
@@ -1017,5 +1110,17 @@ class ZPushAdmin {
         return array($devices, $devicesWithAddFolders, $fixed);
     }
 
+    /**
+     * Returns the list of all devices.
+     *
+     * @access public
+     * @return array
+     */
+    public static function GetAllDevices() {
+        if (empty(self::$devices)) {
+            self::$devices = ZPush::GetStateMachine()->GetAllDevices(false);
+        }
+        return self::$devices;
+    }
 
 }

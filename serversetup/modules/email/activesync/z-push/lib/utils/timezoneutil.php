@@ -66,6 +66,7 @@ class TimezoneUtil {
                         "100" => array("Central European Standard Time",            "(GMT+01:00) Sarajevo, Skopje, Warsaw, Zagreb"),
                         "105" => array("Romance Standard Time",                     "(GMT+01:00) Brussels, Copenhagen, Madrid, Paris"),
                         "110" => array("W Europe Standard Time",                    "(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"),
+                        "111" => array("W. Europe Standard Time",                   "(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"),
                         "113" => array("W Central Africa Standard Time",            "(GMT+01:00) West Central Africa"),
                         "115" => array("E Europe Standard Time",                    "(GMT+02:00) Bucharest"),
                         "120" => array("Egypt Standard Time",                       "(GMT+02:00) Cairo"),
@@ -1177,7 +1178,7 @@ class TimezoneUtil {
     }
 
     /**
-     * Tries to find a AS timezone for a php timezone
+     * Tries to find a AS timezone for a php timezone.
      *
      * @param string    $phpname        a php timezone name
      *
@@ -1187,17 +1188,14 @@ class TimezoneUtil {
     static private function guessTZNameFromPHPName($phpname) {
         foreach (self::$phptimezones as $tzn => $phptzs) {
             if (in_array($phpname, $phptzs)) {
-                $tzname = $tzn;
+                if (!is_int($tzn)) {
+                    return $tzn;
+                }
                 break;
             }
         }
-
-        if (!isset($tzname) || is_int($tzname)) {
-            ZLog::Write(LOGLEVEL_ERROR, sprintf("TimezoneUtil::guessTZNameFromPHPName() no compatible timezone found for '%s'. Returning 'GMT Standard Time'. Please contact the Z-Push dev team.", $phpname));
-            return self::$mstzones["085"][0];
-        }
-
-        return $tzname;
+        ZLog::Write(LOGLEVEL_ERROR, sprintf("TimezoneUtil::guessTZNameFromPHPName() no compatible timezone found for '%s'. Returning 'GMT Standard Time'. Please contact the Z-Push dev team.", $phpname));
+        return self::$mstzones["085"][0];
     }
 
     /**
@@ -1209,6 +1207,12 @@ class TimezoneUtil {
      * @return string
      */
     static private function getMSTZnameFromTZName($name) {
+        // if $name is empty, get the timezone from system
+        if (trim($name) == '') {
+            $name = date_default_timezone_get();
+            ZLog::Write(LOGLEVEL_INFO, sprintf("TimezoneUtil::getMSTZnameFromTZName(): empty timezone name sent. Got timezone from the system: '%s'", $name));
+        }
+
         foreach (self::$mstzones as $mskey => $msdefs) {
             if ($name == $msdefs[0])
                 return $msdefs[1];
@@ -1351,5 +1355,48 @@ class TimezoneUtil {
             return $matches[1] . "/" . $matches[2];
         }
         return self::getMSTZnameFromTZName(trim($timezone, '"'));
+    }
+
+    /**
+     * Returns a timezone supported by PHP for DateTimeZone constructor.
+     * @see http://php.net/manual/en/timezones.php
+     *
+     * @param string $timezone
+     *
+     * @access public
+     * @return string
+     */
+    public static function GetPhpSupportedTimezone($timezone) {
+        if (in_array($timezone, DateTimeZone::listIdentifiers())) {
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("TimezoneUtil::GetPhpSupportedTimezone(): '%s' is a PHP supported timezone", $timezone));
+            return $timezone;
+        }
+        $dtz = date_default_timezone_get();
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("TimezoneUtil::GetPhpSupportedTimezone(): '%s' is not a PHP supported timezone. Returning default timezone: '%s'", $timezone, $dtz));
+        return $dtz;
+    }
+
+    /**
+     * Returns official timezone name from windows timezone name.
+     * E.g. "W Europe Standard Time" for "(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna".
+     *
+     * @param string $winTz Timezone name in windows
+     *
+     * @access public
+     * @return string timezone name
+     */
+    public static function GetTZNameFromWinTZ($winTz = false) {
+
+        // Return "GMT Standard Time" per default
+        if ($winTz === false) {
+            return self::$mstzones['085'][0];
+        }
+
+        foreach (self::$mstzones as $mskey => $msdefs) {
+            if ($winTz == $msdefs[1]) {
+                return $msdefs[0];
+            }
+        }
+        return self::$mstzones['085'][0];
     }
 }

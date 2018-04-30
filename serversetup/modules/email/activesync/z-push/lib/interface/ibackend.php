@@ -257,7 +257,7 @@ interface IBackend {
     /**
      * Applies settings to and gets informations from the device
      *
-     * @param SyncObject    $settings (SyncOOF or SyncUserInformation possible)
+     * @param SyncObject    $settings (SyncOOF, SyncUserInformation, SyncRightsManagementTemplates possible)
      *
      * @access public
      * @return SyncObject   $settings
@@ -333,4 +333,12 @@ interface IBackend {
      * @return string|boolean
      */
     public function GetKoeGabBackendFolderId($foldername);
+
+    /**
+     * Returns a KoeSignatures object.
+     *
+     * @access public
+     * @return KoeSignatures
+     */
+    public function GetKoeSignatures();
 }

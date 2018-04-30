@@ -186,6 +186,7 @@ class MAPIMapping {
             // Override 'From' to show "Full Name <user@domain.com>"
             "representingname"      => PR_SENT_REPRESENTING_NAME,
             "representingentryid"   => PR_SENT_REPRESENTING_ENTRYID,
+            "representingsearchkey" => PR_SENT_REPRESENTING_SEARCH_KEY,
             "sourcekey"             => PR_SOURCE_KEY,
             "entryid"               => PR_ENTRYID,
             "parentsourcekey"       => PR_PARENT_SOURCE_KEY,
@@ -234,6 +235,7 @@ class MAPIMapping {
             "reminderset"           => "PT_BOOLEAN:PSETID_Common:0x8503",
             "remindertime"          => "PT_LONG:PSETID_Common:0x8501",
             "recurrenceend"         => "PT_SYSTIME:PSETID_Appointment:0x8236",
+            "meetingType"           => "PT_LONG:PSETID_Meeting:0x26",
             );
     }
 
@@ -314,6 +316,7 @@ class MAPIMapping {
             "isrecurring"           => "PT_BOOLEAN:PSETID_Appointment:0x8223",
             "recurringstate"        => "PT_BINARY:PSETID_Appointment:0x8216",
             "timezonetag"           => "PT_BINARY:PSETID_Appointment:0x8233",
+            "timezonedesc"          => "PT_STRING8:PSETID_Appointment:0x8234",
             "recurrenceend"         => "PT_SYSTIME:PSETID_Appointment:0x8236",
             "responsestatus"        => "PT_LONG:PSETID_Appointment:0x8218",
             "commonstart"           => "PT_SYSTIME:PSETID_Common:0x8516",

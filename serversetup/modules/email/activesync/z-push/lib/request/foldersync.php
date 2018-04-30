@@ -77,7 +77,7 @@ class FolderSync extends RequestProcessor {
         $changesMem = self::$deviceManager->GetHierarchyChangesWrapper();
 
         // the hierarchyCache should now fully be initialized - check for changes in the additional folders
-        $changesMem->Config(ZPush::GetAdditionalSyncFolders(false));
+        $changesMem->Config(ZPush::GetAdditionalSyncFolders(false), ChangesMemoryWrapper::SYNCHRONIZING);
 
          // reset to default store in backend
         self::$backend->Setup(false);
@@ -198,7 +198,7 @@ class FolderSync extends RequestProcessor {
                         // say that we are done with partial synching
                         self::$deviceManager->SetFolderSyncComplete(true);
                         // reset the loop data to prevent any loop detection to kick in now
-                        self::$deviceManager->ClearLoopDetectionData(Request::GetAuthUser(), Request::GetDeviceID());
+                        self::$deviceManager->ClearLoopDetectionData(Request::GetAuthUserString(), Request::GetDeviceID());
                         ZLog::Write(LOGLEVEL_INFO, "Request->HandleFolderSync(): Chunked exporting of folders completed successfully");
                     }
 
@@ -248,11 +248,17 @@ class FolderSync extends RequestProcessor {
                     // update SPA & save it
                     $spa->SetSyncKey($newsynckey);
                     $spa->SetFolderId(false);
-                    self::$deviceManager->GetStateManager()->SetSynchedFolderState($spa);
 
                     // invalidate all pingable flags
                     SyncCollections::InvalidatePingableFlags();
                 }
+                // save the SyncParameters if it changed or the reference policy key is not set or different
+                if ($spa->IsDataChanged() || !$spa->HasReferencePolicyKey() || self::$deviceManager->ProvisioningRequired($spa->GetReferencePolicyKey(), true, false)) {
+                    // saves the SPA (while updating the reference policy key)
+                    $spa->SetLastSynctime(time());
+                    self::$deviceManager->GetStateManager()->SetSynchedFolderState($spa);
+                }
+
             }
         }
         self::$encoder->endTag();

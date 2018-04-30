@@ -26,14 +26,15 @@
 /**********************************************************************************
  *  Default settings
  */
+
+    // Replace zpush.example.com with your z-push's host name and uncomment the line below.
+    // define('ZPUSH_HOST', 'zpush.example.com');
+
     // Defines the default time zone, change e.g. to "Europe/London" if necessary
     define('TIMEZONE', '');
 
     // Defines the base path on the server
     define('BASE_PATH', dirname($_SERVER['SCRIPT_FILENAME']). '/');
-
-    // The Z-Push server location for the autodiscover response
-    define('SERVERURL', 'https://localhost/Microsoft-Server-ActiveSync');
 
     /*
      * Whether to use the complete email address as a login name
@@ -43,6 +44,28 @@
      * true - use the complete email address.
      */
     define('USE_FULLEMAIL_FOR_LOGIN', false);
+
+    /*
+     * AutoDiscover requires the username to match either the email address
+     * or the local part of the email address.
+     * This is not always possible as the username might have a different
+     * schema than email address. Configure this parameter to match your
+     * username settings.
+     * @see https://wiki.z-hub.io/display/ZP/Configuring+Z-Push+Autodiscover#ConfiguringZ-PushAutodiscover-Configuration
+     * @see https://jira.z-hub.io/browse/ZP-1209
+     *
+     * Possible values:
+     * AUTODISCOVER_LOGIN_EMAIL             - uses the email address as provided when setting up the account
+     * AUTODISCOVER_LOGIN_NO_DOT            - removes the '.' from email address:
+     *                                          email: first.last@domain.com -> resulting username: firstlast
+     * AUTODISCOVER_LOGIN_F_NO_DOT_LAST     - cuts the first part before '.' after the first letter and
+     *                                          removes the '.' from email address:
+     *                                          email: first.last@domain.com -> resulting username: flast
+     * AUTODISCOVER_LOGIN_F_DOT_LAST        - cuts the part before '.' after the first letter and
+     *                                          leaves the part after '.' as is:
+     *                                          email: first.last@domain.com -> resulting username: f.last
+     */
+    define('AUTODISCOVER_LOGIN_TYPE', AUTODISCOVER_LOGIN_EMAIL);
 
 /**********************************************************************************
  *  Logging settings

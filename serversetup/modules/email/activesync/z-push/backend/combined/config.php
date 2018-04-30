@@ -43,7 +43,7 @@ class BackendCombinedConfig {
             //the order in which the backends are loaded.
             //login only succeeds if all backend return true on login
             //sending mail: the mail is sent with first backend that is able to send the mail
-            'backends' => array(
+          'backends' => array(
                 'i' => array(
                     'name' => 'BackendIMAP',
                 ),

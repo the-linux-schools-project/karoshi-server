@@ -55,16 +55,16 @@ include_once(ZPUSH_CONFIG);
         if (! Request::HasAuthenticationInfo() || !Request::GetGETUser())
             throw new AuthenticationRequiredException("Access denied. Please send authorisation information");
 
+        ZPush::CheckAdvancedConfig();
+
+        // Process request headers and look for AS headers
+        Request::ProcessHeaders();
+
         // Stop here if this is an OPTIONS request
         if (Request::IsMethodOPTIONS()) {
             RequestProcessor::Authenticate();
             throw new NoPostRequestException("Options request", NoPostRequestException::OPTIONS_REQUEST);
         }
-
-        ZPush::CheckAdvancedConfig();
-
-        // Process request headers and look for AS headers
-        Request::ProcessHeaders();
 
         // Check required GET parameters
         if(Request::IsMethodPOST() && (Request::GetCommandCode() === false || !Request::GetDeviceID() || !Request::GetDeviceType()))
@@ -107,8 +107,10 @@ include_once(ZPUSH_CONFIG);
         RequestProcessor::HandleRequest();
 
         // eventually the RequestProcessor wants to send other headers to the mobile
-        foreach (RequestProcessor::GetSpecialHeaders() as $header)
+        foreach (RequestProcessor::GetSpecialHeaders() as $header) {
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("Special header: %s", $header));
             header($header);
+        }
 
         // stream the data
         $len = ob_get_length();
@@ -223,10 +225,11 @@ include_once(ZPUSH_CONFIG);
 
     // end gracefully
     ZLog::Write(LOGLEVEL_INFO,
-            sprintf("cmd='%s' memory='%s/%s' time='%ss' devType='%s' devId='%s' getUser='%s' from='%s' version='%s' method='%s' httpcode='%s'",
+            sprintf("cmd='%s' memory='%s/%s' time='%ss' devType='%s' devId='%s' getUser='%s' from='%s' idle='%ss' version='%s' method='%s' httpcode='%s'",
                     Request::GetCommand(), Utils::FormatBytes(memory_get_peak_usage(false)), Utils::FormatBytes(memory_get_peak_usage(true)),
                     number_format(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"], 2),
-                    Request::GetDeviceType(), Request::GetDeviceID(), Request::GetGETUser(), Request::GetRemoteAddr(), @constant('ZPUSH_VERSION'), Request::GetMethod(), http_response_code() ));
+                    Request::GetDeviceType(), Request::GetDeviceID(), Request::GetGETUser(), Request::GetRemoteAddr(),
+                    RequestProcessor::GetWaitTime(), @constant('ZPUSH_VERSION'), Request::GetMethod(), http_response_code() ));
 
     ZLog::Write(LOGLEVEL_DEBUG, "-------- End");
 
