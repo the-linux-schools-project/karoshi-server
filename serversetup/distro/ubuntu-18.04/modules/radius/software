@@ -55,8 +55,8 @@ cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/
 ln -s /etc/freeradius/3.0/mods-available/krb5 /etc/freeradius/3.0/mods-enabled/krb5
 
 #Add symlinks for freeradius for backward compatibility
-ln -s /etc/freeradius/3.0/clients.conf /etc/freeradius/clients.conf
-ln -s /etc/freeradius/3.0/users /etc/freeradius/users
+[ ! -e /etc/freeradius/clients.conf ] && ln -s /etc/freeradius/3.0/clients.conf /etc/freeradius/clients.conf
+[ ! -e /etc/freeradius/users ] && ln -s /etc/freeradius/3.0/users /etc/freeradius/users
 
 #Create krb5 config file
 echo 'krb5 {
