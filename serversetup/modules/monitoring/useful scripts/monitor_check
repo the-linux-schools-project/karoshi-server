@@ -1,17 +1,17 @@
 #!/bin/bash
 #MonitorCheck
 [ ! -f /opt/karoshi/server_network/monitoringserver ] && exit
-MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
+MONITORING_SERVER=$(sed -n 1,1p /opt/karoshi/server_network/monitoringserver)
 
 #Get defcon status
-DEFCON=$(ssh -x -o PasswordAuthentication=no $MONITORING_SERVER '
+DEFCON=$(ssh -x -o PasswordAuthentication=no "$MONITORING_SERVER" '
 source /opt/karoshi/server_network/mon/network_status
 echo $DEFCON
 ')
 
 #Create web management warning
 ERRORALERT="Monitoring System Failure Alert"
-if [ $DEFCON != 5 ]
+if [ "$DEFCON" != 5 ]
 then
 	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add monitoring /cgi-bin/admin/mon_status.cgi "$ERRORALERT" 3
 else

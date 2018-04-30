@@ -53,7 +53,7 @@ echo -e "$MON_DATA_PASSES" | grep -w time: > /opt/karoshi/server_network/mon/mon
 MON_DATA_PASSES=$(echo -e "$MON_DATA_PASSES" | sed 's/ * /,/g')
 
 #Get list of all groups
-GROUP_LIST_ARRAY=( `grep -w watch /etc/mon/mon.cf | sed 's/watch//g' | sed 's/\t//g'` )
+GROUP_LIST_ARRAY=( $(grep -w watch /etc/mon/mon.cf | sed 's/watch//g' | sed 's/\t//g') )
 GROUP_LIST_COUNT=${#GROUP_LIST_ARRAY[@]}
 
 #Get list of all failed services
