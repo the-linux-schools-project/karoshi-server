@@ -131,5 +131,22 @@ fi
 cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monitors/* > /opt/karoshi/server_network/mon/mon.cf 2>/dev/null
 #Create flag file for activate changes button
 touch /opt/karoshi/server_network/mon/activate_changes
+
+MONITORING_SERVER=$(sed -n 1,1p /opt/karoshi/server_network/monitoringserver)
+if [[ "$MONITORING_SERVER" = $(hostname-fqdn) ]]
+then
+	if [ -d /opt/karoshi/server_network/mon/events/"$MONITOR" ]
+	then
+		rm -f -R /opt/karoshi/server_network/mon/events/"$MONITOR"
+	fi
+else
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$MONITORING_SERVER" '
+	if [ -d /opt/karoshi/server_network/mon/events/"'"$MONITOR"'" ]
+	then
+		rm -f -R /opt/karoshi/server_network/mon/events/"'"$MONITOR"'"
+	fi
+	'
+fi
+
 exit
 
