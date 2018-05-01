@@ -50,15 +50,15 @@ fi
 
 function show_elapsed_time {
 echo
-echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time."'</li>'
+echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time."'</li><li>'
 #Wait for command to start
-while [[ $(ps aux | grep -c "/etc/ssl/radius/dh_2048.pem") = 1 ]]
+while [[ $(ps aux | grep -c "$CertPath/$CertName") = 1 ]]
 do
 	sleep 1
 done
 
 COUNTER=1
-while [[ $(ps aux | grep -c "/etc/ssl/radius/dh_2048.pem") -gt 1 ]]
+while [[ $(ps aux | grep -c "$CertPath/$CertName") -gt 1 ]]
 do
 	# Do something here
 	echo "."
@@ -70,7 +70,7 @@ do
 		echo '<br>'
 	fi
 done
-echo '</ul>'
+echo '</li></ul>'
 }
 
 if [ ! -f "$CertPath/$CertName" ]
