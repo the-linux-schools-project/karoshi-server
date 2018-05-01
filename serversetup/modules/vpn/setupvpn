@@ -167,40 +167,7 @@ sed -i '/CA_EXPIRE=/c\export CA_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 sed -i '/KEY_EXPIRE=/c\export KEY_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 
 #Generate Diffie Hellmam parameters
-
-function show_elapsed_time {
-echo
-echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time."'</li>'
-#Wait for command to start
-while [[ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") = 1 ]]
-do
-	sleep 1
-done
-
-COUNTER=1
-while [[ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") -gt 1 ]]
-do
-	# Do something here
-	echo "."
-	sleep 0.5
-	let COUNTER="$COUNTER"+1
-	if [ "$COUNTER" = 80 ]
-	then
-		COUNTER=1
-		echo '<br>'
-	fi
-done
-echo '</ul>'
-}
-
-
-if [ ! -f /etc/openvpn/dh2048.pem ]
-then
-	echo '<span style="word-wrap: break-word; width: 500px; font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-	openssl dhparam -out /etc/openvpn/dh2048.pem 2048 | show_elapsed_time
-	echo '</span>'
-fi
-
+/opt/karoshi/serversetup/all/scripts/create_diffie_hellman/etc/openvpn dh2048.pem 2048 html
 
 if [ ! -f /etc/openvpn/server.key ] || [ ! -f /etc/openvpn/server.crt ]
 then

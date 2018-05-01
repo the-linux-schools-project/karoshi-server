@@ -72,6 +72,5 @@ chown freerad /etc/ssl/radius/radius.req
 
 
 #Create diffie Helman
-[ -f /etc/ssl/radius/dh_4096.pem ] && rm -f etc/ssl/radius/dh_4096.pem
-openssl genpkey -genparam -algorithm DH -out /etc/ssl/radius/dh_4096.pem 4096 
+/opt/karoshi/serversetup/all/scripts/create_diffie_hellman /etc/ssl/radius dh2048.pem 2048 html
 

@@ -1,0 +1,86 @@
+#!/bin/bash
+
+
+CertPath=$(echo "$1" | tr -cd 'A-Za-z0-9/')
+CertName=$(echo "$2" | tr -cd 'A-Za-z0-9')
+CertSize=$(echo "$3" | tr -cd '0-9')
+Display=$(echo "$4" | tr -cd 'a-z')
+
+[ -z "$Display" ] && Display=normal
+
+function usage {
+clear
+echo  "
+
+This creates a Diffie Hellman certificate if it does not already exist.
+
+Usage
+
+create_diffie_hellman <Certificate Path> <Certificate Name> <Certificate Size>
+
+Certificate Path
+
+The full path to the folder where you want the generated certifcate to be stored.
+
+Certificate Name
+
+The name that you want the generated certificate to be saved as.
+
+Certificate Size 
+
+The size that you want the certificate to be. Suitable sizes are 1024, 2048, 4096 and 8192 if you want to wait a long time.
+
+Example
+
+create_diffie_hellman /etc/ssl/radius dh2048.pem 2048
+"
+exit
+}
+
+#Check input
+if [ -z "$CertPath" ] || [ -z "$CertName" ] || [ -z "$CertSize" ] || [ "$CertPath" = help ]
+then
+	usage
+fi
+
+if [ "$CertSize" != 1024 ] || [ "$CertSize" != 2048 ] || [ "$CertSize" != 4096 ] || [ "$CertSize" != 8192 ]
+then
+	usage
+fi	
+
+function show_elapsed_time {
+echo
+echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time."'</li>'
+#Wait for command to start
+while [[ $(ps aux | grep -c "/etc/ssl/radius/dh_2048.pem") = 1 ]]
+do
+	sleep 1
+done
+
+COUNTER=1
+while [[ $(ps aux | grep -c "/etc/ssl/radius/dh_2048.pem") -gt 1 ]]
+do
+	# Do something here
+	echo "."
+	sleep 0.5
+	let COUNTER="$COUNTER"+1
+	if [ "$COUNTER" = 80 ]
+	then
+		COUNTER=1
+		echo '<br>'
+	fi
+done
+echo '</ul>'
+}
+
+if [ ! -f "$CertPath/$CertName" ]
+then
+	if [ "$Display" = html ]
+	then
+		echo '<span style="word-wrap: break-word; width: 500px; font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		openssl dhparam -out "$CertPath/$CertName" "$CertSize" | show_elapsed_time
+		echo '</span>'
+	else
+		openssl dhparam -out "$CertPath/$CertName" "$CertSize"
+	fi
+fi
