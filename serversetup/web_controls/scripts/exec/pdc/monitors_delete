@@ -96,10 +96,13 @@ then
 	exit 101
 fi
 
+MONITOR=${MONITOR//%25%25%25%25%25/_}
+
 #Exit if no monitoring server has been set up.
 [ ! -f /opt/karoshi/server_network/monitoringserver ] && exit 103
 #Delete monitor
-MONITOR=$(echo "$MONITOR" | sed 's/%25%25%25%25%25/_/g')
+
+
 echo "$(date): monitors_delete - Deleting $MONITOR by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 [ -f /opt/karoshi/server_network/mon/monitors/"$MONITOR" ] && rm -f /opt/karoshi/server_network/mon/monitors/"$MONITOR"
 [ -f /opt/karoshi/server_network/mon/monitors_disabled/"$MONITOR" ] && rm -f /opt/karoshi/server_network/mon/monitors_disabled/"$MONITOR"

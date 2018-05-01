@@ -118,7 +118,7 @@ then
 	ALERTAFTER=1
 fi
 
-if [ -z "$MONITORTYPES" ]
+if [[ ! ${MONITORTYPES[@]} ]]
 then
 	echo "$(date): monitors_add - Blank monitortypes by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -174,16 +174,16 @@ hostgroup $GROUPNAME $TCPIP
 watch $GROUPNAME" > /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
 
 function add_monitor {
-echo "	service $ServiceName
-		description $Description
-		interval $INTERVAL""m
-		monitor $MonitorType
-		period wd {$DAYSTART-$DAYEND} $MON_PERIOD
-			alertafter $ALERTAFTER
-			alert file.alert -d /opt/karoshi/server_network/mon/events/$GROUPNAME $ServiceName.log
-			alert send_mail.alert :SERVICE:$ServiceName:GROUP:$GROUPNAME:LOGNAME:$ServiceName.log
-			upalert file.alert -d /opt/karoshi/server_network/mon/events/$GROUPNAME $ServiceName.log
-			alertevery 480m" >> /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
+echo '	service '"$ServiceName"'
+		description '"$Description"'
+		interval '"$INTERVAL"'m
+		monitor '"$MonitorType"'
+		period wd {'"$DAYSTART"'-'"$DAYEND"'} '"$MON_PERIOD"'
+			alertafter '"$ALERTAFTER"'
+			alert file.alert -d /opt/karoshi/server_network/mon/events/'"$GROUPNAME"' '"$ServiceName"'.log
+			alert send_mail.alert :SERVICE:'"$ServiceName"':GROUP:'"$GROUPNAME"':LOGNAME:'"$ServiceName"'.log
+			upalert file.alert -d /opt/karoshi/server_network/mon/events/'"$GROUPNAME"' '"$ServiceName"'.log
+			alertevery 480m' >> /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
 }
 
 #Create checks
