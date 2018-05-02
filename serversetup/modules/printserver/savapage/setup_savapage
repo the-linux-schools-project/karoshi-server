@@ -89,12 +89,7 @@ fi
 chown savapage "$INSTALLPATH/$SAVABINARY"
 chmod 0755 "$INSTALLPATH/$SAVABINARY"
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-if [[ $(lsb_release -r | grep -c 12.04) -gt 0 ]]
-then
-	su savapage -c 'echo -e "yes\nyes\nno\n" | ./"'"$SAVABINARY"'"'
-else
-	su savapage -c 'echo -e "yes\nno\n" | ./"'"$SAVABINARY"'"'
-fi
+su savapage -c 'echo -e "yes\nyes\nno\n" | ./"'"$SAVABINARY"'"'
 echo '</pre>'
 
 #Run root tasks
@@ -193,5 +188,6 @@ cp -f /opt/karoshi/serversetup/modules/printserver/savapage/savapage.service /et
 echo '<ul><li>'$"Restarting Avahi"'</li></ul>'
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/avahi 1>/dev/null
 
 
