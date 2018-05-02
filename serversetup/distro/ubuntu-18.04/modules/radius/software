@@ -51,7 +51,7 @@ echo '</pre>'
 cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/sites-available/default /etc/freeradius/3.0/sites-available/
 #cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/sites-available/inner-tunnel /etc/freeradius/3.0/sites-available/
 cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/users /etc/freeradius/3.0/
-cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/eap /etc/freeradius/3.0/mods_available
+cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/eap /etc/freeradius/3.0/mods-available
 [ ! -e /etc/freeradius/3.0/mods-enabled/krb5 ] && ln -s /etc/freeradius/3.0/mods-available/krb5 /etc/freeradius/3.0/mods-enabled/krb5
 
 #Add symlinks for freeradius for backward compatibility

@@ -43,7 +43,7 @@ then
 	usage
 fi
 
-if [ "$CertSize" != 1024 ] || [ "$CertSize" != 2048 ] || [ "$CertSize" != 4096 ] || [ "$CertSize" != 8192 ]
+if [ "$CertSize" != 1024 ] && [ "$CertSize" != 2048 ] && [ "$CertSize" != 4096 ] && [ "$CertSize" != 8192 ]
 then
 	usage
 fi	
