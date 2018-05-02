@@ -575,7 +575,7 @@ fi
 sed -i 's/timeout 300;/timeout 10;/g' /etc/dhcp/dhclient.conf
 
 #Configure systemd to wait for 10 seconds for networking instead of 5 minutes
-sed -i 's/TimeoutStartSec=5min/TimeoutStartSec=10sec/g' /etc/systemd/system/network-online.target.wants/networking.service
+sed -i 's/TimeoutStartSec=5min/TimeoutStartSec=10sec/g' /lib/systemd/system/networking.service
 
 #Configure 
 

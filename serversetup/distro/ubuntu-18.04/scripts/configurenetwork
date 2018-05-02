@@ -353,7 +353,7 @@ ln -s /opt/karoshi/serversetup/"$SERVERTYPE"/scripts/standardsetup /opt/karoshi/
 sed -i "s%indicators=~language;~session;~power%indicators=~host;~spacer;~language;~session;~power%g" /etc/lightdm/lightdm-gtk-greeter.conf
 
 #Configure systemd to wait for 1 minute for networking instead of 10 seconds
-sed -i 's/TimeoutStartSec=10sec/TimeoutStartSec=1min/g' /etc/systemd/system/network-online.target.wants/networking.service
+sed -i 's/TimeoutStartSec=10sec/TimeoutStartSec=1min/g' /lib/systemd/system/networking.service
 
 #Reboot to sort out name change problem
 sleep 1

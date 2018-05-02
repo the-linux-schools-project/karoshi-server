@@ -121,7 +121,7 @@ do
 		#Make sure that denied_groups is included in /etc/freeradius/users
 		if [[ $(grep -c "INCLUDE denied_groups" /etc/freeradius/users) = 0 ]]
 		then
-			sed -i "1i \$INCLUDE denied_groups" /etc/freeradius/users
+			sed -i --follow-symlinks "1i \$INCLUDE denied_groups" /etc/freeradius/users
 		fi
 
 		#Reload radius
@@ -136,7 +136,7 @@ do
 		#Make sure that denied_groups is included in /etc/freeradius/users
 		if [[ $(grep -c "INCLUDE denied_groups" /etc/freeradius/users) = 0 ]]
 		then
-			sed -i "1i \$INCLUDE denied_groups" /etc/freeradius/users
+			sed -i --follow-symlinks "1i \$INCLUDE denied_groups" /etc/freeradius/users
 		fi
 
 		#Reload radius
