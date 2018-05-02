@@ -2,7 +2,7 @@
 
 
 CertPath=$(echo "$1" | tr -cd 'A-Za-z0-9/')
-CertName=$(echo "$2" | tr -cd 'A-Za-z0-9')
+CertName=$(echo "$2" | tr -cd 'A-Za-z0-9.')
 CertSize=$(echo "$3" | tr -cd '0-9')
 Display=$(echo "$4" | tr -cd 'a-z')
 
