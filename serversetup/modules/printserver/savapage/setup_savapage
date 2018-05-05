@@ -22,6 +22,10 @@ if [[ $(lsb_release -r | grep -c 14.04) -gt 0 ]]
 then
 	INSTALL_LIST="lynx default-jre default-jdk avahi-daemon python-cups python3-cups libreoffice libgxps-utils imagemagick"
 fi
+if [[ $(lsb_release -r | grep -c 18.04) -gt 0 ]]
+then
+	INSTALL_LIST="lynx openjdk-8-jre openjdk-8-jdk avahi-daemon python-cups python3-cups libreoffice libgxps-utils imagemagick"
+fi
 
 #Install packages - libreoffice is needed for web printing
 UPDATEREPO=yes
@@ -70,7 +74,7 @@ then
 	mkdir -p "$INSTALLPATH"
 fi
 
-chown savapage "$INSTALLPATH"
+chown savapage.savapage "$INSTALLPATH"
 
 cd "$INSTALLPATH"
 #Download savapage binary
@@ -89,16 +93,20 @@ fi
 chown savapage "$INSTALLPATH/$SAVABINARY"
 chmod 0755 "$INSTALLPATH/$SAVABINARY"
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-su savapage -c 'echo -e "yes\nyes\nno\n" | ./"'"$SAVABINARY"'"'
+
+if [[ $(lsb_release -r | grep -c 12.04) -gt 0 ]] || [[ $(lsb_release -r | grep -c 18.04) -gt 0 ]]
+then
+	su savapage -c 'echo -e "yes\nyes\nno\n" | ./"'"$SAVABINARY"'"'
+else
+	su savapage -c 'echo -e "yes\nno\n" | ./"'"$SAVABINARY"'"'
+fi
+
 echo '</pre>'
 
 #Run root tasks
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 "$INSTALLPATH"/MUST-RUN-AS-ROOT
 echo '</pre>'
-
-#Link in the savapage init.d script
-ln -sf "/opt/savapage/server/bin/linux-x64/app-server" /etc/init.d/savapage
 
 #Set savapage to start on boot
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/savapage
