@@ -53,14 +53,28 @@ do
 done
 
 #Get the latest savapage version
-LATESTVER=$(lynx -dump https://www.savapage.org/download/installer/ | grep "x64.bin" | sed -n 1,1p | cut -d- -f3)
-if [ "$?" != 0 ]
+function get_version {
+LATESTVER=$(lynx -dump https://"$DOWNLOADPATH"/ | grep "x64.bin" | sed -n 1,1p | cut -d- -f3- | cut -d" " -f1)
+}
+
+#See if there is a rolling release
+DOWNLOADPATH=www.savapage.org/download/snapshots
+get_version
+
+if [ -z "$LATESTVER" ]
+then
+	#Fallback to standard release
+	DOWNLOADPATH=www.savapage.org/download/installer
+	get_version
+fi
+
+if [ -z "$LATESTVER" ]
 then
 	echo '<ul><li>'$"Error getting the Savapage version"'</li></ul>'
 	exit 101
 fi
 
-SAVABINARY=savapage-setup-"$LATESTVER"-linux-x64.bin
+SAVABINARY=savapage-setup-"$LATESTVER"
 
 #Create savapage user
 getent passwd savapage 1>/dev/null
@@ -81,8 +95,8 @@ cd "$INSTALLPATH"
 if [ ! -f "$INSTALLPATH/$SAVABINARY" ]
 then
 	echo '<ul><li>'$"Downloading Savapage"'</li></ul>'
-	wget https://www.savapage.org/download/installer/savapage-setup-"$LATESTVER"-linux-x64.bin
-	if [ $? != 0 ]
+	wget https://"$DOWNLOADPATH/$SAVABINARY"
+	if [ "$?" != 0 ]
 	then
 		echo '<ul><li>'$"Error Downloading Savapage"'</li></ul>'
 		exit 101
