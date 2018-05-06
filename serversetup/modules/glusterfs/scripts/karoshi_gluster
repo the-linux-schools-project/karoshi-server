@@ -416,13 +416,13 @@ then
 
 	echo "$(date): karoshi_gluster restricting access to $VOLUME to 127.0.0.1" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Restrict access to the gluster volume
-	gluster volume set "$VOLUME" auth.allow 127.0.0.1
+	gluster volume set "$VOLUME" auth.allow 127.0.0.1 1>/dev/null
 
 	echo "$(date): karoshi_gluster settting features.cache-invalidation on, features.cache-invalidation-timeout 600, performance.stat-prefetch on to $VOLUME to 127.0.0.1" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Speed up the gluster volume
-	gluster volume set "$VOLUME" features.cache-invalidation on
-	gluster volume set "$VOLUME" features.cache-invalidation-timeout 600
-	gluster volume set "$VOLUME" performance.stat-prefetch on
+	gluster volume set "$VOLUME" features.cache-invalidation on 1>/dev/null
+	gluster volume set "$VOLUME" features.cache-invalidation-timeout 600 1>/dev/null
+	gluster volume set "$VOLUME" performance.stat-prefetch on 1>/dev/null
 
 	for SERVERS in $(echo "$SERVERLIST" | sed 's/,/ /g')
 	do

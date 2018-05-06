@@ -414,8 +414,7 @@ function schedule_cron {
 echo "<ul><li>"$"Scheduling vpn checking""</li></ul>"
 [ -d "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs" ] || mkdir -p "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs"
 echo '*/5 * * * *' /opt/karoshi/serversetup/modules/authentication/openvpnclients > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/openvpnclients.cron"
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-echo '<br><br>'
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 }
 
 echo "<ul><li>"$"Configure OpenVPN""</li></ul>"

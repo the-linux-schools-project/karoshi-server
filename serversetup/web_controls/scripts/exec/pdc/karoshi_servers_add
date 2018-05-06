@@ -486,6 +486,16 @@ then
 	then
 		echo "$(date): karoshi_servers_add - setting up a vpn tunnel for $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:" | /opt/karoshi/serversetup/modules/authentication/setupopenvpn
+		#Check for bin interfaces on the main server
+		if [ $(grep -c "bind interfaces only = yes" /etc/samba/smb.conf) -gt 0 ]
+		then
+			cp /etc/samba/smb.conf "/etc/samba/smb.conf.$LOG_DATE.$$"
+			sed -i 's/bind interfaces only = yes/bind interfaces only = no/g' /etc/samba/smb.conf
+			#Restart samba
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null
+			sleep 2
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null
+		fi
 	fi
 fi
 

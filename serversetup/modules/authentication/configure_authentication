@@ -106,7 +106,7 @@ function restart_samba {
 echo "<ul><li>"'"$SERVERNAME"' - '$"Restarting Samba"'"</li></ul>"
 #Stop samba
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
-sleep 5
+sleep 2
 #start samba
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null
 #Make sure samba runs on boot

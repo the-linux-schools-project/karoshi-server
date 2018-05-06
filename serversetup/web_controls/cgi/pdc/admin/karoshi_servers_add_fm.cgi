@@ -197,9 +197,9 @@ echo '<div id="actionbox3"><div id="titlebox">
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form id="ViewServers" action="/cgi-bin/admin/karoshi_servers_view.cgi" method="post">
 			<button class="info infonavbutton" name="ShowServers" value="_">
-				<img src="'$ICON1'" alt="'$"Show Servers"'">
+				<img src="'$ICON1'" alt="'$"View Servers"'">
 				<span>'$"Show the servers and roles."'</span><br>
-				'$"Show Servers"'
+				'$"View Servers"'
 			</button>
 		</form>
 	</td>
