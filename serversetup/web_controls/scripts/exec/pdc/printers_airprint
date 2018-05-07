@@ -117,6 +117,12 @@ then
 		/opt/karoshi/serversetup/modules/printserver/setupairprint "'"$ACTION"'"
 		'
 	fi
+	if [ "$ACTION" = enableairprint ]
+	then
+		echo $PRINTSERVER > /opt/karoshi/server_network/servers/"$PRINTSERVER"/airprint
+	else
+		[ -f /opt/karoshi/server_network/servers/"$PRINTSERVER"/airprint ] && rm -f /opt/karoshi/server_network/servers/"$PRINTSERVER"/airprint
+	fi
 fi
 
 if [ "$ACTION" = disable ]

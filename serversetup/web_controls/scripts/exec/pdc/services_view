@@ -153,6 +153,7 @@ then
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/minidlnaserver ] && DSERVICES="$DSERVICES",minidlna
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/squid ] && DSERVICES="$DSERVICES",apache,e2guardian,squid,squiddebproxy
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/printserver ] && DSERVICES="$DSERVICES",cups,samba
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/airprint ] && DSERVICES="$DSERVICES",avahi	
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/savapage ] && DSERVICES="$DSERVICES",avahi,savapage
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/radiusserver ] && DSERVICES="$DSERVICES",radius
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/radioserver ] && DSERVICES="$DSERVICES",icecast
@@ -181,6 +182,7 @@ then
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/homeaccess ] && DSERVICES="$DSERVICES",apache
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/squid ] && DSERVICES="$DSERVICES",apache,e2guardian,squid,squiddebproxy
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/printserver ] && DSERVICES="$DSERVICES",cups,samba
+	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/airprint ] && DSERVICES="$DSERVICES",avahi
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/savapage ] && DSERVICES="$DSERVICES",avahi,savapage
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/radiusserver ] && DSERVICES="$DSERVICES",radius
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/reverseproxyserver ] && DSERVICES="$DSERVICES",nginx
@@ -208,6 +210,7 @@ then
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/homeaccess ] && DSERVICES="$DSERVICES",apache
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/squid ] && DSERVICES="$DSERVICES",apache,e2guardian,squid,squiddebproxy
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/printserver ] && DSERVICES="$DSERVICES",cups,samba
+	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/airprint ] && DSERVICES="$DSERVICES",avahi
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/savapage ] && DSERVICES="$DSERVICES",avahi,savapage
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/radiusserver ] && DSERVICES="$DSERVICES",radius
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/reverseproxyserver ] && DSERVICES="$DSERVICES",nginx

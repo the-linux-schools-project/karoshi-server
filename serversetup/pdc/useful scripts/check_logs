@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WARNLIMIT=40
+WARNLIMIT=50
 LOGPATH=/var/log/syslog
 LOG_DATE=$(date +%F)
 
@@ -18,7 +18,7 @@ do
 	FAIL_LIST=""
 	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
-		#Don't run a check in the first 6 minutes of uptime - there will be a lot of kernel boot messages in syslog.
+		#Don't run a check in the first 5 minutes of uptime - there will be a lot of kernel boot messages in syslog.
 
 		#Get uptime in seconds 
 		UPTIME=$(cut -d. -f1 < /proc/uptime)

@@ -32,7 +32,7 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
-HEIGHT=25
+HEIGHT=30
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then

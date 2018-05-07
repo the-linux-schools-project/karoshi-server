@@ -83,12 +83,12 @@ echo '</head><body><div id="pagecontainer">'
 if [ $MOBILE = no ]
 then
 	DIV_ID=actionbox3
-	HEIGHT=25
+	HEIGHT=30
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
-	HEIGHT=30
+	HEIGHT=35
 fi
 
 echo '<form action="/cgi-bin/admin/remote_management_change_language2.cgi" method="post">'

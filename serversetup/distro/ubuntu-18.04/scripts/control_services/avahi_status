@@ -1,1 +1,7 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_status
+#!/bin/bash
+if [[ $(ps aux | grep -w -c "avahi-daemon:") -gt 1 ]]
+then
+	exit 0
+else
+	exit 1
+fi

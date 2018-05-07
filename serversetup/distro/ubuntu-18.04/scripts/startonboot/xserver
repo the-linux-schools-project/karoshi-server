@@ -1,4 +1,4 @@
 #!/bin/bash
 #Start xserver on boot
 systemctl enable lightdm.service
-
+ln -s /lib/systemd/system/lightdm.service /etc/systemd/system/display-manager.service
