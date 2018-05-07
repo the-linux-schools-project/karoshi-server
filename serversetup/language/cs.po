@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Xibo byl nainstalován a lze jej zpřístupnit"
 
 msgid "Please login and change this password immediately."
 msgstr "Přihlaste se prosím a změňte toto heslo ihned."
-
-msgid "Setup Airprint"
-msgstr "Nastavení Airprint"
-
-msgid "Updating repositories"
-msgstr "Aktualizace úložišť"
-
-msgid "Installing Avahi Daemon"
-msgstr "Instalace Avahi Daemon"
-
-msgid "Installing python-cups"
-msgstr "Instalace pytonových šálků"
 
 msgid "The main server cannot be contacted."
 msgstr "Nelze kontaktovat hlavní server."
@@ -867,7 +855,7 @@ msgid "Enter in the new password that you want the user to have."
 msgstr "Zadejte nové heslo, které má uživatel mít."
 
 msgid "Upper and lower case characters and numbers are required."
-msgstr "Vyžadují se znaky a čísla v malém a malém písmenu."
+msgstr "Vyžadují se znaky a čísla v malých a malých písmenách."
 
 msgid "The Minimum password length is "
 msgstr "Minimální délka hesla je"
@@ -1511,11 +1499,11 @@ msgstr "Přidat server"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Nastavte ssh spojení na server Karoshi tak, aby bylo možné jej řídit pomocí správy webu."
 
-msgid "Show Servers"
+msgid "View Servers"
 msgstr "Zobrazit servery"
 
-msgid "Show the servers and roles."
-msgstr "Zobrazit servery a role."
+msgid "View the servers and roles."
+msgstr "Zobrazení serverů a rolí."
 
 msgid "Server name"
 msgstr "Název serveru"
@@ -1545,13 +1533,13 @@ msgid "Authentication type"
 msgstr "Typ ověření"
 
 msgid "In most cases your extra server will need to recognise your network users and groups."
-msgstr "Ve většině případů bude váš další server muset uznat uživatele a skupiny vaší sítě."
+msgstr "Ve většině případů bude váš další server muset rozpoznat uživatele a skupiny vaší sítě."
 
 msgid "Additional domain controller"
 msgstr "Další řadič domény"
 
 msgid "Reduncancy in the case of failure of your main domain controller and for additional file servers."
-msgstr "Redundance v případě selhání hlavního řadiče domény a dalších souborůových serverů."
+msgstr "Redundance v případě selhání hlavního řadiče domény a pro další souborové servery."
 
 msgid "Read only domain controller"
 msgstr "Přečíst pouze řadič domény"
@@ -1624,6 +1612,36 @@ msgstr "Nastaví výchozí nastavení uživatelských účtů."
 
 msgid "Upload User Image"
 msgstr "Nahrát obrázek uživatele"
+
+msgid "Import User Image"
+msgstr "Importovat obrázek uživatele"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Umožňuje vám nahrát obrázky uživatelů, které lze použít k identifikaci vašich uživatelů."
+
+msgid "Bulk User Creation"
+msgstr "Tvorba hromadných uživatelů"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Vytvořte uživatelské účty ze souboru CSV."
+
+msgid "View New Passwords"
+msgstr "Zobrazit nová hesla"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Zobrazte nastavení hesel pro nově vytvořené účty."
+
+msgid "Import Enrollment Numbers"
+msgstr "Importovat čísla zápisu"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Importujte čísla zápisů pro své uživatelské účty."
+
+msgid "Set User Passwords"
+msgstr "Nastavte uživatelská hesla"
+
+msgid "Set User Passwords."
+msgstr "Nastavte uživatelská hesla."
 
 msgid "User Image or compressed file"
 msgstr "Obrázek uživatele nebo komprimovaný soubor"
@@ -2055,7 +2073,7 @@ msgid "Select the location that you want. All computers in this location will be
 msgstr "Vyberte požadované umístění. Všechny počítače v tomto umístění budou zapnuté."
 
 msgid "There are no locations to schedule."
-msgstr "Neexistují místa, která by měla být naplánována."
+msgstr "Neexistují místa, která byste si mohli naplánovat."
 
 msgid "This allows you to create groups of users that change on a regular basis."
 msgstr "To vám umožní vytvořit skupiny uživatelů, kteří se pravidelně mění."
@@ -2111,23 +2129,20 @@ msgstr "Formát souboru CSV je"
 msgid "username, enrollment number or staff code"
 msgstr "uživatelské jméno, číslo zápisu nebo kód zaměstnanců"
 
-msgid "Bulk User Creation"
-msgstr "Tvorba hromadných uživatelů"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Vytvořte uživatelské účty ze souboru CSV."
-
 msgid "Import enrollment numbers"
 msgstr "Importovat čísla zápisu"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Importujte čísla zápisů pro své uživatelské účty."
+msgid "Import User Images"
+msgstr "Importovat obrázky uživatele"
+
+msgid "Import user images for your user accounts."
+msgstr "Import uživatelských obrázků pro vaše uživatelské účty."
 
 msgid "View the new passwords for a group of users."
 msgstr "Zobrazit nová hesla pro skupinu uživatelů."
 
 msgid "Windows Desktop Icons - Upload"
-msgstr "Ikony na ploše systému Windows - Nahrajte"
+msgstr "Ikony na ploše systému Windows - Nahrát"
 
 msgid "Choose the icons that you want to upload."
 msgstr "Vyberte ikony, které chcete nahrát."
@@ -2277,10 +2292,10 @@ msgid "View the whitelist."
 msgstr "Zobrazit whitelist."
 
 msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
-msgstr "Přidáním whitelistu bude možné přijímat e-maily z aliasové adresy bez kontroly spamu."
+msgstr "Přidáním whitelistu bude možné přijímat e-maily z aliasové adresy, aniž by byly zkontrolovány jako spam."
 
 msgid "Add an entry to whitelist."
-msgstr "Přidat položku na seznam povolených položek."
+msgstr "Přidejte položku na seznam povolených položek."
 
 msgid "E-Mails from addresses listed here are not checked for spam."
 msgstr "E-maily z adres uvedených zde nejsou kontrolovány pro spam."
@@ -2340,7 +2355,7 @@ msgid "Add an Internet Trend Category"
 msgstr "Přidejte kategorii Internet Trend"
 
 msgid "Enter in a name for the category you want to add."
-msgstr "Zadejte do názvu kategorie, kterou chcete přidat."
+msgstr "Zadejte název pro kategorii, kterou chcete přidat."
 
 msgid "Search Criteria"
 msgstr "Kritéria vyhledávání"
@@ -2508,7 +2523,7 @@ msgid "View user aliases."
 msgstr "Zobrazit aliasy uživatelů."
 
 msgid "Each Primary Group has a limit set for the amount of printing that each user can do in that group."
-msgstr "Každá primární skupina má limit nastavený pro množství tisku, které může uživatel v této skupině udělat."
+msgstr "Každá primární skupina má limit nastavený na množství tisku, které může uživatel v této skupině udělat."
 
 msgid "User limits override group limits."
 msgstr "Uživatelské limity potlačují omezení skupiny."
@@ -2586,7 +2601,7 @@ msgid "Detailed logs"
 msgstr "Podrobné protokoly"
 
 msgid "View detailed backup logs."
-msgstr "Zobrazení podrobných protokolů zálohování."
+msgstr "Zobrazení podrobných protokolů záloh."
 
 msgid "Summary logs"
 msgstr "Souhrnné protokoly"
@@ -2607,7 +2622,7 @@ msgid "The server type must not be blank."
 msgstr "Typ serveru nesmí být prázdný."
 
 msgid "This custom command is not in the allowed custom command list."
-msgstr "Tento vlastní příkaz není v seznamu povolených vlastních příkazů."
+msgstr "Tento vlastní příkaz není v povoleném seznamu vlastních příkazů."
 
 msgid "Assign Backup Server"
 msgstr "Přiřaďte záložní server"
@@ -2829,7 +2844,7 @@ msgid "Choose user / group"
 msgstr "Vyberte uživatele / skupinu"
 
 msgid "This will save the wifi information on the netlogon share for your clients to use when accessing wifi access points."
-msgstr "Tímto se uloží wifi informace o sdílené položce netlogon, kterou mohou vaši klienti používat při přístupu k přístupovým bodům wifi."
+msgstr "Tím se uloží wifi informace o sdílené síti netlogon, kterou mohou vaši klienti používat při přístupu k přístupovým bodům wifi."
 
 msgid "Wifi - SSID"
 msgstr "Wifi - SSID"
@@ -2991,7 +3006,7 @@ msgid "Disable acceptable use"
 msgstr "Zakázat přijatelné použití"
 
 msgid "The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."
-msgstr "Politika přijatelného používání dává novým uživatelům období odkladu, aby podepsaly a vrátily přijatelné zásady používání."
+msgstr "Politika přijatelného užívání dává novým uživatelům období odkladu, aby podepsaly a vrátily přijatelné zásady používání."
 
 msgid "User accounts are automatically disabled once the trial time is ended unless they are authorised."
 msgstr "Po skončení zkušební doby se uživatelské účty automaticky deaktivují, pokud nejsou oprávněni."
@@ -3039,13 +3054,13 @@ msgid "Setup Internet Radio Server"
 msgstr "Nastavení serveru Internet Radio"
 
 msgid "This will set up an Internet Radio Server for your network."
-msgstr "Tím vytvoříte pro svou síť Internet Radio Server."
+msgstr "Tím vytvoříte internetový rádiový server pro vaši síť."
 
 msgid "Admin Password"
 msgstr "Heslo správce"
 
 msgid "This is used to access the icecast server as the admin user."
-msgstr "Používá se k přístupu k serveru icecast jako administrátorovi."
+msgstr "Používá se k přístupu k serveru Icecast jako administrátorovi."
 
 msgid "Source Password"
 msgstr "Zdrojové heslo"
@@ -3545,11 +3560,8 @@ msgstr "Typ protokolu"
 msgid "Choose the log type that you would like to view."
 msgstr "Vyberte typ protokolu, který chcete zobrazit."
 
-msgid "View Servers"
-msgstr "Zobrazit servery"
-
 msgid "No Karoshi Servers have been set up with ssh."
-msgstr "Žádné servery Karoshi nebyly nastaveny pomocí ssh."
+msgstr "Seros servery Karoshi nebyly nastaveny pomocí ssh."
 
 msgid "Web Application Permissions"
 msgstr "Povolení webové aplikace"
@@ -3684,7 +3696,7 @@ msgid "Delete Printer"
 msgstr "Smazat tiskárnu"
 
 msgid "Delete a new printer queue."
-msgstr "Odstranění nové fronty tiskáren."
+msgstr "Odstraňte novou frontu tiskárny."
 
 msgid "Assigned Printers"
 msgstr "Přiřazené tiskárny"
@@ -3698,11 +3710,20 @@ msgstr "Upravit PPD"
 msgid "Edit a printer driver."
 msgstr "Upravte ovladač tiskárny."
 
+msgid "Windows Drivers"
+msgstr "Ovladače systému Windows"
+
 msgid "Windows printer drivers."
 msgstr "Ovladače tiskárny pro systém Windows."
 
-msgid "Windows Drivers"
-msgstr "Ovladače systému Windows"
+msgid "AirPrint Controls"
+msgstr "Ovládací prvky AirPrint"
+
+msgid "AirPrint controls."
+msgstr "Ovládací prvky AirPrint."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Nakonfigurujte tisk se službou Savapage."
@@ -3762,7 +3783,7 @@ msgid "Web Management - View-delete files"
 msgstr "Web Management - Zobrazení a odstranění souborů"
 
 msgid "Choose the web server that you want to view the files on."
-msgstr "Zvolte webový server, na kterém chcete soubory zobrazit."
+msgstr "Vyberte webový server, na který chcete soubory zobrazit."
 
 msgid "There are no web servers to choose."
 msgstr "Nejsou k dispozici žádné webové servery."
@@ -4056,7 +4077,7 @@ msgid "This will not affect other web management users."
 msgstr "To neovlivní ostatní uživatele správy webu."
 
 msgid "This will upload files so that they are available on a web server You can choose the server you wish to upload the files to."
-msgstr "Tím se nahrají soubory tak, aby byly dostupné na webovém serveru. Můžete si vybrat server, na který chcete soubory načíst."
+msgstr "Tím se nahrají soubory tak, aby byly dostupné na webovém serveru. Můžete si vybrat server, na který chcete soubory nahrát."
 
 msgid "Use the create subfolders option to create extra locations."
 msgstr "Pomocí možnosti Vytvořit podsložky můžete vytvořit další umístění."
@@ -4105,12 +4126,6 @@ msgstr "Záznamy o využití disku ukazují celkové využití pro každý oddí
 
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Importovat čísla zápisu nebo kódy zaměstnanců"
-
-msgid "View New Passwords"
-msgstr "Zobrazit nová hesla"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Zobrazte nastavení hesel pro nově vytvořené účty."
 
 msgid "CSV file"
 msgstr "Soubor CSV"
@@ -4251,7 +4266,7 @@ msgid "Proxy Port"
 msgstr "Proxy port"
 
 msgid "Enter in the password needed to connect to the proxy server."
-msgstr "Zadejte heslo potřebné k připojení k serveru proxy."
+msgstr "Zadejte heslo potřebné pro připojení k serveru proxy."
 
 msgid "Enter in the name or tcpip number of the internet proxy server that you want this server to use for updates."
 msgstr "Zadejte do jména nebo tcpip čísla internetového proxy serveru, který chcete tento server použít pro aktualizace."
@@ -4338,7 +4353,7 @@ msgid "Monthly printer totals are re-calculated at the end of every day."
 msgstr "Měsíční součty tiskáren jsou přepočítávány na konci každého dne."
 
 msgid "This will add a device to the ups list to show that it is phsyically plugged into the ups. It will not configure the device."
-msgstr "To přidá zařízení do seznamu ups a ukáže, že je fyzicky zapojeno do ups. Neinstaluje zařízení."
+msgstr "To přidá zařízení do seznamu ups a ukáže, že je fyzicky zapojen do ups. Neinstaluje zařízení."
 
 msgid "This could be a network switch or a non Karoshi server."
 msgstr "Mohlo by to být síťový přepínač nebo server bez Karoshi."
@@ -4375,6 +4390,15 @@ msgstr "Port UPS nesmí být prázdný."
 
 msgid "Add a UPS"
 msgstr "Přidat UPS"
+
+msgid "Airprint"
+msgstr "Airprint"
+
+msgid "Manage AirPrint"
+msgstr "Spravujte AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Klepnutím na ikony můžete ovládat dostupnost Airprint."
 
 msgid "User Information"
 msgstr "uživatelské informace"
@@ -4602,7 +4626,7 @@ msgid "The reverse proxy feature allows incoming web connections on port 80 and 
 msgstr "Funkce reverzního serveru proxy umožňuje příchozí webové spojení na portech 80 a 443 projít přes reverzní server proxy na jiné servery v síti."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
-msgstr "To obchází potřebu subdomén a aliasů tcpip čísel pro externí přístup a také umožní všem externím přenosům ssl použít jeden certifikát SSL k ověření těchto stránek."
+msgstr "To obchází potřebu subdomén a aliasů tcpip čísel pro externí přístup a také umožní všem externím přenosům ssl používat jeden SSL certifikát pro autentizaci stránek."
 
 msgid "Reverse Proxies"
 msgstr "Reverzní proxy"
@@ -4662,7 +4686,7 @@ msgid "Deny All"
 msgstr "Odmítnout vše"
 
 msgid "Deny internet access for all assets."
-msgstr "Odmítnout přístup k internetu pro všechna aktiva."
+msgstr "Odmítnout přístup k internetu pro všechny prostředky."
 
 msgid "Allow All Media"
 msgstr "Povolit všechna média"
@@ -4803,7 +4827,7 @@ msgid "There should be one folder in the top level of the created archive which 
 msgstr "V horní úrovni vytvořeného archivu by měl být jeden adresář, což je jméno vašeho profilu."
 
 msgid "User Internet Access"
-msgstr "Uživatelský přístup k internetu"
+msgstr "Uživatelský přístup k Internetu"
 
 msgid "Network Monitoring can be used to monitor any device connected to your network."
 msgstr "Sledování sítě lze použít ke sledování všech zařízení připojených k síti."
@@ -4953,7 +4977,7 @@ msgid "Radius Server"
 msgstr "Radius Server"
 
 msgid "Unflags this server as a radus server. Stops radius from running on the server."
-msgstr "Odstraňuje tento server jako rádiusový server. Zastaví rádius z běhu na serveru."
+msgstr "Odstraňuje tento server jako radiusový server. Zastaví rádius z běhu na serveru."
 
 msgid "OpenVPN Server"
 msgstr "OpenVPN Server"
@@ -5543,6 +5567,9 @@ msgstr "Změnit motiv"
 msgid "Current theme"
 msgstr "Aktuální téma"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Vyberte si uživatelské jméno a primární skupinu uživatelů, které chcete vytvořit."
+
 msgid "Select the following options to create your users"
 msgstr "Chcete-li vytvořit uživatele, vyberte následující možnosti"
 
@@ -5552,29 +5579,29 @@ msgstr "Tento server je součástí federovaného systému. Uživatelé musí b�
 msgid "Style"
 msgstr "Styl"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Číslo zápisu jako uživatelské jméno"
@@ -5850,7 +5877,7 @@ msgid "This share already exits in samba."
 msgstr "Tato podíl již existuje v sambě."
 
 msgid "Bulk User Creation - Import Enrolment Numbers or staff codes"
-msgstr "Vytvoření hromadného uživatele - Import čísla zápisu nebo kódů zaměstnanců"
+msgstr "Vytvoření hromadného uživatele - Import čísla zápisů nebo kódů zaměstnanců"
 
 msgid "The CSV file you have chosen is not formatted correctly."
 msgstr "Soubor CSV, který jste si vybrali, není správně naformátován."
@@ -5943,7 +5970,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Pokud potřebujete změnit síťovou kartu, nejdříve odeberte adresu mac ze statických arpsů."
 
 msgid "View E-Mail Statistics"
-msgstr "Zobrazit statistiku e-mailu"
+msgstr "Zobrazit statistiku EMail"
 
 msgid "The log view must not be blank."
 msgstr "Prohlížení protokolu nesmí být prázdné."
@@ -6068,41 +6095,17 @@ msgstr "Java a Libre Office budou automaticky nainstalovány jako součást toho
 msgid "Add new users to your system."
 msgstr "Přidejte do systému nové uživatele."
 
-msgid "Enrolment number / staff code"
-msgstr "Číslo zápisu / pracovníků"
+msgid "Advanced"
+msgstr "Pokročilý"
 
-msgid "Primary group"
-msgstr "Primární skupina"
+msgid "Show advanced fields."
+msgstr "Zobrazit pokročilé pole."
 
-msgid "Username style"
-msgstr "Styl uživatele"
+msgid "Basic"
+msgstr "Základní"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Číslo zápisu"
+msgid "Hide advanced fields."
+msgstr "Skrýt rozšířená pole."
 
 msgid "Enter the firstname for this user."
 msgstr "Zadejte jméno tohoto uživatele."
@@ -6113,8 +6116,38 @@ msgstr "Zadejte příjmení pro tohoto uživatele."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Zadejte heslo a potvrďte jej do rámečku níže."
 
+msgid "User code"
+msgstr "Uživatelský kód"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Číslo zápisu studenta nebo kód zaměstnance. Toto pole může zůstat prázdné."
+
+msgid "Room Number"
+msgstr "Číslo pokoje"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Číslo pokoje pro uživatele. Toto pole může zůstat prázdné."
+
+msgid "Telephone Number"
+msgstr "Telefonní číslo"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Telefonní číslo pro uživatele. Toto pole může zůstat prázdné."
+
+msgid "Fax Number"
+msgstr "Číslo faxu"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Faxové číslo pro uživatele. Toto pole může zůstat prázdné."
+
+msgid "Mobile Number"
+msgstr "Číslo mobilního telefonu"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Mobilní číslo pro uživatele. Toto pole může zůstat prázdné."
+
+msgid "Primary group"
+msgstr "Primární skupina"
 
 msgid "The groups give different levels of access."
 msgstr "Skupiny poskytují různé úrovně přístupu."
@@ -6124,6 +6157,9 @@ msgstr "Skupina itadmin je pro správce sítě."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Pouze členové skupiny itadmin a tech skupiny získají přístup administrátora k počítačům se systémem Windows připojeným k doméně."
+
+msgid "Username style"
+msgstr "Styl uživatele"
 
 msgid "Choose the username style you require."
 msgstr "Vyberte požadovaný styl uživatelského jména."
@@ -6348,7 +6384,7 @@ msgid "View the protected distribution lists."
 msgstr "Zobrazte chráněné distribuční seznamy."
 
 msgid "Adding a protected domain restricts which internal users can send to it."
-msgstr "Přidání chráněné domény omezuje, které interní uživatelé je mohou posílat."
+msgstr "Přidání chráněné domény omezuje, které interní uživatelé mohou odesílat."
 
 msgid "Allowed Users"
 msgstr "Povolení uživatelé"
@@ -6521,45 +6557,6 @@ msgstr "Nevybrali jste akci."
 msgid "You have not chosen an asset."
 msgstr "Nevybrali jste si aktivum."
 
-msgid "The user style must not be blank."
-msgstr "Styl uživatele nesmí být prázdný."
-
-msgid "The primary group must not be blank."
-msgstr "Primární skupina nesmí být prázdná."
-
-msgid "Blank forename"
-msgstr "Prázdné jméno"
-
-msgid "Blank surname"
-msgstr "Prázdné příjmení"
-
-msgid "Blank enrolment number"
-msgstr "Prázdné číslo zápisu"
-
-msgid "Blank username"
-msgstr "Prázdné uživatelské jméno"
-
-msgid "The username is greater than 20 characters"
-msgstr "Uživatelské jméno je větší než 20 znaků"
-
-msgid "Blank Primary Group"
-msgstr "Prázdná primární skupina"
-
-msgid "Failed"
-msgstr "Selhalo"
-
-msgid "CSV file error."
-msgstr "Chyba souboru CSV."
-
-msgid "This username is already in use."
-msgstr "Toto uživatelské jméno je již používáno."
-
-msgid "Creating"
-msgstr "Vytváření"
-
-msgid "Bulk user creation completed."
-msgstr "Hromadné vytvoření uživatele bylo dokončeno."
-
 msgid "View Event Logs"
 msgstr "Zobrazit protokoly událostí"
 
@@ -6573,7 +6570,7 @@ msgid "Update location data from the asset register."
 msgstr "Aktualizujte data o poloze z registru aktiv."
 
 msgid "Allowed special keys /+ -"
-msgstr "Povolené speciální klávesy / + -"
+msgstr "Povolené speciální klíče / + -"
 
 msgid "Please use this feature with care."
 msgstr "Používejte prosím tuto funkci opatrně."
@@ -6642,7 +6639,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Zakázané domény elektronické pošty"
+msgstr "Zakázané e-mailové domény"
 
 msgid "Whitelists"
 msgstr "Whitelists"
@@ -6845,6 +6842,9 @@ msgstr "Pokud jste tak ještě neučinili, můžete do sítě přidat tiskový s
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Zobrazený odkaz na servery zobrazuje všechny dostupné servery. Vyberte server, ke kterému chcete přidat modul tiskárny, klepnutím na tlačítko Přidat úlohu."
 
+msgid "Show Servers"
+msgstr "Zobrazit servery"
+
 msgid "Control Printers"
 msgstr "Ovládací tiskárny"
 
@@ -6906,7 +6906,7 @@ msgid "Copy Files - upload"
 msgstr "Kopírovat soubory - nahrát"
 
 msgid "This will copy files into all of the user home areas for the group that you choose."
-msgstr "To bude kopírovat soubory do všech uživatelských oblastí domény pro zvolenou skupinu."
+msgstr "To bude kopírovat soubory do všech uživatelských oblastí domény pro vybranou skupinu."
 
 msgid "Select the files that you want to upload to a group"
 msgstr "Vyberte soubory, které chcete nahrát do skupiny"
@@ -6969,7 +6969,7 @@ msgid "Bypass E-Mail Authentication"
 msgstr "Odepření ověření e-mailem"
 
 msgid "By default all E-Mail clients have to authenticate to be able to send E-Mails."
-msgstr "Ve výchozím nastavení se všichni e-mailové klienti musí ověřit, aby mohli posílat e-maily."
+msgstr "Ve výchozím nastavení musí být všichni e-mailoví klienti ověřeni, aby mohli odesílat e-maily."
 
 msgid "Here you can allow TCPIP addresses that you want to be able to send E-Mail without having to authenticate."
 msgstr "Zde můžete povolit adresy TCPIP, které chcete odeslat e-mail bez nutnosti ověření."
@@ -7302,13 +7302,13 @@ msgid "SSH Server"
 msgstr "SSH Server"
 
 msgid "This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
-msgstr "To umožní vzdálený přístup ssh k vašemu hlavnímu serveru. Toto lze také použít k připojení tohoto serveru k jinému systému karoshi, takže zde budou vytvořeny také uživatelé vytvořené na hlavním serveru."
+msgstr "To umožní vzdálený přístup ssh k vašemu hlavnímu serveru. Toto lze také použít pro připojení k tomuto serveru až do jiného systému karoshi, takže zde budou vytvořeny také uživatelé vytvořené na hlavním serveru."
 
 msgid "This will allow remote ssh access to your main server."
 msgstr "To umožní vzdálený přístup ssh k vašemu hlavnímu serveru."
 
 msgid "This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
-msgstr "Toto lze také použít k připojení tohoto serveru k jinému systému karoshi, takže zde budou vytvořeny také uživatelé vytvořené na hlavním serveru."
+msgstr "Toto lze také použít pro připojení k tomuto serveru až do jiného systému karoshi, takže zde budou vytvořeny také uživatelé vytvořené na hlavním serveru."
 
 msgid "Web Hosting"
 msgstr "Web hosting"
@@ -7431,10 +7431,19 @@ msgid "Schedule a job for this server."
 msgstr "Naplánujte úlohu pro tento server."
 
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
-msgstr "Jméno, příjmení, přihlašovací číslo nebo kód zaměstnanců - volitelné, uživatelské jméno - volitelné, primární skupina - nepovinná, sekundární skupiny odděleny dvojtečkami - volitelné, změna hesla při prvním přihlášení -"
+msgstr "Jméno, příjmení, číslo zápisu nebo kód zaměstnanců - volitelné, uživatelské jméno - volitelné, primární skupina - volitelná, sekundární skupiny oddělené dvojtečkami - volitelné, změna hesla při prvním přihlášení -"
 
-msgid "Import Enrollment Numbers"
-msgstr "Importovat čísla zápisu"
+msgid "CSV file format without the first row as headers"
+msgstr "Formát souboru CSV bez prvního řádku jako záhlaví"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Jméno, příjmení, číslo zápisu nebo kód zaměstnanců - volitelné, uživatelské jméno - volitelné, primární skupina - nepovinné, sekundární skupiny oddělené dvojtečkami - volitelné, změna hesla při prvním přihlášení - číslo - volitelné, faxové číslo - volitelné, mobilní číslo - volitelné, heslo - volitelné"
+
+msgid "CSV file format with the first row as headers"
+msgstr "Formát souboru CSV s prvním řádkem jako záhlaví"
+
+msgid "Possible column headers are"
+msgstr "Jsou možné záhlaví sloupců"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Tím vytvoříte radiusový server pro vaši síť, který lze použít pro nastavení bezdrátových přístupových bodů pomocí podnikového rozhraní WPA2."
@@ -7470,7 +7479,7 @@ msgid "Configure Offsite Backup"
 msgstr "Nakonfigurujte zálohování mimo server"
 
 msgid "Choose the server that you want to configure the offsite backup for."
-msgstr "Vyberte server, který chcete konfigurovat zálohování mimo server pro."
+msgstr "Vyberte server, který chcete konfigurovat pro zálohování mimo server."
 
 msgid "Timeout"
 msgstr "Časový limit"
@@ -7554,7 +7563,7 @@ msgid "The lockout duration cannot be blank."
 msgstr "Doba blokování nemůže být prázdná."
 
 msgid "The lockout threshold cannot be blank."
-msgstr "Prahová hodnota blokování nesmí být prázdná."
+msgstr "Prah uzamčení nesmí být prázdný."
 
 msgid "The lockout observation period cannot be blank."
 msgstr "Doba pozorování blokování nesmí být prázdná."
@@ -7857,7 +7866,7 @@ msgid "Moodle update guide which this feature automates."
 msgstr "Aktualizační příručka Moodle, která tuto funkci automatizuje."
 
 msgid "IMPORTANT - Make sure that you have a working backup of the following areas on your moodle server before carrying out an upgrade"
-msgstr "DŮLEŽITÉ - Ujistěte se, že před provedením aktualizace máte na serveru moodle funkční zálohu následujících oblastí"
+msgstr "DŮLEŽITÉ - Ujistěte se, že máte ještě před provedením aktualizace funkční zálohu následujících oblastí na serveru moodle"
 
 msgid "Choose the moodle archive to upgrade from. The archive MUST be a .tgz."
 msgstr "Zvolte archiv moodle, ze kterého chcete upgradovat. Archiv MUSÍ být .tgz."
@@ -7949,7 +7958,7 @@ msgstr "Přidejte název pracovníka"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Zadejte v uživatelských jménech všech zaměstnanců, kteří nechtějí mít přístup k části personálu správy webu."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Omezený personál"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -8175,7 +8184,7 @@ msgid "The update type must not be blank."
 msgstr "Typ aktualizace nesmí být prázdný."
 
 msgid "Allowing access on port 22"
-msgstr "Povolení přístupu na portu 22"
+msgstr "Povolit přístup na portu 22"
 
 msgid "Archive Check"
 msgstr "Kontrola archivu"
@@ -8184,7 +8193,7 @@ msgid "The archive is not valid."
 msgstr "Archiv není platný."
 
 msgid "No errors detected in this archive."
-msgstr "V tomto archívu nebyly zjištěny žádné chyby."
+msgstr "V tomto archivu nebyly zjištěny žádné chyby."
 
 msgid "Copying profile to"
 msgstr "Kopírování profilu na"
@@ -8382,7 +8391,7 @@ msgid "Enter in a name for this access point. This will appear in the logs."
 msgstr "Zadejte název tohoto přístupového bodu. Toto se objeví v protokolech."
 
 msgid "Enter in the tcpip address of your wireless access point. You can also allow a range of addresses if you enter in a tcpip range. 172.30.0.0/16 would allow all devices in that range."
-msgstr "Zadejte adresu tcpip bezdrátového přístupového bodu. Můžete také povolit rozsah adres, pokud zadáte rozsah tcpip. 172.30.0.0/16 umožní všem zařízením v tomto rozsahu."
+msgstr "Zadejte adresu tcpip bezdrátového přístupového bodu. Můžete také povolit řadu adres, pokud zadáte rozsah tcpip. 172.30.0.0/16 umožní všem zařízením v tomto rozsahu."
 
 msgid "Enter in the secret key that you want. This will also need to be entered into your wireless access points. This can be uppercase, lowercase, and numbers."
 msgstr "Zadejte do tajného klíče, který chcete. To bude také nutné zadat do bezdrátových přístupových bodů. Může to být velká, malá a číslice."
@@ -8931,7 +8940,7 @@ msgid "Full backup every"
 msgstr "Úplné zálohování všech"
 
 msgid "Keep backups for"
-msgstr "Udržujte zálohy pro"
+msgstr "Zachovat zálohy pro"
 
 msgid "Months"
 msgstr "Měsíce"
@@ -8994,7 +9003,7 @@ msgid "Wake on lan packet sent to"
 msgstr "Probuzení na balíku lan odeslané"
 
 msgid "Enter in a username or choose a group from the dropdown list."
-msgstr "Zadejte do uživatelského jména nebo v rozbalovacím seznamu vyberte skupinu."
+msgstr "Zadejte do uživatelského jména nebo vyberte skupinu z rozbalovacího seznamu."
 
 msgid "Distribution List / Group"
 msgstr "Distribuční seznam / skupina"
@@ -9081,7 +9090,7 @@ msgid "Replace"
 msgstr "Nahradit"
 
 msgid "Add this disk to a raid."
-msgstr "Přidat tento disk do útoku."
+msgstr "Přidejte tento disk do útoku."
 
 msgid "Raid Information"
 msgstr "Raid Informace"
@@ -9217,18 +9226,6 @@ msgstr "Křestní jméno"
 
 msgid "Display Name"
 msgstr "Zobrazovaný název"
-
-msgid "Room Number"
-msgstr "Číslo pokoje"
-
-msgid "Telephone Number"
-msgstr "Telefonní číslo"
-
-msgid "Fax Number"
-msgstr "Číslo faxu"
-
-msgid "Mobile Number"
-msgstr "Číslo mobilního telefonu"
 
 msgid "E-Mail address"
 msgstr "Emailová adresa"
@@ -9456,7 +9453,7 @@ msgid "The moodle files have now been updated."
 msgstr "Soubory moodle byly nyní aktualizovány."
 
 msgid "Click Here to visit the moodle admin page to complete the installation."
-msgstr "Kliknutím sem otevřete stránku admin moodle pro dokončení instalace."
+msgstr "Chcete-li dokončit instalaci, klikněte na stránku admin moodle."
 
 msgid "The server name cannot be the same as the domain."
 msgstr "Název serveru nemůže být stejný jako doména."
@@ -9651,7 +9648,7 @@ msgid "Recycle Bin Duration"
 msgstr "Doba trvání koše"
 
 msgid "The duration in days that files are kept in the recycle folder before being deleted."
-msgstr "Doba trvání v dnech, kdy jsou soubory uloženy ve složce recyklu před odstraněním."
+msgstr "Doba trvání v dnech, kdy se soubory uchovávají ve složce recykluje před odstraněním."
 
 msgid "No Access"
 msgstr "Žádný přístup"
@@ -9705,7 +9702,7 @@ msgid "Installing ZFS - this can take a long time"
 msgstr "Instalace ZFS - to může trvat dlouho"
 
 msgid "Restore existing raid"
-msgstr "Obnovit stávající nájezd"
+msgstr "Obnovit stávající útok"
 
 msgid "An existing ZFS raid array has been detected. Do you want this array to be restored?"
 msgstr "Bylo detekováno stávající pole raidů ZFS. Chcete, aby bylo toto pole obnoveno?"
@@ -9972,7 +9969,7 @@ msgid "Enter in the name of the site that you want to ban or allow."
 msgstr "Zadejte do jména webu, který chcete zakázat nebo povolit."
 
 msgid "Enter in a search term to filter the results."
-msgstr "Zadejte výsledky hledání do vyhledávacího dotazu."
+msgstr "Zadejte do vyhledávacího dotazu filtrovat výsledky."
 
 msgid "Group ID"
 msgstr "ID skupiny"
@@ -10059,7 +10056,7 @@ msgid "Admin level"
 msgstr "Úroveň administrátora"
 
 msgid "The following ports need to be opened on shorewall"
-msgstr "Následující porty je třeba otevřít na ploše"
+msgstr "Následující porty musí být otevřeny na ploše"
 
 msgid "Boot status"
 msgstr "Stav bootování"
@@ -10101,7 +10098,7 @@ msgid "Copying data to"
 msgstr "Kopírování dat do"
 
 msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
-msgstr "DŮLEŽITÉ - Ujistěte se, že uživatelé nejsou přihlášeni, aby se zajistilo, že data nebudou ztracena."
+msgstr "DŮLEŽITÉ - Ujistěte se, že uživatelé nejsou přihlášeni, aby se ujistil, že data nejsou ztracena."
 
 msgid "Enter in the full path that you want to add to the gluster volume."
 msgstr "Zadejte celou cestu, kterou chcete přidat do svazku glusteru."
@@ -10616,6 +10613,9 @@ msgstr "Žádný přístup"
 msgid "Change Status"
 msgstr "Změnit stav"
 
+msgid "Change Student Password"
+msgstr "Změnit heslo pro studenty"
+
 msgid "Internet Logs"
 msgstr "Internetové protokoly"
 
@@ -10719,7 +10719,7 @@ msgid "Copy Data to Accounts"
 msgstr "Kopírování dat do účtů"
 
 msgid "Copy files to the exam accounts."
-msgstr "Zkopírujte soubory do účtů zkoušek."
+msgstr "Kopírovat soubory na účty zkoušky."
 
 msgid "Enable - Disable Accounts"
 msgstr "Povolit - Zakázat účty"
@@ -10738,9 +10738,6 @@ msgstr "Nahrajte obrázky vašich uživatelů z archivovaného souboru."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importujte čísla zápisů nebo pracovníky z souboru CSV."
-
-msgid "Set User Passwords"
-msgstr "Nastavte uživatelská hesla"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Nastavte uživatelská hesla ze souboru CSV."
@@ -11111,6 +11108,9 @@ msgstr "Nakonfigurujte aplikaci Savapage."
 msgid "View assigned printers."
 msgstr "Zobrazení přiřazených tiskáren."
 
+msgid "View the Airprint status."
+msgstr "Zobrazte stav Airprint."
+
 msgid "Generate Windows printer drivers."
 msgstr "Vygenerujte ovladače tiskárny pro systém Windows."
 
@@ -11304,7 +11304,7 @@ msgid "You have not entered a fully qualified domain name."
 msgstr "Nezadali jste úplný název domény."
 
 msgid "The domain name cannot be the same as the hostname."
-msgstr "Název domény nemůže být stejný jako název hostitele."
+msgstr "Název domény nemůže být shodný s názvem hostitele."
 
 msgid "The first part of the domain name cannot be the same as the hostname."
 msgstr "První část názvu domény nemůže být stejná jako název hostitele."
@@ -11374,6 +11374,9 @@ msgstr "Přidání skupiny"
 
 msgid "Creating home folders"
 msgstr "Vytváření domovských složek"
+
+msgid "Creating"
+msgstr "Vytváření"
 
 msgid "Copying in logon files"
 msgstr "Kopírování v přihlašovacích souborech"
@@ -11532,7 +11535,7 @@ msgid "This option will still require an essential backup archive."
 msgstr "Tato volba bude stále vyžadovat zásadní záložní archiv."
 
 msgid "Restore from a backup archive"
-msgstr "Obnovit z archivu záloh"
+msgstr "Obnovení z archivu záloh"
 
 msgid "Restore users and groups from an essential backup archive."
 msgstr "Obnovte uživatele a skupiny z archivu záloh."

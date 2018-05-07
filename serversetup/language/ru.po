@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,18 +284,6 @@ msgstr "Xibo был установлен и доступен из"
 msgid "Please login and change this password immediately."
 msgstr "Пожалуйста, войдите в систему и измените этот пароль."
 
-msgid "Setup Airprint"
-msgstr "Настройка Airprint"
-
-msgid "Updating repositories"
-msgstr "Обновление репозиториев"
-
-msgid "Installing Avahi Daemon"
-msgstr "Установка Avaii Daemon"
-
-msgid "Installing python-cups"
-msgstr "Установка python-cups"
-
 msgid "The main server cannot be contacted."
 msgstr "С основным сервером нельзя связаться."
 
@@ -402,7 +390,7 @@ msgid "Extracting Xerte"
 msgstr "Извлечение Xerte"
 
 msgid "Xerte has been installed and can be accessed from"
-msgstr "Xerte был установлен и может быть доступен из"
+msgstr "Xerte был установлен и доступен из"
 
 msgid "The Xerte management console can be accessed from"
 msgstr "К консоли управления Xerte можно получить доступ из"
@@ -705,7 +693,7 @@ msgid "Room controls"
 msgstr "Обслуживание номеров"
 
 msgid "Client Bypass Controls"
-msgstr "Контроль обхода клиента"
+msgstr "Элементы управления обхода клиента"
 
 msgid "Version"
 msgstr "Версия"
@@ -1511,11 +1499,11 @@ msgstr "Добавить сервер"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Установите ssh-соединение на сервер Karoshi, чтобы его можно было контролировать с помощью веб-управления."
 
-msgid "Show Servers"
-msgstr "Показать серверы"
+msgid "View Servers"
+msgstr "Просмотр серверов"
 
-msgid "Show the servers and roles."
-msgstr "Показывать серверы и роли."
+msgid "View the servers and roles."
+msgstr "Просмотр серверов и ролей."
 
 msgid "Server name"
 msgstr "Имя сервера"
@@ -1624,6 +1612,36 @@ msgstr "Устанавливает настройки по умолчанию д
 
 msgid "Upload User Image"
 msgstr "Загрузить изображение пользователя"
+
+msgid "Import User Image"
+msgstr "Импортировать изображение пользователя"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Это позволяет загружать пользовательские изображения, которые могут использоваться для идентификации ваших пользователей."
+
+msgid "Bulk User Creation"
+msgstr "Создание массового пользователя"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Создавайте учетные записи пользователей из файла CSV."
+
+msgid "View New Passwords"
+msgstr "Просмотр новых паролей"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Просмотрите пароли, установленные для вновь созданных учетных записей."
+
+msgid "Import Enrollment Numbers"
+msgstr "Импорт номеров регистрации"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Импортируйте номера регистрации для своих учетных записей."
+
+msgid "Set User Passwords"
+msgstr "Установка паролей пользователей"
+
+msgid "Set User Passwords."
+msgstr "Установите пароли пользователей."
 
 msgid "User Image or compressed file"
 msgstr "Пользовательское изображение или сжатый файл"
@@ -2111,17 +2129,14 @@ msgstr "Формат файла CSV"
 msgid "username, enrollment number or staff code"
 msgstr "имя пользователя, номер регистрации или код штата"
 
-msgid "Bulk User Creation"
-msgstr "Создание массового пользователя"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Создавайте учетные записи пользователей из файла CSV."
-
 msgid "Import enrollment numbers"
 msgstr "Импорт числа зачисления"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Импортируйте номера регистрации для своих учетных записей."
+msgid "Import User Images"
+msgstr "Импорт изображений пользователей"
+
+msgid "Import user images for your user accounts."
+msgstr "Импортируйте изображения пользователей для своих учетных записей."
 
 msgid "View the new passwords for a group of users."
 msgstr "Просмотр новых паролей для группы пользователей."
@@ -3545,9 +3560,6 @@ msgstr "Тип журнала"
 msgid "Choose the log type that you would like to view."
 msgstr "Выберите тип журнала, который вы хотите просмотреть."
 
-msgid "View Servers"
-msgstr "Просмотр серверов"
-
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Никаких серверов Karoshi не было создано с помощью ssh."
 
@@ -3698,11 +3710,20 @@ msgstr "Изменить PPD"
 msgid "Edit a printer driver."
 msgstr "Отредактируйте драйвер принтера."
 
+msgid "Windows Drivers"
+msgstr "Драйверы для Windows"
+
 msgid "Windows printer drivers."
 msgstr "Драйверы принтера Windows."
 
-msgid "Windows Drivers"
-msgstr "Драйверы для Windows"
+msgid "AirPrint Controls"
+msgstr "Управление AirPrint"
+
+msgid "AirPrint controls."
+msgstr "AirPrint."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Настройте печать с помощью Savapage."
@@ -4106,12 +4127,6 @@ msgstr "Журналы использования диска показываю�
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Импортировать номера регистрации или коды персонала"
 
-msgid "View New Passwords"
-msgstr "Просмотр новых паролей"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Просмотрите пароли, установленные для вновь созданных учетных записей."
-
 msgid "CSV file"
 msgstr "CSV-файл"
 
@@ -4375,6 +4390,15 @@ msgstr "Порт ИБП не может быть пустым."
 
 msgid "Add a UPS"
 msgstr "Добавить ИБП"
+
+msgid "Airprint"
+msgstr "AirPrint"
+
+msgid "Manage AirPrint"
+msgstr "Управление AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Нажмите на значки, чтобы контролировать доступность Airprint."
 
 msgid "User Information"
 msgstr "информация о пользователе"
@@ -5442,7 +5466,7 @@ msgid "This will setup the Joomla content management system as a website for you
 msgstr "Это позволит настроить систему управления контентом Joomla как веб-сайт для вашей школы."
 
 msgid "if you would like all staff to be able to log in and add information to the website enable the ldap authentication module in the Plug in Manager section."
-msgstr "если вы хотите, чтобы все сотрудники имели возможность войти в систему и добавить информацию на сайт, включите модуль аутентификации ldap в разделе «Менеджер подключений»."
+msgstr "если вы хотите, чтобы все сотрудники имели возможность войти в систему и добавить информацию на веб-сайт, включите модуль аутентификации ldap в разделе «Диспетчер подключений»."
 
 msgid "Federated File Synchronisation"
 msgstr "Федеративная синхронизация файлов"
@@ -5475,7 +5499,7 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "Введите адрес почтового сервера, на который вы хотите отправить электронное письмо."
 
 msgid "Banned E-mail Domains"
-msgstr "Запрещенные домены электронной почты"
+msgstr "Запрещенные почтовые домены"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr "Любые домены электронной почты, указанные в приведенном ниже списке, либо разрешены, либо не имеют каких-либо проверок DNS, размещенных на них, либо запрещены для отправки E-Mail на ваш сервер."
@@ -5543,6 +5567,9 @@ msgstr "Менять тему"
 msgid "Current theme"
 msgstr "Текущая тема"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Выберите стиль имени пользователя и основную группу для пользователей, которых вы хотите создать."
+
 msgid "Select the following options to create your users"
 msgstr "Выберите следующие параметры, чтобы создать своих пользователей."
 
@@ -5552,29 +5579,29 @@ msgstr "Этот сервер является частью федеративн
 msgid "Style"
 msgstr "Стиль"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "Арнольдс"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Номер регистрации в качестве имени пользователя"
@@ -5943,7 +5970,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Если вам нужно изменить сетевую карту, сначала удалите MAC-адрес из статических арп."
 
 msgid "View E-Mail Statistics"
-msgstr "Просмотреть статистику по E-Mail"
+msgstr "Просмотр статистики EMail"
 
 msgid "The log view must not be blank."
 msgstr "Просмотр журнала не должен быть пустым."
@@ -6068,41 +6095,17 @@ msgstr "Java и Libre Office будут автоматически устано�
 msgid "Add new users to your system."
 msgstr "Добавьте новых пользователей в свою систему."
 
-msgid "Enrolment number / staff code"
-msgstr "Регистрационный номер / код персонала"
+msgid "Advanced"
+msgstr "продвинутый"
 
-msgid "Primary group"
-msgstr "Первичная группа"
+msgid "Show advanced fields."
+msgstr "Показать расширенные поля."
 
-msgid "Username style"
-msgstr "Стиль пользователя"
+msgid "Basic"
+msgstr "основной"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Номер регистрации"
+msgid "Hide advanced fields."
+msgstr "Скрыть дополнительные поля."
 
 msgid "Enter the firstname for this user."
 msgstr "Введите первое имя для этого пользователя."
@@ -6113,8 +6116,38 @@ msgstr "Введите фамилию для этого пользователя
 msgid "Enter a password and confirm it in the box below."
 msgstr "Введите пароль и подтвердите его в поле ниже."
 
+msgid "User code"
+msgstr "Код пользователя"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Номер студенческого зачисления или код штата. Это поле можно оставить пустым."
+
+msgid "Room Number"
+msgstr "Номер комнаты"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Номер комнаты для пользователя. Это поле можно оставить пустым."
+
+msgid "Telephone Number"
+msgstr "Номер телефона"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Номер телефона для пользователя. Это поле можно оставить пустым."
+
+msgid "Fax Number"
+msgstr "Номер факса"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Номер факса для пользователя. Это поле можно оставить пустым."
+
+msgid "Mobile Number"
+msgstr "Мобильный номер"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Номер мобильного телефона для пользователя. Это поле можно оставить пустым."
+
+msgid "Primary group"
+msgstr "Первичная группа"
 
 msgid "The groups give different levels of access."
 msgstr "Группы предоставляют разные уровни доступа."
@@ -6124,6 +6157,9 @@ msgstr "Группа itadmin предназначена для сетевого 
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Только члены itadmin и технические группы получают доступ администратора к компьютерам Windows, подключенным к домену."
+
+msgid "Username style"
+msgstr "Стиль пользователя"
 
 msgid "Choose the username style you require."
 msgstr "Выберите желаемый стиль имени пользователя."
@@ -6521,45 +6557,6 @@ msgstr "Вы не выбрали действие."
 msgid "You have not chosen an asset."
 msgstr "Вы не выбрали актив."
 
-msgid "The user style must not be blank."
-msgstr "Пользовательский стиль не должен быть пустым."
-
-msgid "The primary group must not be blank."
-msgstr "Основная группа не должна быть пустой."
-
-msgid "Blank forename"
-msgstr "Пустое имя"
-
-msgid "Blank surname"
-msgstr "Пустая фамилия"
-
-msgid "Blank enrolment number"
-msgstr "Пустой номер зачисления"
-
-msgid "Blank username"
-msgstr "Пустое имя пользователя"
-
-msgid "The username is greater than 20 characters"
-msgstr "Имя пользователя больше 20 символов."
-
-msgid "Blank Primary Group"
-msgstr "Пустая основная группа"
-
-msgid "Failed"
-msgstr "Не смогли"
-
-msgid "CSV file error."
-msgstr "Ошибка файла CSV."
-
-msgid "This username is already in use."
-msgstr "Это имя пользователя уже используется."
-
-msgid "Creating"
-msgstr "Создание"
-
-msgid "Bulk user creation completed."
-msgstr "Выполнено массовое создание пользователя."
-
 msgid "View Event Logs"
 msgstr "Просмотр журналов событий"
 
@@ -6642,7 +6639,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Запрещенные домены электронной почты"
+msgstr "Запрещенные области EMail"
 
 msgid "Whitelists"
 msgstr "Головоломки"
@@ -6844,6 +6841,9 @@ msgstr "Если вы еще этого не сделали, вы можете �
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "На приведенной ниже ссылке показаны все доступные серверы. Выберите сервер, на который вы хотите добавить модуль принтера, нажав кнопку добавления роли."
+
+msgid "Show Servers"
+msgstr "Показать серверы"
 
 msgid "Control Printers"
 msgstr "Контрольные принтеры"
@@ -7433,8 +7433,17 @@ msgstr "Запланируйте задание для этого сервера
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Фамилия, имя, номер записи или код персонала - необязательный, имя пользователя - необязательный, первичная группа - необязательный, вторичные группы, разделенные двоеточиями - необязательный, сменить пароль при первом входе в систему - необязательный (y / n), пароль - необязательный"
 
-msgid "Import Enrollment Numbers"
-msgstr "Импорт номеров регистрации"
+msgid "CSV file format without the first row as headers"
+msgstr "Формат файла CSV без первой строки в виде заголовков"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Фамилия, имя, номер записи или код персонала - необязательный, имя пользователя - необязательный, основная группа - необязательный, вторичные группы, разделенные двоеточиями - необязательный, сменить пароль при первом входе в систему - необязательный (y / n), номер комнаты - необязательный, номер - необязательный, номер факса - необязательный, номер мобильного телефона - необязательный, пароль - необязательный"
+
+msgid "CSV file format with the first row as headers"
+msgstr "Формат файла CSV с первой строкой в ​​виде заголовков"
+
+msgid "Possible column headers are"
+msgstr "Возможные заголовки столбцов:"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Это настроит сервер радиуса для вашей сети, который можно использовать для настройки точек беспроводного доступа с использованием предприятия WPA2."
@@ -7949,7 +7958,7 @@ msgstr "Добавить имя сотрудника"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Введите в имена пользователей любых сотрудников, которым вы не хотите иметь доступ к разделу персонала веб-управления."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Ограниченный персонал"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -9217,18 +9226,6 @@ msgstr "Собственное имя"
 
 msgid "Display Name"
 msgstr "Отображаемое имя"
-
-msgid "Room Number"
-msgstr "Номер комнаты"
-
-msgid "Telephone Number"
-msgstr "Номер телефона"
-
-msgid "Fax Number"
-msgstr "Номер факса"
-
-msgid "Mobile Number"
-msgstr "Мобильный номер"
 
 msgid "E-Mail address"
 msgstr "Адрес электронной почты"
@@ -10616,6 +10613,9 @@ msgstr "Нет доступа"
 msgid "Change Status"
 msgstr "Изменить статус"
 
+msgid "Change Student Password"
+msgstr "Изменить пароль для учащихся"
+
 msgid "Internet Logs"
 msgstr "Интернет-журналы"
 
@@ -10738,9 +10738,6 @@ msgstr "Загружайте изображения своих пользова�
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Импортируйте номера регистрации или коды персонала из файла CSV."
-
-msgid "Set User Passwords"
-msgstr "Установка паролей пользователей"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Установите пароли пользователей из файла CSV."
@@ -11111,6 +11108,9 @@ msgstr "Настроить Savapage."
 msgid "View assigned printers."
 msgstr "Просмотр назначенных принтеров."
 
+msgid "View the Airprint status."
+msgstr "Просмотрите статус «Отпечаток»."
+
 msgid "Generate Windows printer drivers."
 msgstr "Создайте драйверы принтера Windows."
 
@@ -11374,6 +11374,9 @@ msgstr "Добавление группы"
 
 msgid "Creating home folders"
 msgstr "Создание домашних папок"
+
+msgid "Creating"
+msgstr "Создание"
 
 msgid "Copying in logon files"
 msgstr "Копирование файлов входа в систему"

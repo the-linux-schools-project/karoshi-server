@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,18 +284,6 @@ msgstr "A Xibo telepítve van és elérhető"
 msgid "Please login and change this password immediately."
 msgstr "Kérjük, jelentkezzen be, és azonnal változtassa meg ezt a jelszót."
 
-msgid "Setup Airprint"
-msgstr "Beállítás Airprint"
-
-msgid "Updating repositories"
-msgstr "Az adattárak frissítése"
-
-msgid "Installing Avahi Daemon"
-msgstr "Avahi Daemon telepítése"
-
-msgid "Installing python-cups"
-msgstr "Python-cups telepítése"
-
 msgid "The main server cannot be contacted."
 msgstr "A fő kiszolgáló nem érhető el."
 
@@ -495,7 +483,7 @@ msgid "Back"
 msgstr "Hát"
 
 msgid "Choose the default page that you want to have for this section of the web management."
-msgstr "Válassza ki az alapértelmezett oldalt, amelyet a webes kezelés ezen részéhez kíván használni."
+msgstr "Válassza ki azt az alapértelmezett oldalt, amelyet szeretne ehhez a webkezeléshez."
 
 msgid "Default Page"
 msgstr "Alapértelmezett oldal"
@@ -1509,13 +1497,13 @@ msgid "Add Server"
 msgstr "Szerver hozzáadása"
 
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
-msgstr "Állítson be egy ssh kapcsolatot egy Karoshi kiszolgálóra, hogy az a webes irányítással vezérelhető legyen."
+msgstr "Állítson be egy ssh kapcsolatot egy Karoshi kiszolgálóhoz, hogy az a webes irányítással vezérelhető legyen."
 
-msgid "Show Servers"
-msgstr "Szerverek megjelenítése"
+msgid "View Servers"
+msgstr "Szerverek megtekintése"
 
-msgid "Show the servers and roles."
-msgstr "A kiszolgálók és szerepek megjelenítése."
+msgid "View the servers and roles."
+msgstr "Megtekintheti a kiszolgálókat és szerepeket."
 
 msgid "Server name"
 msgstr "Szerver név"
@@ -1624,6 +1612,36 @@ msgstr "Beállítja a felhasználói fiókok alapértelmezett beállításait."
 
 msgid "Upload User Image"
 msgstr "Felhasználói kép feltöltése"
+
+msgid "Import User Image"
+msgstr "Felhasználó kép importálása"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Ez lehetővé teszi, hogy olyan felhasználói képeket töltsön fel, amelyek felhasználhatók a felhasználók azonosításához."
+
+msgid "Bulk User Creation"
+msgstr "Tömeges felhasználói létrehozás"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Hozzon létre felhasználói fiókokat egy CSV-fájlból."
+
+msgid "View New Passwords"
+msgstr "Új jelszavak megtekintése"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Az újonnan létrehozott fiókokhoz beállított jelszavak megtekintése."
+
+msgid "Import Enrollment Numbers"
+msgstr "Importálási számok importálása"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "A felhasználói fiókok beiratkozási számainak importálása."
+
+msgid "Set User Passwords"
+msgstr "Felhasználói jelszavak beállítása"
+
+msgid "Set User Passwords."
+msgstr "Felhasználói jelszavak beállítása."
 
 msgid "User Image or compressed file"
 msgstr "Felhasználói kép vagy tömörített fájl"
@@ -2111,17 +2129,14 @@ msgstr "A CSV fájlformátuma"
 msgid "username, enrollment number or staff code"
 msgstr "felhasználónév, beiratkozási szám vagy személyzeti kód"
 
-msgid "Bulk User Creation"
-msgstr "Tömeges felhasználói létrehozás"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Hozzon létre felhasználói fiókokat egy CSV-fájlból."
-
 msgid "Import enrollment numbers"
 msgstr "Beiratkozási számok importálása"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "A felhasználói fiókok beiratkozási számainak importálása."
+msgid "Import User Images"
+msgstr "Képek importálása"
+
+msgid "Import user images for your user accounts."
+msgstr "Felhasználói képek importálása felhasználói fiókokhoz."
 
 msgid "View the new passwords for a group of users."
 msgstr "A felhasználók csoportjának új jelszavainak megtekintése."
@@ -2283,7 +2298,7 @@ msgid "Add an entry to whitelist."
 msgstr "Adjon hozzá egy bejegyzést engedélyező listára."
 
 msgid "E-Mails from addresses listed here are not checked for spam."
-msgstr "Az e-mailek az itt felsorolt ​​címekről nem ellenőrzik a levélszemetet."
+msgstr "Az e-mailek az itt felsorolt ​​címekről nem ellenőrzik a spameket."
 
 msgid "E-Mail Whitelists"
 msgstr "E-mail engedélyező listák"
@@ -2373,7 +2388,7 @@ msgid "This will affect all general web management pages."
 msgstr "Ez hatással lesz az összes általános webes kezelési oldalra."
 
 msgid "This page shows the status of your software raid. You can also add and remove drives from the raid array here."
-msgstr "Ez az oldal a szoftveres raid állapotát mutatja. Itt is hozzáadhat és távolíthat el meghajtókat a raid tömbből."
+msgstr "Ez az oldal a szoftveres raid állapotát mutatja. Itt is hozzáadhatja és eltávolíthatja a meghajtókat a raid tömbből."
 
 msgid "Create Software Raid"
 msgstr "Szoftver Raid létrehozása"
@@ -2394,7 +2409,7 @@ msgid "Archive exam accounts"
 msgstr "Archívum vizsga-fiókok"
 
 msgid "All data will be archived from the exam accounts to an examfiles folder in the network share that you choose."
-msgstr "Minden adat archiválódik a vizsga-számláról a választott hálózati megosztás vizsgabiztonsági mappájába."
+msgstr "Minden adat archiválódik a vizsga számlájáról a választott hálózati megosztás példaböngésző mappájába."
 
 msgid "Only a member of the selected group can access this folder."
 msgstr "Csak a kiválasztott csoport tagjai férhetnek hozzá ehhez a mappához."
@@ -2592,7 +2607,7 @@ msgid "Summary logs"
 msgstr "Összefoglaló naplók"
 
 msgid "View a summary of the backup logs."
-msgstr "A biztonsági naplók összefoglalása."
+msgstr "A biztonsági naplók összefoglalójának megtekintése."
 
 msgid "Custom Command"
 msgstr "Egyéni parancs"
@@ -3393,7 +3408,7 @@ msgid "Every hour"
 msgstr "Minden órában"
 
 msgid "Choose the hour you want the job to start on."
-msgstr "Válassza ki azt az órát, ameddig el szeretné kezdeni a munkát."
+msgstr "Válassza ki azt az órát, ameddig a munkát be kívánja kezdeni."
 
 msgid "Day"
 msgstr "Nap"
@@ -3522,7 +3537,7 @@ msgid "The TCPIP number is not corrrect."
 msgstr "A TCP IP-száma helytelen."
 
 msgid "This allows you to add a domain trust so that users from other domains can log into this domain."
-msgstr "Ez lehetővé teszi domainbiztonsági hozzáadását, így más tartományokból származó felhasználók bejelentkezhetnek erre a tartományra."
+msgstr "Ez lehetővé teszi, hogy domainbiztonsági függvényt adjon hozzá, hogy más domainekből származó felhasználók be tudjanak jelentkezni ebbe a tartományba."
 
 msgid "Add a domain trust"
 msgstr "Adjon hozzá domainbiztonságot"
@@ -3544,9 +3559,6 @@ msgstr "Napló típusa"
 
 msgid "Choose the log type that you would like to view."
 msgstr "Válassza ki a megtekinteni kívánt napló típusát."
-
-msgid "View Servers"
-msgstr "Szerverek megtekintése"
 
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Nincs Karoshi kiszolgáló telepítve ssh-vel."
@@ -3698,11 +3710,20 @@ msgstr "PPD szerkesztése"
 msgid "Edit a printer driver."
 msgstr "Nyomtatóillesztő szerkesztése."
 
+msgid "Windows Drivers"
+msgstr "Windows illesztőprogramok"
+
 msgid "Windows printer drivers."
 msgstr "Windows nyomtató-illesztőprogramok."
 
-msgid "Windows Drivers"
-msgstr "Windows illesztőprogramok"
+msgid "AirPrint Controls"
+msgstr "AirPrint vezérlők"
+
+msgid "AirPrint controls."
+msgstr "AirPrint vezérlők."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Állítsa be a nyomtatást a Savapage segítségével."
@@ -4106,12 +4127,6 @@ msgstr "A lemezhasználati naplók a kiszolgáló minden egyes partíciójának 
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Bejegyzési számok importálása vagy személyzeti kódok"
 
-msgid "View New Passwords"
-msgstr "Új jelszavak megtekintése"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Az újonnan létrehozott fiókokhoz beállított jelszavak megtekintése."
-
 msgid "CSV file"
 msgstr "CSV fájl"
 
@@ -4146,7 +4161,7 @@ msgid "Linux Background - Upload"
 msgstr "Linux háttér - feltöltés"
 
 msgid "This will replace the standard background with one of your choice. The backgrounds are applied when the client computer is rebooted."
-msgstr "Ez felváltja a szabványos hátteret az Ön által választott módon. A háttérképek az ügyfélszámítógép újraindításakor kerülnek alkalmazásra."
+msgstr "Ez felváltja a szabvány hátteret az Ön által választott módon. A háttérképek az ügyfélszámítógép újraindításakor kerülnek alkalmazásra."
 
 msgid "View Backgrounds"
 msgstr "Háttér megtekintése"
@@ -4376,6 +4391,15 @@ msgstr "Az UPS portja nem lehet üres."
 msgid "Add a UPS"
 msgstr "Adjon hozzá egy UPS-t"
 
+msgid "Airprint"
+msgstr "Airprint"
+
+msgid "Manage AirPrint"
+msgstr "Az AirPrint kezelése"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Kattintson az ikonokra az Airprint elérhetőségének szabályozásához."
+
 msgid "User Information"
 msgstr "Felhasználói információ"
 
@@ -4446,7 +4470,7 @@ msgid "You have not chosen any sites."
 msgstr "Nem választottál semmilyen webhelyet."
 
 msgid "The selected sites have been deleted."
-msgstr "A kijelölt webhelyek törlésre kerültek."
+msgstr "A kiválasztott webhelyeket törölték."
 
 msgid "View the passwords for the exam accounts if they have been reset."
 msgstr "Nézze meg a vizsga-fiókok jelszavát, ha vissza lettek állítva."
@@ -4569,7 +4593,7 @@ msgid "This is the maximum file size that users can have on the system."
 msgstr "Ez az a maximális fájlméret, amelyet a felhasználók a rendszeren találhatnak."
 
 msgid "Users who reach this limit will not be able to save any more files until they have deleted some files."
-msgstr "Azok a felhasználók, akik ezt a határt elérik, nem tudnak további fájlokat menteni, amíg nem töröltek néhány fájlt."
+msgstr "Azok a felhasználók, akik elérik ezt a határt, nem tudnak több fájlt menteni addig, amíg néhány fájlt töröltek."
 
 msgid "Setting this value to 0 will disable this option."
 msgstr "Ha ezt az értéket 0 értékre állítja, akkor ezt az opciót letiltja."
@@ -4971,7 +4995,7 @@ msgid "Savapage"
 msgstr "Savapage"
 
 msgid "Removes the Savapage data folder. Unflags this server as Savapage server. Stops Savapage from running."
-msgstr "Eltávolítja a Savapage adatmappát. A kiszolgáló mentése a Savapage kiszolgálóról. Megállítja a Savapage futását."
+msgstr "Eltávolítja a Savapage adatmappát. A kiszolgáló mentése Savapage kiszolgálóként történik. Megállítja a Savapage futását."
 
 msgid "Federated Server"
 msgstr "Szövetségi szerver"
@@ -5160,7 +5184,7 @@ msgid "E-Mail Over Quota Report"
 msgstr "E-Mail Over Quota jelentés"
 
 msgid "E-mail quota checks are run on E-mail inboxes for all users three times a day."
-msgstr "Az e-mail kvóta-ellenőrzéseket az e-mail postafiókokban futtatja minden felhasználó számára napi három alkalommal."
+msgstr "Az e-mail kvóta-ellenőrzéseket az e-mail postafiókokban futtatják minden felhasználó számára napi három alkalommal."
 
 msgid "Users who are over quota receive an E-mail warning them."
 msgstr "A kvóta alatt álló felhasználók e-mailben értesítik őket."
@@ -5475,7 +5499,7 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "Adja meg annak a levélkiszolgálónak a címét, amelybe az e-mailt küldi."
 
 msgid "Banned E-mail Domains"
-msgstr "Tiltott e-mail tartományok"
+msgstr "Tiltott e-mail domainek"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr "Az alábbi listában megjelenített e-mail domainek engedélyezettek és nincsenek DNS-ellenőrzések, vagy tiltották az e-mail küldését a kiszolgálóra."
@@ -5543,6 +5567,9 @@ msgstr "Téma módosítása"
 msgid "Current theme"
 msgstr "Aktuális téma"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Válassza ki a felhasználónév stílusát és az elsődleges csoportot a létrehozni kívánt felhasználók számára."
+
 msgid "Select the following options to create your users"
 msgstr "Válassza ki a következő lehetőségeket a felhasználók létrehozásához"
 
@@ -5552,29 +5579,29 @@ msgstr "Ez a kiszolgáló egy összevont rendszer része. A felhasználókat a f
 msgid "Style"
 msgstr "Stílus"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "Arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Bejegyzési számot felhasználónévként"
@@ -5943,7 +5970,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Ha meg kell változtatnia egy hálózati kártyát, először távolítsa el a mac címet a statikus arps-ról."
 
 msgid "View E-Mail Statistics"
-msgstr "E-mail statisztikák megtekintése"
+msgstr "Az EMail statisztikák megtekintése"
 
 msgid "The log view must not be blank."
 msgstr "A napló nézete nem lehet üres."
@@ -6068,41 +6095,17 @@ msgstr "A Java és Libre Office automatikusan telepítésre kerül a telepítés
 msgid "Add new users to your system."
 msgstr "Új felhasználók hozzáadása a rendszerhez."
 
-msgid "Enrolment number / staff code"
-msgstr "Beiratkozási szám / személyzet kódja"
+msgid "Advanced"
+msgstr "Fejlett"
 
-msgid "Primary group"
-msgstr "Elsődleges csoport"
+msgid "Show advanced fields."
+msgstr "Speciális mezők megjelenítése."
 
-msgid "Username style"
-msgstr "Felhasználónév stílus"
+msgid "Basic"
+msgstr "Alapvető"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Beiratkozási szám"
+msgid "Hide advanced fields."
+msgstr "Haladó mezők elrejtése."
 
 msgid "Enter the firstname for this user."
 msgstr "Adja meg a felhasználó első nevét."
@@ -6113,8 +6116,38 @@ msgstr "Adja meg a felhasználónév vezetéknevét."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Írja be a jelszót, és erősítse meg az alábbi mezőbe."
 
+msgid "User code"
+msgstr "Felhasználói kód"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Tanulói beiratkozási szám vagy személyzeti kód. Ez a mező üresen hagyható."
+
+msgid "Room Number"
+msgstr "Szoba szám"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "A szobaszám a felhasználó számára. Ez a mező üresen hagyható."
+
+msgid "Telephone Number"
+msgstr "Telefonszám"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "A felhasználó telefonszáma. Ez a mező üresen hagyható."
+
+msgid "Fax Number"
+msgstr "Faxszámra"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "A felhasználó faxszáma. Ez a mező üresen hagyható."
+
+msgid "Mobile Number"
+msgstr "Mobil szám"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "A mobil szám a felhasználó számára. Ez a mező üresen hagyható."
+
+msgid "Primary group"
+msgstr "Elsődleges csoport"
 
 msgid "The groups give different levels of access."
 msgstr "A csoportok különböző szintű hozzáférést biztosítanak."
@@ -6124,6 +6157,9 @@ msgstr "Az itadmin csoport a hálózati rendszergazda."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Csak az itadmin és a tech csoportok tagjai nyerhetnek rendszergazdai hozzáférést a tartományhoz csatlakozó Windows számítógépekhez."
+
+msgid "Username style"
+msgstr "Felhasználónév stílus"
 
 msgid "Choose the username style you require."
 msgstr "Válassza ki a kívánt felhasználónév stílust."
@@ -6521,45 +6557,6 @@ msgstr "Nem választottál be egy beavatkozást."
 msgid "You have not chosen an asset."
 msgstr "Nem választottál ki egy eszközt."
 
-msgid "The user style must not be blank."
-msgstr "A felhasználói stílus nem lehet üres."
-
-msgid "The primary group must not be blank."
-msgstr "Az elsődleges csoport nem lehet üres."
-
-msgid "Blank forename"
-msgstr "Üres keresztnév"
-
-msgid "Blank surname"
-msgstr "Üres vezetéknév"
-
-msgid "Blank enrolment number"
-msgstr "Üres beiratkozási szám"
-
-msgid "Blank username"
-msgstr "Üres felhasználónév"
-
-msgid "The username is greater than 20 characters"
-msgstr "A felhasználónév 20 karakternél hosszabb"
-
-msgid "Blank Primary Group"
-msgstr "Üres elsődleges csoport"
-
-msgid "Failed"
-msgstr "nem sikerült"
-
-msgid "CSV file error."
-msgstr "CSV fájlhiba."
-
-msgid "This username is already in use."
-msgstr "Ez a felhasználónév már használatban van."
-
-msgid "Creating"
-msgstr "létrehozása"
-
-msgid "Bulk user creation completed."
-msgstr "A tömeges felhasználói létrehozás befejeződött."
-
 msgid "View Event Logs"
 msgstr "Eseménynaplók megtekintése"
 
@@ -6582,7 +6579,7 @@ msgid "Run Command"
 msgstr "Fuss parancsot"
 
 msgid "This page shows the status of your ZFS raid array. You can also add and remove drives from the raid array here."
-msgstr "Ez az oldal a ZFS raid tömb állapotát mutatja. Itt is hozzáadhat és távolíthat el meghajtókat a raid tömbből."
+msgstr "Ez az oldal a ZFS raid tömb állapotát mutatja. Itt is hozzáadhatja és eltávolíthatja a meghajtókat a raid tömbből."
 
 msgid "Select a server"
 msgstr "Válasszon ki egy kiszolgálót"
@@ -6714,7 +6711,7 @@ msgid "This will setup a a squid proxy server for providing access to the intern
 msgstr "Ez létrehoz egy tintahal-proxy kiszolgálót, amely hozzáférést biztosít az internethez a hálózaton lévő ügyfélszámítógépek számára."
 
 msgid "Internet filtering is provided by E2Guardian and all internet access through the system is logged."
-msgstr "Az internetes szűrést az E2Guardian biztosítja, és a rendszeren keresztül minden internet-hozzáférést naplóz."
+msgstr "Az internetszűrést az E2Guardian biztosítja, és a rendszeren keresztül minden internet-hozzáférést naplóz."
 
 msgid "Logs for all user internet access can be viewed in the web management."
 msgstr "Az összes felhasználói internet-hozzáférés naplózása megtekinthető a webes kezelésben."
@@ -6840,10 +6837,13 @@ msgid "Setup Printers"
 msgstr "Telepítő nyomtatók"
 
 msgid "If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."
-msgstr "Ha még nem tette meg, akkor nyomtatószervert szeretne hozzáadni a hálózathoz, hogy ellenőrizhesse az ügyfelek nyomtatását."
+msgstr "Ha ezt még nem tette meg, érdemes lehet nyomtató-kiszolgálót adnia a hálózathoz, hogy ellenőrizhesse az ügyfelek nyomtatását."
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Az alább felsorolt ​​show szerverek az összes elérhető szervert mutatják. Válassza ki azt a kiszolgálót, amelyhez hozzá kívánja adni a nyomtatómodult, a Hozzáadás szerepkör gombra kattintva."
+
+msgid "Show Servers"
+msgstr "Szerverek megjelenítése"
 
 msgid "Control Printers"
 msgstr "Vezérlő nyomtatók"
@@ -7062,19 +7062,19 @@ msgid "Technician"
 msgstr "Technikus"
 
 msgid "Primary Admins have full control of the web management."
-msgstr "Az elsődleges adminisztrátorok teljes mértékben ellenőrzik a webes kezelést."
+msgstr "Az elsődleges adminisztrátorok teljes mértékben irányítják az internetes kezelést."
 
 msgid "Admins have full control of the web management but cannot add or delete other admins."
 msgstr "A rendszergazdák teljes mértékben ellenőrzik a webes kezelést, de nem tudnak hozzáadni vagy törölni más adminokat."
 
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
-msgstr "A technikusok korlátozott számú vezérlőhöz férhetnek hozzá a rendszer napi működéséhez, például a jelszavak megváltoztatásához."
+msgstr "A technikusok korlátozott számú vezérlővel férhetnek hozzá a rendszer napi működéséhez, például a jelszavak megváltoztatásához."
 
 msgid "Incident Logs"
 msgstr "Eseménynaplók"
 
 msgid "Record an incident that has occured."
-msgstr "Jegyezzen be egy eseményt, amely történt."
+msgstr "Jegyezzen fel egy eseményt, amely történt."
 
 msgid "Add Network Printer"
 msgstr "Hálózati nyomtató hozzáadása"
@@ -7203,7 +7203,7 @@ msgid "This will setup a reverse proxy server that allows incoming web traffic t
 msgstr "Ez beállít egy fordított proxy szervert, amely lehetővé teszi a bejövő webforgalom átirányítását a hálózat más szervereire."
 
 msgid "The redirect is based on the trailing slash after the end of the domain of your site."
-msgstr "Az átirányítás a webhely domainjének végét követően a záró perjelen alapul."
+msgstr "Az átirányítás a webhely tartományának befejezése után a záró perjelen alapul."
 
 msgid "This module cannot be applied to a server running modules that use the apache web server."
 msgstr "Ez a modul nem használható olyan kiszolgálóra, amely az apache webszervert használó modulokat futtat."
@@ -7410,7 +7410,7 @@ msgid "You can also join client computers to the domain using any accounts that 
 msgstr "Csatlakozhat az ügyfélszámítógépekhez is a domainhez az itadmin-csoport tagjai számára."
 
 msgid "Once you have successfully joined a client you can test it with the new user that you have just created."
-msgstr "Miután sikeresen csatlakozott egy ügyfélhez, tesztelheti azt az újonnan létrehozott felhasználóval."
+msgstr "Miután sikeresen csatlakozott az ügyfélhez, tesztelheti azt az újonnan létrehozott felhasználóval."
 
 msgid "Karoshi Linux Clients"
 msgstr "Karoshi Linux ügyfelek"
@@ -7425,7 +7425,7 @@ msgid "The mail ID cannot be blank."
 msgstr "A postai azonosító nem lehet üres."
 
 msgid "This shows the jobs that are scheduled to run on this server."
-msgstr "Ez megmutatja a futtatni kívánt feladatokat ezen a kiszolgálón."
+msgstr "Ez megmutatja a futtatni kívánt feladatokat ezen a szerveren."
 
 msgid "Schedule a job for this server."
 msgstr "Állítson be egy munkát ehhez a kiszolgálóhoz."
@@ -7433,8 +7433,17 @@ msgstr "Állítson be egy munkát ehhez a kiszolgálóhoz."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Név, keresztnév, beiratkozási szám vagy személyzet kódja - opcionális, felhasználónév - opcionális, elsődleges csoport - opcionális, másodlagos csoportok kettősponttal elválasztva - választható, jelszó megváltoztatása az első bejelentkezéskor - opcionális (y / n), jelszó - opcionális"
 
-msgid "Import Enrollment Numbers"
-msgstr "Importálási számok importálása"
+msgid "CSV file format without the first row as headers"
+msgstr "CSV fájlformátumot az első sor nélkül, fejlécként"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Utónév, beiratkozási szám vagy személyzet kódja - opcionális, felhasználónév - opcionális, elsődleges csoport - opcionális, másodlagos csoportok kettőspontokkal elválasztva - választható, jelszó megváltoztatása az első bejelentkezéskor - opcionális (y / n), szobaszám - opcionális, szám - opcionális, faxszám - opcionális, mobilszám - opcionális, jelszó - opcionális"
+
+msgid "CSV file format with the first row as headers"
+msgstr "CSV-fájlformátum, az első sor fejlécként"
+
+msgid "Possible column headers are"
+msgstr "Lehetséges oszlopfejlécek"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Ez létrehoz egy rádiusz kiszolgálót a hálózathoz, amely használható a WPA2 vállalaton keresztüli vezeték nélküli hozzáférési pontok beállításához."
@@ -7524,7 +7533,7 @@ msgid "Install certificate"
 msgstr "Tanúsítvány telepítése"
 
 msgid "Enter in the username that you want to check the logs for."
-msgstr "Adja meg azt a felhasználónevet, amelyiknek a naplót szeretné ellenőrizni."
+msgstr "Írja be azt a felhasználónevet, amelybe be szeretné ellenőrizni a naplókat."
 
 msgid "Leave the date blank to search for all dates."
 msgstr "Hagyja üresen a dátumot az összes dátum megkereséséhez."
@@ -7539,7 +7548,7 @@ msgid "Ban duration in days - leave blank for a permanent ban."
 msgstr "A tilalom időtartama napokban - tilos maradni az állandó tilalom miatt."
 
 msgid "Users are automatically allowed after their ban duration is up. The ban duration will include weekends and holidays."
-msgstr "A felhasználók automatikusan engedélyezettek a tiltási időtartamuk után. A tilalom időtartama hétvégéket és ünnepeket is magában foglal."
+msgstr "A felhasználók automatikusan engedélyezettek a tiltási időtartamuk után. A tilalom időtartama hétvégéket és ünnepeket is tartalmaz."
 
 msgid "Enter the usernames you want to ban from the system separated by spaces:"
 msgstr "Adja meg a tiltani kívánt felhasználóneveket a rendszerből szóközzel elválasztva:"
@@ -7949,7 +7958,7 @@ msgstr "Adja hozzá a személyzet nevét"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Adja meg a személyzet bármely tagjának felhasználónevét, hogy ne akarja elérni a webkezelés személyzetének szakaszait."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Korlátozott személyzet"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -8112,7 +8121,7 @@ msgid "ssh has been enabled."
 msgstr "Az ssh engedélyezve volt."
 
 msgid "There was a problem enabling ssh for this server. Please check the web administration logs."
-msgstr "Hiba történt az ssh számára a kiszolgáló számára. Kérjük, ellenőrizze a web adminisztrációs naplókat."
+msgstr "Hiba történt az ssh számára a kiszolgáló számára. Kérjük, ellenőrizze a webes adminisztrációs naplókat."
 
 msgid "Setup"
 msgstr "Beállít"
@@ -8132,8 +8141,8 @@ msgstr "belső hozzáférés"
 msgid "external access"
 msgstr "külső hozzáférés"
 
-msgid "Port '"
-msgstr "Port ""
+msgid "Port "
+msgstr "Port "
 
 msgid "Staff"
 msgstr "Személyzet"
@@ -8406,7 +8415,7 @@ msgid "Removing"
 msgstr "eltávolítása"
 
 msgid "This will be restored after the ZFS array has been created"
-msgstr "Ezt a ZFS-tömb létrehozása után visszaállítják"
+msgstr "Ez a ZFS-tömb létrehozása után visszaáll"
 
 msgid "Starting Samba4"
 msgstr "Samba4 indítása"
@@ -9218,18 +9227,6 @@ msgstr "Keresztnév"
 msgid "Display Name"
 msgstr "Megjelenítendő név"
 
-msgid "Room Number"
-msgstr "Szoba szám"
-
-msgid "Telephone Number"
-msgstr "Telefonszám"
-
-msgid "Fax Number"
-msgstr "Faxszámra"
-
-msgid "Mobile Number"
-msgstr "Mobil szám"
-
 msgid "E-Mail address"
 msgstr "Email cím"
 
@@ -9864,7 +9861,7 @@ msgid "Fallback filter"
 msgstr "Tartalék szűrő"
 
 msgid "Assigned Filter Group Fallback Times"
-msgstr "Hozzárendelt szűrőcsoport visszacsatolási idő"
+msgstr "Hozzárendelt szűrőcsoport visszacsatolási idők"
 
 msgid "Filter Group Options"
 msgstr "Szűrési csoport beállításai"
@@ -9951,7 +9948,7 @@ msgid "Deny Mime Type"
 msgstr "Deny Mime típus"
 
 msgid "This allows you to view and add in websites that you want to deny access to."
-msgstr "Ez lehetővé teszi, hogy megtekinthesse és felvehessen olyan webhelyeket, amelyek megtagadják a hozzáférést."
+msgstr "Ez lehetővé teszi, hogy megtekinthesse és felvehessen olyan webhelyeket, amelyekhez megtagadja a hozzáférést."
 
 msgid "This allows you to view and add in websites that you want to allow access to."
 msgstr "Ez lehetővé teszi az olyan webhelyek megtekintését és feltöltését, amelyekhez engedélyezni kívánja a hozzáférést."
@@ -10119,7 +10116,7 @@ msgid "Servers"
 msgstr "szerverek"
 
 msgid "Choose an extra server to create the Gluster volume on."
-msgstr "Válasszon ki egy extra kiszolgálót a Gluster kötet létrehozásához."
+msgstr "Válasszon ki egy extra szervert a Gluster kötet létrehozásához."
 
 msgid "Choose the servers that you want to add to the gluster volume."
 msgstr "Válassza ki azokat a kiszolgálókat, amelyeket hozzá kíván adni a glitter kötethez."
@@ -10616,6 +10613,9 @@ msgstr "Nincs hozzáférés"
 msgid "Change Status"
 msgstr "Állapotváltozás"
 
+msgid "Change Student Password"
+msgstr "Student jelszó módosítása"
+
 msgid "Internet Logs"
 msgstr "Internet naplók"
 
@@ -10739,9 +10739,6 @@ msgstr "Töltse fel a felhasználók képeit egy archivált fájlból."
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importálási számok vagy személyzeti kódok importálása CSV-fájlból."
 
-msgid "Set User Passwords"
-msgstr "Felhasználói jelszavak beállítása"
-
 msgid "Set user's passwords from a CSV file."
 msgstr "Felhasználói jelszó beállítása CSV-fájlból."
 
@@ -10800,7 +10797,7 @@ msgid "View disk usage on your servers."
 msgstr "A lemezhasználat megtekintése a kiszolgálón."
 
 msgid "View disk usage logs on your servers."
-msgstr "Megtekintheti a lemezhasználati naplókat a kiszolgálón."
+msgstr "Megtekintheti a lemezhasználati naplókat a kiszolgálókon."
 
 msgid "Disk Quotas"
 msgstr "Disk Quotas"
@@ -11111,6 +11108,9 @@ msgstr "Állítsa be a Savapage beállítást."
 msgid "View assigned printers."
 msgstr "Megtekintheti a hozzárendelt nyomtatókat."
 
+msgid "View the Airprint status."
+msgstr "Az Airprint állapotának megtekintése."
+
 msgid "Generate Windows printer drivers."
 msgstr "Generáljon Windows nyomtatóillesztőket."
 
@@ -11142,7 +11142,7 @@ msgid "Configure the E-Mail server to send out going E-Mail via an E-Mail relay.
 msgstr "Állítsa be az E-Mail kiszolgálót, hogy küldjön e-mailt e-mailes relével."
 
 msgid "Add E-Mails or domains to a whitelist that bypasses spam checks."
-msgstr "Adja hozzá az e-maileket vagy domaineket egy engedélyezési listához, amely megkerüli a spam ellenőrzéseket."
+msgstr "Adja hozzá az e-maileket vagy domaineket egy engedélyező listához, amely megkerüli a spam ellenőrzéseket."
 
 msgid "Configure TCP-IP addresses that can send E-Mail without user authentication."
 msgstr "Olyan TCP-IP címek konfigurálása, amelyek felhasználói hitelesítés nélkül küldhetnek e-mailt."
@@ -11375,6 +11375,9 @@ msgstr "Csoport hozzáadása"
 msgid "Creating home folders"
 msgstr "Otthoni mappák létrehozása"
 
+msgid "Creating"
+msgstr "létrehozása"
+
 msgid "Copying in logon files"
 msgstr "Másolás bejelentkezési fájlokban"
 
@@ -11394,7 +11397,7 @@ msgid "Extracting Windows 10 Profile"
 msgstr "A Windows 10 profil kibontása"
 
 msgid "Extracting Windows 10 Aniversary Profile"
-msgstr "A Windows 10 évfordulójának kivonása"
+msgstr "A Windows 10 évfordulós profiljának kivonata"
 
 msgid "Setting profile permissions"
 msgstr "Profilengedélyek beállítása"
@@ -11490,7 +11493,7 @@ msgid "Karoshi Server Setup"
 msgstr "Karoshi szerver beállítása"
 
 msgid "The Karoshi Server Project comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions."
-msgstr "A Karoshi Szerver Projekt abszolút NINCS GARANCIA. Ez ingyenes szoftver, és bizonyos körülmények között szívesen oszthatod meg újra."
+msgstr "A Karoshi Szerver Projekt jön-val MINDIG GARANCIÁT. Ez ingyenes szoftver, és bizonyos körülmények között szívesen oszthatod meg újra."
 
 msgid "Confirm Licence"
 msgstr "Licenc megerősítése"

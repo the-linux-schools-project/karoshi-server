@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Xibo har installerats och kan nås från"
 
 msgid "Please login and change this password immediately."
 msgstr "Vänligen logga in och ändra det här lösenordet omedelbart."
-
-msgid "Setup Airprint"
-msgstr "Setup Airprint"
-
-msgid "Updating repositories"
-msgstr "Uppdatering av repositories"
-
-msgid "Installing Avahi Daemon"
-msgstr "Installera Avahi Daemon"
-
-msgid "Installing python-cups"
-msgstr "Installera python-koppar"
 
 msgid "The main server cannot be contacted."
 msgstr "Huvudservern kan inte kontaktas."
@@ -1511,10 +1499,10 @@ msgstr "Lägg till server"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Konfigurera en ssh-anslutning till en Karoshi-server så att den kan styras av webbhanteringen."
 
-msgid "Show Servers"
+msgid "View Servers"
 msgstr "Visa servrar"
 
-msgid "Show the servers and roles."
+msgid "View the servers and roles."
 msgstr "Visa servrar och roller."
 
 msgid "Server name"
@@ -1624,6 +1612,36 @@ msgstr "Ställer in standardinställningarna för användarkonton."
 
 msgid "Upload User Image"
 msgstr "Ladda upp användarbild"
+
+msgid "Import User Image"
+msgstr "Importera användarbild"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Detta låter dig ladda upp användarbilder som kan användas för att identifiera dina användare."
+
+msgid "Bulk User Creation"
+msgstr "Bulk User Creation"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Skapa användarkonton från en CSV-fil."
+
+msgid "View New Passwords"
+msgstr "Visa nya lösenord"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Visa lösenorden som anges för nyskapade konton."
+
+msgid "Import Enrollment Numbers"
+msgstr "Importera inskrivningsnummer"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Importera inskrivningsnummer för dina användarkonton."
+
+msgid "Set User Passwords"
+msgstr "Ange användarlösenord"
+
+msgid "Set User Passwords."
+msgstr "Ange användarlösenord."
 
 msgid "User Image or compressed file"
 msgstr "Användarbild eller komprimerad fil"
@@ -2111,17 +2129,14 @@ msgstr "CSV-filformatet är"
 msgid "username, enrollment number or staff code"
 msgstr "användarnamn, inskrivningsnummer eller personalkod"
 
-msgid "Bulk User Creation"
-msgstr "Bulk User Creation"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Skapa användarkonton från en CSV-fil."
-
 msgid "Import enrollment numbers"
 msgstr "Importera inskrivningsnummer"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Importera inskrivningsnummer för dina användarkonton."
+msgid "Import User Images"
+msgstr "Importera användarbilder"
+
+msgid "Import user images for your user accounts."
+msgstr "Importera användarbilder för dina användarkonton."
 
 msgid "View the new passwords for a group of users."
 msgstr "Visa de nya lösenorden för en grupp användare."
@@ -3204,7 +3219,7 @@ msgid "Web Management Name"
 msgstr "Webbenhanteringsnamn"
 
 msgid "The site name cannot be blank."
-msgstr "Webbplatsnamnet kan inte vara tomt."
+msgstr "Webbplatsens namn kan inte vara tomt."
 
 msgid "The short site name cannot be blank."
 msgstr "Det korta webbplatsnamnet kan inte vara tomt."
@@ -3545,9 +3560,6 @@ msgstr "Logg typ"
 msgid "Choose the log type that you would like to view."
 msgstr "Välj loggtypen som du vill visa."
 
-msgid "View Servers"
-msgstr "Visa servrar"
-
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Inga Karoshi-servrar har upprättats med ssh."
 
@@ -3698,11 +3710,20 @@ msgstr "Redigera PPD"
 msgid "Edit a printer driver."
 msgstr "Redigera en skrivardrivrutin."
 
+msgid "Windows Drivers"
+msgstr "Windows Drivers"
+
 msgid "Windows printer drivers."
 msgstr "Windows skrivardrivrutiner."
 
-msgid "Windows Drivers"
-msgstr "Windows Drivers"
+msgid "AirPrint Controls"
+msgstr "AirPrint kontroller"
+
+msgid "AirPrint controls."
+msgstr "AirPrint kontroller."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Konfigurera utskrift med Savapage."
@@ -3738,7 +3759,7 @@ msgid "You have not chosen an asset type."
 msgstr "Du har inte valt en tillgångstyp."
 
 msgid "The TCP IP address cannot be blank."
-msgstr "TCP IP-adressen kan inte vara tom."
+msgstr "TCP IP-adressen kan inte vara blank."
 
 msgid "The mac address cannot be blank."
 msgstr "Mac-adressen kan inte vara tom."
@@ -4106,12 +4127,6 @@ msgstr "Skivanvändningsloggarna visar den totala användningen för varje parti
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Importera inskrivningsnummer eller personalkoder"
 
-msgid "View New Passwords"
-msgstr "Visa nya lösenord"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Visa lösenorden som anges för nyskapade konton."
-
 msgid "CSV file"
 msgstr "CSV-fil"
 
@@ -4376,6 +4391,15 @@ msgstr "UPS-porten kan inte vara blank."
 msgid "Add a UPS"
 msgstr "Lägg till en UPS"
 
+msgid "Airprint"
+msgstr "AirPrint"
+
+msgid "Manage AirPrint"
+msgstr "Hantera AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Klicka på ikonerna för att kontrollera tillgängligheten för Airprint."
+
 msgid "User Information"
 msgstr "användar information"
 
@@ -4407,7 +4431,7 @@ msgid "View the current aliases."
 msgstr "Visa de aktuella aliaserna."
 
 msgid "Adding an alias will allow emails to be sent to the alias address rather than the actual username."
-msgstr "Om du lägger till ett alias kommer e-postmeddelanden att skickas till aliasadressen i stället för själva användarnamnet."
+msgstr "Om du lägger till ett alias kommer e-postmeddelanden att skickas till aliasadressen istället för själva användarnamnet."
 
 msgid "Add Alias"
 msgstr "Lägg till alias"
@@ -5543,6 +5567,9 @@ msgstr "Byta tema"
 msgid "Current theme"
 msgstr "Aktuellt tema"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Välj användarnamnet och primärgruppen för de användare du vill skapa."
+
 msgid "Select the following options to create your users"
 msgstr "Välj följande alternativ för att skapa dina användare"
 
@@ -5552,29 +5579,29 @@ msgstr "Den här servern är en del av ett federerat system. Användare måste s
 msgid "Style"
 msgstr "Stil"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "Arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Inloggningsnummer som användarnamn"
@@ -5943,7 +5970,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Om du behöver byta ett nätverkskort ska du först ta bort mac-adressen från dina statiska armar."
 
 msgid "View E-Mail Statistics"
-msgstr "Visa e-post statistik"
+msgstr "Visa e-poststatistik"
 
 msgid "The log view must not be blank."
 msgstr "Loggvisningen måste inte vara blank."
@@ -6068,41 +6095,17 @@ msgstr "Java och Libre Office installeras automatiskt som en del av den här ins
 msgid "Add new users to your system."
 msgstr "Lägg till nya användare i ditt system."
 
-msgid "Enrolment number / staff code"
-msgstr "Inskrivningsnummer / personalkod"
+msgid "Advanced"
+msgstr "Avancerad"
 
-msgid "Primary group"
-msgstr "Primärgrupp"
+msgid "Show advanced fields."
+msgstr "Visa avancerade fält."
 
-msgid "Username style"
-msgstr "Användarnamn stil"
+msgid "Basic"
+msgstr "Grundläggande"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Inskrivningsnummer"
+msgid "Hide advanced fields."
+msgstr "Dölj avancerade fält."
 
 msgid "Enter the firstname for this user."
 msgstr "Ange förnamn för den här användaren."
@@ -6113,8 +6116,38 @@ msgstr "Ange efternamnet för den här användaren."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Ange ett lösenord och bekräfta det i rutan nedan."
 
+msgid "User code"
+msgstr "Användarkod"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Studentregistreringsnummer eller personalkod. Detta fält kan lämnas tomt."
+
+msgid "Room Number"
+msgstr "Rumsnummer"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Rumsnumret för användaren. Detta fält kan lämnas tomt."
+
+msgid "Telephone Number"
+msgstr "Telefonnummer"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Telefonnumret för användaren. Detta fält kan lämnas tomt."
+
+msgid "Fax Number"
+msgstr "Faxnummer"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Faxnumret för användaren. Detta fält kan lämnas tomt."
+
+msgid "Mobile Number"
+msgstr "Mobilnummer"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Mobilnumret för användaren. Detta fält kan lämnas tomt."
+
+msgid "Primary group"
+msgstr "Primärgrupp"
 
 msgid "The groups give different levels of access."
 msgstr "Grupperna ger olika åtkomstnivåer."
@@ -6124,6 +6157,9 @@ msgstr "Itadmin-gruppen är för nätverksadministratören."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Endast medlemmar i itadmin och de tekniska grupperna får administratörsbehörighet till Windows-datorer som är anslutna till domänen."
+
+msgid "Username style"
+msgstr "Användarnamn stil"
 
 msgid "Choose the username style you require."
 msgstr "Välj önskat användarnamnsstil."
@@ -6521,45 +6557,6 @@ msgstr "Du har inte valt en åtgärd."
 msgid "You have not chosen an asset."
 msgstr "Du har inte valt en tillgång."
 
-msgid "The user style must not be blank."
-msgstr "Användarstilen får inte vara tom."
-
-msgid "The primary group must not be blank."
-msgstr "Den primära gruppen får inte vara blank."
-
-msgid "Blank forename"
-msgstr "Blank förnamn"
-
-msgid "Blank surname"
-msgstr "Blank efternamn"
-
-msgid "Blank enrolment number"
-msgstr "Blank inskrivningsnummer"
-
-msgid "Blank username"
-msgstr "Blank användarnamn"
-
-msgid "The username is greater than 20 characters"
-msgstr "Användarnamnet är större än 20 tecken"
-
-msgid "Blank Primary Group"
-msgstr "Blank primärgrupp"
-
-msgid "Failed"
-msgstr "misslyckades"
-
-msgid "CSV file error."
-msgstr "CSV-filfel."
-
-msgid "This username is already in use."
-msgstr "Det här användarnamnet används redan."
-
-msgid "Creating"
-msgstr "Skapande"
-
-msgid "Bulk user creation completed."
-msgstr "Bulk användarskapande slutförd."
-
 msgid "View Event Logs"
 msgstr "Visa händelseloggar"
 
@@ -6642,7 +6639,7 @@ msgid "UPS"
 msgstr "POSTEN"
 
 msgid "Banned E-Mail domains"
-msgstr "Bannrade e-postdomäner"
+msgstr "Bannrade EMail-domäner"
 
 msgid "Whitelists"
 msgstr "vitlistning"
@@ -6844,6 +6841,9 @@ msgstr "Om du inte redan har gjort det kanske du vill lägga till en skrivarserv
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Visningsservrar länken nedan visar alla tillgängliga servrar. Välj den server som du vill lägga till skrivarmodulen till genom att klicka på knappen Lägg till roll."
+
+msgid "Show Servers"
+msgstr "Visa servrar"
 
 msgid "Control Printers"
 msgstr "Kontrollskrivare"
@@ -7389,7 +7389,7 @@ msgid "This will change all of the exam accounts to a password of your choice."
 msgstr "Detta kommer att ändra alla provkonton till ett valfritt lösenord."
 
 msgid "Enter the password that you want all of the exam accounts changed to."
-msgstr "Ange lösenordet som du vill att alla examenkonton ska ändras till."
+msgstr "Ange lösenordet som du vill att alla examenskonton ska ändras till."
 
 msgid "Enter in any exam accounts that you do not want to have the passwords changed for separated by spaces."
 msgstr "Ange i alla examenkonton som du inte vill ha lösenordet ändrat för att separera av mellanslag."
@@ -7433,8 +7433,17 @@ msgstr "Planera ett jobb för den här servern."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Förnamn, efternamn, inskrivningsnummer eller personalkod - valfritt, användarnamn - valfritt, primärgrupp - valfritt, sekundära grupper separerade av kolon - valfritt, byt lösenord vid första inloggning - valfritt (y / n), lösenord - valfritt"
 
-msgid "Import Enrollment Numbers"
-msgstr "Importera inskrivningsnummer"
+msgid "CSV file format without the first row as headers"
+msgstr "CSV-filformat utan första raden som rubriker"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Förnamn, efternamn, inskrivningsnummer eller personalkod - valfritt, användarnamn - valfritt, primärgrupp - valfritt, sekundärgrupper separerade av kolon - valfritt, byt lösenord vid första inloggning - valfritt (y / n), rumsnummer - nummer - valfritt, faxnummer - valfritt, mobilnummer - valfritt, lösenord - valfritt"
+
+msgid "CSV file format with the first row as headers"
+msgstr "CSV-filformat med första raden som rubriker"
+
+msgid "Possible column headers are"
+msgstr "Möjliga kolumnrubriker är"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Detta ställer in en radiusserver för ditt nätverk som kan användas för att konfigurera trådlösa åtkomstpunkter med WPA2-företag."
@@ -7949,7 +7958,7 @@ msgstr "Lägg till personnamn"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Ange i användarnamnen för alla anställda som du inte vill kunna få tillgång till personalavsnittet i webbhanteringen."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Begränsad personal"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -8132,8 +8141,8 @@ msgstr "intern åtkomst"
 msgid "external access"
 msgstr "extern åtkomst"
 
-msgid "Port '"
-msgstr "Hamn ""
+msgid "Port "
+msgstr "Hamn "
 
 msgid "Staff"
 msgstr "Personal"
@@ -9217,18 +9226,6 @@ msgstr "Förnamn"
 
 msgid "Display Name"
 msgstr "Visningsnamn"
-
-msgid "Room Number"
-msgstr "Rumsnummer"
-
-msgid "Telephone Number"
-msgstr "Telefonnummer"
-
-msgid "Fax Number"
-msgstr "Faxnummer"
-
-msgid "Mobile Number"
-msgstr "Mobilnummer"
 
 msgid "E-Mail address"
 msgstr "E-postadress"
@@ -10616,6 +10613,9 @@ msgstr "Ingen åtkomst"
 msgid "Change Status"
 msgstr "Byta status"
 
+msgid "Change Student Password"
+msgstr "Ändra studentlösenord"
+
 msgid "Internet Logs"
 msgstr "Internet-loggar"
 
@@ -10707,7 +10707,7 @@ msgid "View Reset Passwords"
 msgstr "Visa Återställ lösenord"
 
 msgid "View the passwords that have been reset for the exam accounts."
-msgstr "Visa lösenord som har blivit nollställda för provkonton."
+msgstr "Visa lösenord som har återställts för examen konton."
 
 msgid "Archive Exam Accounts"
 msgstr "Arkiv examen konton"
@@ -10738,9 +10738,6 @@ msgstr "Ladda upp bilder av dina användare från en arkiverad fil."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importera inskrivningsnummer eller personalkoder från en CSV-fil."
-
-msgid "Set User Passwords"
-msgstr "Ange användarlösenord"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Ange användarens lösenord från en CSV-fil."
@@ -11111,6 +11108,9 @@ msgstr "Konfigurera Savapage."
 msgid "View assigned printers."
 msgstr "Visa tilldelade skrivare."
 
+msgid "View the Airprint status."
+msgstr "Visa Airprint-statusen."
+
 msgid "Generate Windows printer drivers."
 msgstr "Generera Windows-skrivardrivrutiner."
 
@@ -11374,6 +11374,9 @@ msgstr "Lägger till grupp"
 
 msgid "Creating home folders"
 msgstr "Skapa hemmappar"
+
+msgid "Creating"
+msgstr "Skapande"
 
 msgid "Copying in logon files"
 msgstr "Kopiering i inloggningsfiler"

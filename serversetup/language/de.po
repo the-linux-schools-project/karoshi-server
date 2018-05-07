@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Xibo wurde installiert und kann von aufgerufen werden"
 
 msgid "Please login and change this password immediately."
 msgstr "Bitte einloggen und dieses Passwort sofort ändern."
-
-msgid "Setup Airprint"
-msgstr "Airprint einrichten"
-
-msgid "Updating repositories"
-msgstr "Repositories aktualisieren"
-
-msgid "Installing Avahi Daemon"
-msgstr "Avahi-Dämon installieren"
-
-msgid "Installing python-cups"
-msgstr "Installieren von Python-Bechern"
 
 msgid "The main server cannot be contacted."
 msgstr "Der Hauptserver kann nicht kontaktiert werden."
@@ -705,7 +693,7 @@ msgid "Room controls"
 msgstr "Raumsteuerung"
 
 msgid "Client Bypass Controls"
-msgstr "Client-Bypass-Steuerelemente"
+msgstr "Client-Bypass-Kontrollen"
 
 msgid "Version"
 msgstr "Ausführung"
@@ -888,7 +876,7 @@ msgid "Art"
 msgstr "Kunst"
 
 msgid "Business Studies"
-msgstr "Betriebswirtschaftslehre"
+msgstr "Betriebswirtschaft"
 
 msgid "Citizenship"
 msgstr "Staatsbürgerschaft"
@@ -1209,7 +1197,7 @@ msgid "Description"
 msgstr "Beschreibung"
 
 msgid "This will set up shell access via your Web Management to you main server."
-msgstr "Dadurch wird der Shell-Zugriff über Ihr Web-Management auf Ihren Hauptserver eingerichtet."
+msgstr "Dadurch wird der Shell-Zugriff über Ihre Webverwaltung auf Ihren Hauptserver eingerichtet."
 
 msgid "This will reset the lockout attempts for a user after too many login attempts."
 msgstr "Dadurch werden die Sperrversuche für einen Benutzer nach zu vielen Anmeldeversuchen zurückgesetzt."
@@ -1511,10 +1499,10 @@ msgstr "Server hinzufügen"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Richten Sie eine SSH-Verbindung zu einem Karoshi-Server ein, damit diese von der Webverwaltung gesteuert werden kann."
 
-msgid "Show Servers"
-msgstr "Zeige Server"
+msgid "View Servers"
+msgstr "Server anzeigen"
 
-msgid "Show the servers and roles."
+msgid "View the servers and roles."
 msgstr "Zeigen Sie die Server und Rollen an."
 
 msgid "Server name"
@@ -1624,6 +1612,36 @@ msgstr "Legt die Standardeinstellungen für Benutzerkonten fest."
 
 msgid "Upload User Image"
 msgstr "Benutzerbild hochladen"
+
+msgid "Import User Image"
+msgstr "Benutzerbild importieren"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Auf diese Weise können Sie Benutzerbilder hochladen, die zur Identifizierung Ihrer Benutzer verwendet werden können."
+
+msgid "Bulk User Creation"
+msgstr "Massenbenutzererstellung"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Erstellen Sie Benutzerkonten aus einer CSV-Datei."
+
+msgid "View New Passwords"
+msgstr "Zeigen Sie neue Passwörter an"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Zeigen Sie die Kennwörter für neu erstellte Konten an."
+
+msgid "Import Enrollment Numbers"
+msgstr "Immatrikulationsnummern importieren"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Importieren Sie Registrierungsnummern für Ihre Benutzerkonten."
+
+msgid "Set User Passwords"
+msgstr "Legen Sie Benutzerpasswörter fest"
+
+msgid "Set User Passwords."
+msgstr "Legen Sie Benutzerpasswörter fest."
 
 msgid "User Image or compressed file"
 msgstr "Benutzer-Image oder komprimierte Datei"
@@ -1875,7 +1893,7 @@ msgid "Monitor time interval"
 msgstr "Überwachungszeitintervall"
 
 msgid "Leave blank for continuous monitoring or add in the hour start and end times."
-msgstr "Lassen Sie dieses Feld für die kontinuierliche Überwachung leer oder fügen Sie die Start- und Endzeiten der Stunden hinzu."
+msgstr "Lassen Sie das Feld leer, um es kontinuierlich zu überwachen, oder fügen Sie die Start- und Endzeiten der Stunden hinzu."
 
 msgid "TCPIP numbers"
 msgstr "TCPIP-Nummern"
@@ -2111,17 +2129,14 @@ msgstr "Das CSV-Dateiformat ist"
 msgid "username, enrollment number or staff code"
 msgstr "Benutzername, Registrierungsnummer oder Personalcode"
 
-msgid "Bulk User Creation"
-msgstr "Massenbenutzererstellung"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Erstellen Sie Benutzerkonten aus einer CSV-Datei."
-
 msgid "Import enrollment numbers"
 msgstr "Registrierungsnummern importieren"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Importieren Sie Registrierungsnummern für Ihre Benutzerkonten."
+msgid "Import User Images"
+msgstr "Importieren Sie Benutzerbilder"
+
+msgid "Import user images for your user accounts."
+msgstr "Importieren Sie Benutzerbilder für Ihre Benutzerkonten."
 
 msgid "View the new passwords for a group of users."
 msgstr "Zeigen Sie die neuen Kennwörter für eine Gruppe von Benutzern an."
@@ -3408,7 +3423,7 @@ msgid "Every month"
 msgstr "Jeden Monat"
 
 msgid "Choose the month you want the job to start on."
-msgstr "Wählen Sie den Monat, in dem der Job beginnen soll."
+msgstr "Wählen Sie den Monat, in dem der Job gestartet werden soll."
 
 msgid "Day of week"
 msgstr "Wochentag"
@@ -3522,7 +3537,7 @@ msgid "The TCPIP number is not corrrect."
 msgstr "Die TCP-IP-Nummer ist nicht korrekt."
 
 msgid "This allows you to add a domain trust so that users from other domains can log into this domain."
-msgstr "Auf diese Weise können Sie eine Domänenvertrauensstellung hinzufügen, sodass sich Benutzer aus anderen Domänen bei dieser Domäne anmelden können."
+msgstr "Auf diese Weise können Sie eine Domänenvertrauensstellung hinzufügen, sodass sich Benutzer aus anderen Domänen in dieser Domäne anmelden können."
 
 msgid "Add a domain trust"
 msgstr "Hinzufügen einer Domänenvertrauensstellung"
@@ -3544,9 +3559,6 @@ msgstr "Protokolltyp"
 
 msgid "Choose the log type that you would like to view."
 msgstr "Wählen Sie den Protokolltyp aus, den Sie anzeigen möchten."
-
-msgid "View Servers"
-msgstr "Server anzeigen"
 
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Es wurden keine Karoshi Server mit ssh eingerichtet."
@@ -3698,11 +3710,20 @@ msgstr "Bearbeite PPD"
 msgid "Edit a printer driver."
 msgstr "Bearbeiten Sie einen Druckertreiber."
 
+msgid "Windows Drivers"
+msgstr "Windows Treiber"
+
 msgid "Windows printer drivers."
 msgstr "Windows-Druckertreiber."
 
-msgid "Windows Drivers"
-msgstr "Windows Treiber"
+msgid "AirPrint Controls"
+msgstr "AirPrint-Steuerelemente"
+
+msgid "AirPrint controls."
+msgstr "AirPrint steuert."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Konfigurieren Sie das Drucken mit Savapage."
@@ -4062,7 +4083,7 @@ msgid "Use the create subfolders option to create extra locations."
 msgstr "Verwenden Sie die Option zum Erstellen von Unterordnern, um zusätzliche Speicherorte zu erstellen."
 
 msgid "Please choose the files that you want to upload to the web area."
-msgstr "Bitte wählen Sie die Dateien aus, die Sie in den Web-Bereich hochladen möchten."
+msgstr "Bitte wählen Sie die Dateien aus, die Sie in den Webbereich hochladen möchten."
 
 msgid "Configure user home folders."
 msgstr "Konfigurieren Sie Benutzer-Benutzerordner."
@@ -4105,12 +4126,6 @@ msgstr "Die Festplattennutzungsprotokolle zeigen die Gesamtnutzung für jede Par
 
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Immatrikulationsnummern oder Mitarbeitercodes importieren"
-
-msgid "View New Passwords"
-msgstr "Zeigen Sie neue Passwörter an"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Zeigen Sie die Kennwörter für neu erstellte Konten an."
 
 msgid "CSV file"
 msgstr "CSV-Datei"
@@ -4375,6 +4390,15 @@ msgstr "Der UPS-Port darf nicht leer sein."
 
 msgid "Add a UPS"
 msgstr "Fügen Sie eine UPS hinzu"
+
+msgid "Airprint"
+msgstr "Luftdruck"
+
+msgid "Manage AirPrint"
+msgstr "Verwalten Sie AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Klicken Sie auf die Symbole, um die Airprint-Verfügbarkeit zu steuern."
 
 msgid "User Information"
 msgstr "Nutzerinformation"
@@ -4935,7 +4959,7 @@ msgid "Unflags this server as a print server. Stops cups on the server."
 msgstr "Entblößt diesen Server als Druckserver. Stoppt Tassen auf dem Server."
 
 msgid "Unflags this server as an Internet Proxy server. Stops squid and dansguardian from running on the server."
-msgstr "Entblößt diesen Server als Internet-Proxy-Server. Stoppt Tintenfisch und Dansguardian auf dem Server."
+msgstr "Entblößt diesen Server als Internet Proxy Server. Stoppt Tintenfisch und Dansguardian auf dem Server."
 
 msgid "Unflags this server as a monitor server. Stops mon from running."
 msgstr "Entblößt diesen Server als Überwachungsserver. Stoppt mon vom Laufen."
@@ -5442,7 +5466,7 @@ msgid "This will setup the Joomla content management system as a website for you
 msgstr "Dadurch wird das Joomla Content Management System als Website für Ihre Schule eingerichtet."
 
 msgid "if you would like all staff to be able to log in and add information to the website enable the ldap authentication module in the Plug in Manager section."
-msgstr "Wenn Sie möchten, dass sich alle Mitarbeiter anmelden und Informationen zur Website hinzufügen können, aktivieren Sie das ldap-Authentifizierungsmodul im Abschnitt Plug-in-Manager."
+msgstr "Wenn Sie möchten, dass sich alle Mitarbeiter einloggen und Informationen zur Website hinzufügen können, aktivieren Sie das ldap-Authentifizierungsmodul im Abschnitt Plug-in-Manager."
 
 msgid "Federated File Synchronisation"
 msgstr "Föderierte Dateisynchronisierung"
@@ -5475,7 +5499,7 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "Geben Sie die Adresse des Mailservers ein, an den Sie die E-Mail senden möchten."
 
 msgid "Banned E-mail Domains"
-msgstr "Gesperrte E-Mail-Domains"
+msgstr "Gebannte E-Mail-Domains"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr "Alle E-Mail-Domains, die in der Liste unten aufgeführt sind, sind entweder erlaubt und es sind keine DNS-Checks auf ihnen platziert oder sie dürfen keine E-Mails an Ihren Server senden."
@@ -5543,6 +5567,9 @@ msgstr "Thema ändern"
 msgid "Current theme"
 msgstr "Aktuelles Thema"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Wählen Sie den Benutzernamen und die primäre Gruppe für die Benutzer aus, die Sie erstellen möchten."
+
 msgid "Select the following options to create your users"
 msgstr "Wählen Sie die folgenden Optionen, um Ihre Benutzer zu erstellen"
 
@@ -5552,29 +5579,29 @@ msgstr "Dieser Server ist Teil eines föderierten Systems. Benutzer müssen auf 
 msgid "Style"
 msgstr "Stil"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09Student"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "Benutzera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "Benutzer.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09Usera"
 
-msgid "09arnolds"
-msgstr "Neunmal"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "Arnolds"
+msgid "arnoldu"
+msgstr "Arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Registrierungsnummer als Benutzername"
@@ -5664,7 +5691,7 @@ msgid "TCPIP Number"
 msgstr "TCPIP-Nummer"
 
 msgid "Enter in the tcpip number of the client computer that you want to set to bypass the filtering."
-msgstr "Geben Sie die Tcpip-Nummer des Client-Computers ein, den Sie festlegen möchten, um die Filterung zu umgehen."
+msgstr "Geben Sie die Tcpip-Nummer des Client-Computers ein, den Sie zum Umgehen der Filterung festlegen möchten."
 
 msgid "Enable - Disable all exam accounts"
 msgstr "Aktivieren - Deaktivieren Sie alle Prüfungskonten"
@@ -5685,7 +5712,7 @@ msgid "This will set up an OpenVPN server for your network."
 msgstr "Dadurch wird ein OpenVPN-Server für Ihr Netzwerk eingerichtet."
 
 msgid "This is useful for allowing client devices to connect to your network via the internet."
-msgstr "Dies ist nützlich, damit Clientgeräte über das Internet eine Verbindung mit Ihrem Netzwerk herstellen können."
+msgstr "Dies ist nützlich, damit Clientgeräte über das Internet eine Verbindung zu Ihrem Netzwerk herstellen können."
 
 msgid "Once you have added your VPN server you will be able to create client VPN certificates in the web management."
 msgstr "Sobald Sie Ihren VPN-Server hinzugefügt haben, können Sie Client-VPN-Zertifikate in der Webverwaltung erstellen."
@@ -5850,7 +5877,7 @@ msgid "This share already exits in samba."
 msgstr "Diese Freigabe existiert bereits in Samba."
 
 msgid "Bulk User Creation - Import Enrolment Numbers or staff codes"
-msgstr "Massenbenutzererstellung - Immatrikulationsnummern oder Mitarbeitercodes importieren"
+msgstr "Massenbenutzererstellung - Importieren Sie Registrierungsnummern oder Mitarbeitercodes"
 
 msgid "The CSV file you have chosen is not formatted correctly."
 msgstr "Die von Ihnen gewählte CSV-Datei ist nicht korrekt formatiert."
@@ -6068,41 +6095,17 @@ msgstr "Java und Libre Office werden automatisch als Teil dieses Setups installi
 msgid "Add new users to your system."
 msgstr "Fügen Sie Ihrem System neue Benutzer hinzu."
 
-msgid "Enrolment number / staff code"
-msgstr "Registrierungsnummer / Personalcode"
+msgid "Advanced"
+msgstr "Fortgeschritten"
 
-msgid "Primary group"
-msgstr "Hauptgruppe"
+msgid "Show advanced fields."
+msgstr "Zeige erweiterte Felder."
 
-msgid "Username style"
-msgstr "Benutzername Stil"
+msgid "Basic"
+msgstr "Basic"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "Benutzera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "Benutzer.arnold09"
-
-msgid "09usera"
-msgstr "09Usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "Arnoldu"
-
-msgid "Enrollment number"
-msgstr "Einschreibungsnummer"
+msgid "Hide advanced fields."
+msgstr "Erweiterte Felder ausblenden"
 
 msgid "Enter the firstname for this user."
 msgstr "Geben Sie den Vornamen für diesen Benutzer ein."
@@ -6113,8 +6116,38 @@ msgstr "Geben Sie den Nachnamen für diesen Benutzer ein."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Geben Sie ein Passwort ein und bestätigen Sie es in der Box unten."
 
+msgid "User code"
+msgstr "Benutzercode"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Matrikelnummer oder Personalcode. Dieses Feld kann leer bleiben."
+
+msgid "Room Number"
+msgstr "Zimmernummer"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Die Zimmernummer für den Benutzer. Dieses Feld kann leer bleiben."
+
+msgid "Telephone Number"
+msgstr "Telefonnummer"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Die Telefonnummer für den Benutzer. Dieses Feld kann leer bleiben."
+
+msgid "Fax Number"
+msgstr "Faxnummer"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Die Faxnummer für den Benutzer. Dieses Feld kann leer bleiben."
+
+msgid "Mobile Number"
+msgstr "Handynummer"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Die Handynummer für den Benutzer. Dieses Feld kann leer bleiben."
+
+msgid "Primary group"
+msgstr "Hauptgruppe"
 
 msgid "The groups give different levels of access."
 msgstr "Die Gruppen geben unterschiedliche Zugriffsebenen."
@@ -6124,6 +6157,9 @@ msgstr "Die Gruppe itadmin ist für den Netzwerkadministrator bestimmt."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Nur Mitglieder von itadmin und den technischen Gruppen erhalten Administratorzugriff auf Windows-Computer, die mit der Domäne verbunden sind."
+
+msgid "Username style"
+msgstr "Benutzername Stil"
 
 msgid "Choose the username style you require."
 msgstr "Wählen Sie den gewünschten Benutzernamen aus."
@@ -6171,7 +6207,7 @@ msgid "The asset register is not in use."
 msgstr "Das Anlagenregister wird nicht verwendet."
 
 msgid "An incorrect password has been added for the root samba account on the PDC or it is not responding"
-msgstr "Ein falsches Passwort wurde für das Root-Samba-Konto auf dem PDC hinzugefügt oder es reagiert nicht"
+msgstr "Ein falsches Passwort wurde für das Root-Samba-Konto auf dem PDC hinzugefügt oder antwortet nicht"
 
 msgid "You have not chosen an web alias for this server."
 msgstr "Sie haben keinen Webalias für diesen Server ausgewählt."
@@ -6264,7 +6300,7 @@ msgid "Windows Background - Upload"
 msgstr "Windows Hintergrund - Hochladen"
 
 msgid "This will replace the standard backgrounds with one of your choice. The backgrounds are applied by kixtart when the user logs into the client computer."
-msgstr "Dies ersetzt die Standard-Hintergründe mit einer Ihrer Wahl. Die Hintergründe werden von Kixtart angewendet, wenn sich der Benutzer beim Clientcomputer anmeldet."
+msgstr "Dies ersetzt die Standard-Hintergründe mit einer Ihrer Wahl. Die Hintergründe werden von kixtart angewendet, wenn sich der Benutzer am Clientcomputer anmeldet."
 
 msgid "Please select the background that you want to upload."
 msgstr "Bitte wählen Sie den Hintergrund, den Sie hochladen möchten."
@@ -6521,45 +6557,6 @@ msgstr "Sie haben keine Aktion gewählt."
 msgid "You have not chosen an asset."
 msgstr "Sie haben kein Asset ausgewählt."
 
-msgid "The user style must not be blank."
-msgstr "Der Benutzerstil darf nicht leer sein."
-
-msgid "The primary group must not be blank."
-msgstr "Die primäre Gruppe darf nicht leer sein."
-
-msgid "Blank forename"
-msgstr "Blanker Vorname"
-
-msgid "Blank surname"
-msgstr "Blanker Nachname"
-
-msgid "Blank enrolment number"
-msgstr "Leere Registrierungsnummer"
-
-msgid "Blank username"
-msgstr "Leerer Benutzername"
-
-msgid "The username is greater than 20 characters"
-msgstr "Der Benutzername ist größer als 20 Zeichen"
-
-msgid "Blank Primary Group"
-msgstr "Leere primäre Gruppe"
-
-msgid "Failed"
-msgstr "Gescheitert"
-
-msgid "CSV file error."
-msgstr "CSV-Dateifehler"
-
-msgid "This username is already in use."
-msgstr "Dieser Benutzername wird bereits benutzt."
-
-msgid "Creating"
-msgstr "Erstellen"
-
-msgid "Bulk user creation completed."
-msgstr "Massenbenutzererstellung abgeschlossen"
-
 msgid "View Event Logs"
 msgstr "Ereignisprotokolle anzeigen"
 
@@ -6720,7 +6717,7 @@ msgid "Logs for all user internet access can be viewed in the web management."
 msgstr "Protokolle für den Internetzugriff aller Benutzer können im Web-Management eingesehen werden."
 
 msgid "This will add the name of your institution to the top of the web management and to the show servers page."
-msgstr "Dadurch wird der Name Ihrer Institution oben auf der Webverwaltung und auf der Seite "Showserver" hinzugefügt."
+msgstr "Dadurch wird der Name Ihrer Institution oben auf der Webverwaltung und auf der Seite Showserver hinzugefügt."
 
 msgid "Enter in the site name."
 msgstr "Geben Sie den Namen der Site ein."
@@ -6768,7 +6765,7 @@ msgid "A server.csr has already been created for this server."
 msgstr "Eine server.csr wurde bereits für diesen Server erstellt."
 
 msgid "Do not proceed unless you want to re-generate the certificate."
-msgstr "Fahren Sie nicht fort, es sei denn, Sie möchten das Zertifikat erneut generieren."
+msgstr "Fahren Sie nicht fort, wenn Sie das Zertifikat nicht erneut generieren möchten."
 
 msgid "Two digit Country Code"
 msgstr "Zweistelliger Ländercode"
@@ -6795,7 +6792,7 @@ msgid "Common name - URL"
 msgstr "Allgemeiner Name - URL"
 
 msgid "This needs to be the fully qualified domain name of your website without the http or https. The *. wildcard will match all sub domains."
-msgstr "Dies muss der vollständig qualifizierte Domain-Name Ihrer Website ohne http oder https sein. Das *. Wildcard wird alle Subdomains übereinstimmen."
+msgstr "Dies muss der vollständig qualifizierte Domain-Name Ihrer Website ohne http oder https sein. Das *. Wildcard passt alle Subdomains an."
 
 msgid "Email contact address"
 msgstr "E-Mail-Kontaktadresse"
@@ -6844,6 +6841,9 @@ msgstr "Wenn Sie dies noch nicht getan haben, können Sie einen Druckerserver zu
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Der unten gezeigte Link zeigt alle verfügbaren Server an. Wählen Sie den Server aus, dem Sie das Druckermodul hinzufügen möchten, indem Sie auf die Schaltfläche zum Hinzufügen einer Rolle klicken."
+
+msgid "Show Servers"
+msgstr "Zeige Server"
 
 msgid "Control Printers"
 msgstr "Steuerungsdrucker"
@@ -6972,7 +6972,7 @@ msgid "By default all E-Mail clients have to authenticate to be able to send E-M
 msgstr "Standardmäßig müssen sich alle E-Mail-Clients authentifizieren, um E-Mails versenden zu können."
 
 msgid "Here you can allow TCPIP addresses that you want to be able to send E-Mail without having to authenticate."
-msgstr "Hier können Sie TCPIP-Adressen zulassen, die E-Mails versenden sollen, ohne sich authentifizieren zu müssen."
+msgstr "Hier können Sie TCPIP-Adressen zulassen, die E-Mails senden sollen, ohne sich authentifizieren zu müssen."
 
 msgid "Choose the server that you want to view the disk usage on."
 msgstr "Wählen Sie den Server aus, auf dem Sie die Datenträgerverwendung anzeigen möchten."
@@ -7230,7 +7230,7 @@ msgid "Radio Server"
 msgstr "Radio Server"
 
 msgid "This will set up the server to act as an internet radio server using icecast."
-msgstr "Dadurch wird der Server eingerichtet, um mit Icecast als Internet-Radioserver zu fungieren."
+msgstr "Dadurch wird der Server so eingerichtet, dass er mit Icecast als Internet-Radioserver fungiert."
 
 msgid "Squid Proxy Server"
 msgstr "Squid Proxy Server"
@@ -7416,7 +7416,7 @@ msgid "Karoshi Linux Clients"
 msgstr "Karoshi Linux Clients"
 
 msgid "Karoshi linux clients can be joined to the domain using the icons provided on the desktop for the local administrator user account on the linux client."
-msgstr "Karoshi-Linux-Clients können der Domäne über die Symbole auf dem Desktop für das lokale Administrator-Benutzerkonto auf dem Linux-Client hinzugefügt werden."
+msgstr "Karoshi-Linux-Clients können der Domäne über die Symbole hinzugefügt werden, die auf dem Desktop für das Benutzerkonto des lokalen Administrators auf dem Linux-Client bereitgestellt werden."
 
 msgid "You have 60 seconds to save this archive before it is deleted from the server."
 msgstr "Sie haben 60 Sekunden Zeit, um dieses Archiv zu speichern, bevor es vom Server gelöscht wird."
@@ -7433,8 +7433,17 @@ msgstr "Planen Sie einen Job für diesen Server."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Vorname, Nachname, Matrikelnummer oder Mitarbeitercode - optional, Benutzername - optional, primäre Gruppe - optional, sekundäre Gruppen durch Doppelpunkte getrennt - optional, Passwort bei der ersten Anmeldung ändern - optional (y / n), Passwort - optional"
 
-msgid "Import Enrollment Numbers"
-msgstr "Immatrikulationsnummern importieren"
+msgid "CSV file format without the first row as headers"
+msgstr "CSV-Dateiformat ohne die erste Zeile als Header"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Vorname, Nachname, Matrikelnummer oder Mitarbeitercode - optional, Benutzername - optional, primäre Gruppe - optional, sekundäre Gruppen durch Doppelpunkte getrennt - optional, Passwort bei der ersten Anmeldung ändern - optional (j / n), Zimmernummer - optional, Telefon- Nummer - optional, Faxnummer - optional, Handynummer - optional, Passwort - optional"
+
+msgid "CSV file format with the first row as headers"
+msgstr "CSV-Dateiformat mit der ersten Zeile als Header"
+
+msgid "Possible column headers are"
+msgstr "Mögliche Spaltenüberschriften sind"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Dadurch wird ein Radius-Server für Ihr Netzwerk eingerichtet, der zum Einrichten von Wireless Access Points mit WPA2 Enterprise verwendet werden kann."
@@ -7949,7 +7958,7 @@ msgstr "Hinzufügen des Mitarbeiternamens"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Geben Sie die Benutzernamen aller Mitarbeiter ein, die nicht auf den Bereich Personal der Webverwaltung zugreifen möchten."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Eingeschränktes Personal"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -9198,7 +9207,7 @@ msgid "Bad Password Count"
 msgstr "Ungültige Passwortanzahl"
 
 msgid "The number of incorrect password attempts that have occured for this user over the time period set on the default user settings page."
-msgstr "Die Anzahl der falschen Kennwortversuche, die für diesen Benutzer über den auf der Standardbenutzereinstellungenseite festgelegten Zeitraum aufgetreten sind."
+msgstr "Die Anzahl der falschen Kennwortversuche, die für diesen Benutzer über den auf der Seite mit den Standardbenutzereinstellungen festgelegten Zeitraum aufgetreten sind."
 
 msgid "Lockout Time"
 msgstr "Sperrzeit"
@@ -9217,18 +9226,6 @@ msgstr "Vorname"
 
 msgid "Display Name"
 msgstr "Anzeigename"
-
-msgid "Room Number"
-msgstr "Zimmernummer"
-
-msgid "Telephone Number"
-msgstr "Telefonnummer"
-
-msgid "Fax Number"
-msgstr "Faxnummer"
-
-msgid "Mobile Number"
-msgstr "Handynummer"
 
 msgid "E-Mail address"
 msgstr "E-Mail-Addresse"
@@ -9471,7 +9468,7 @@ msgid "network settings for this server show that it should not be in the same z
 msgstr "Netzwerkeinstellungen für diesen Server zeigen, dass es nicht in der gleichen Zone wie der Hauptserver sein sollte."
 
 msgid "Network settings for this server show that it should not be in the same zone as the main server."
-msgstr "Netzwerkeinstellungen für diesen Server zeigen, dass es sich nicht in derselben Zone wie der Hauptserver befinden sollte."
+msgstr "Netzwerkeinstellungen für diesen Server zeigen, dass es nicht in derselben Zone wie der Hauptserver sein sollte."
 
 msgid "network settings for this server show that it should be in the same zone as the main server."
 msgstr "Netzwerkeinstellungen für diesen Server zeigen, dass es in der gleichen Zone wie der Hauptserver sein sollte."
@@ -9633,7 +9630,7 @@ msgid "By default acl permissions are set on the network share to allow the sele
 msgstr "Standardmäßig sind acl-Berechtigungen für die Netzwerkfreigabe festgelegt, damit die ausgewählten Benutzer auf die Freigabe zugreifen können."
 
 msgid "If you do not want any permissions changed or you want to set them yourself then deselect this option."
-msgstr "Wenn Sie keine Berechtigungen ändern möchten oder sie selbst festlegen möchten, deaktivieren Sie diese Option."
+msgstr "Wenn Sie nicht möchten, dass Berechtigungen geändert werden oder Sie sie selbst festlegen möchten, deaktivieren Sie diese Option."
 
 msgid "Full Audit Logs"
 msgstr "Vollständige Audit-Protokolle"
@@ -10616,6 +10613,9 @@ msgstr "Kein Zugang"
 msgid "Change Status"
 msgstr "Status ändern"
 
+msgid "Change Student Password"
+msgstr "Ändern Sie das Schülerpasswort"
+
 msgid "Internet Logs"
 msgstr "Internetprotokolle"
 
@@ -10738,9 +10738,6 @@ msgstr "Laden Sie Bilder Ihrer Benutzer aus einer archivierten Datei hoch."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importieren Sie Registrierungsnummern oder Mitarbeitercodes aus einer CSV-Datei."
-
-msgid "Set User Passwords"
-msgstr "Legen Sie Benutzerpasswörter fest"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Legen Sie Benutzerkennwörter aus einer CSV-Datei fest."
@@ -11111,6 +11108,9 @@ msgstr "Konfigurieren Sie die Savapage."
 msgid "View assigned printers."
 msgstr "Gewünschte Drucker anzeigen."
 
+msgid "View the Airprint status."
+msgstr "Zeigen Sie den Airprint-Status an."
+
 msgid "Generate Windows printer drivers."
 msgstr "Windows-Druckertreiber erstellen"
 
@@ -11375,6 +11375,9 @@ msgstr "Gruppe hinzufügen"
 msgid "Creating home folders"
 msgstr "Hausordner erstellen"
 
+msgid "Creating"
+msgstr "Erstellen"
+
 msgid "Copying in logon files"
 msgstr "Anmeldedateien kopieren"
 
@@ -11559,7 +11562,7 @@ msgid "You have chosen to join an existing windows domain."
 msgstr "Sie haben sich entschieden, einer bestehenden Windows-Domäne beizutreten."
 
 msgid "This will create sub containers in OU=People and additional groups."
-msgstr "Dadurch werden Subcontainer in OU = Personen und zusätzliche Gruppen erstellt."
+msgstr "Dadurch werden Subcontainer in OU = Personen und zusätzlichen Gruppen erstellt."
 
 msgid "Cancel this installation of you are not happy with this choice."
 msgstr "Abbrechen dieser Installation von Ihnen sind nicht glücklich mit dieser Wahl."

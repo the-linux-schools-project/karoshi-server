@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Xibo has been installed and can be accessed from"
 
 msgid "Please login and change this password immediately."
 msgstr "Please login and change this password immediately."
-
-msgid "Setup Airprint"
-msgstr "Setup Airprint"
-
-msgid "Updating repositories"
-msgstr "Updating repositories"
-
-msgid "Installing Avahi Daemon"
-msgstr "Installing Avahi Daemon"
-
-msgid "Installing python-cups"
-msgstr "Installing python-cups"
 
 msgid "The main server cannot be contacted."
 msgstr "The main server cannot be contacted."
@@ -1511,11 +1499,11 @@ msgstr "Add Server"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 
-msgid "Show Servers"
-msgstr "Show Servers"
+msgid "View Servers"
+msgstr "View Servers"
 
-msgid "Show the servers and roles."
-msgstr "Show the servers and roles."
+msgid "View the servers and roles."
+msgstr "View the servers and roles."
 
 msgid "Server name"
 msgstr "Server name"
@@ -1624,6 +1612,36 @@ msgstr "Sets the default settings for user accounts."
 
 msgid "Upload User Image"
 msgstr "Upload User Image"
+
+msgid "Import User Image"
+msgstr "Import User Image"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "This allows you to upload user images that can be used to identify your users."
+
+msgid "Bulk User Creation"
+msgstr "Bulk User Creation"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Create user accounts from a CSV file."
+
+msgid "View New Passwords"
+msgstr "View New Passwords"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "View the passwords set for newly created accounts."
+
+msgid "Import Enrollment Numbers"
+msgstr "Import Enrollment Numbers"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Import enrollment numbers for your user accounts."
+
+msgid "Set User Passwords"
+msgstr "Set User Passwords"
+
+msgid "Set User Passwords."
+msgstr "Set User Passwords."
 
 msgid "User Image or compressed file"
 msgstr "User Image or compressed file"
@@ -2111,17 +2129,14 @@ msgstr "The CSV file format is"
 msgid "username, enrollment number or staff code"
 msgstr "username, enrollment number or staff code"
 
-msgid "Bulk User Creation"
-msgstr "Bulk User Creation"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Create user accounts from a CSV file."
-
 msgid "Import enrollment numbers"
 msgstr "Import enrollment numbers"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Import enrollment numbers for your user accounts."
+msgid "Import User Images"
+msgstr "Import User Images"
+
+msgid "Import user images for your user accounts."
+msgstr "Import user images for your user accounts."
 
 msgid "View the new passwords for a group of users."
 msgstr "View the new passwords for a group of users."
@@ -3545,9 +3560,6 @@ msgstr "Log type"
 msgid "Choose the log type that you would like to view."
 msgstr "Choose the log type that you would like to view."
 
-msgid "View Servers"
-msgstr "View Servers"
-
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "No Karoshi Servers have been set up with ssh."
 
@@ -3698,11 +3710,20 @@ msgstr "Edit PPD"
 msgid "Edit a printer driver."
 msgstr "Edit a printer driver."
 
+msgid "Windows Drivers"
+msgstr "Windows Drivers"
+
 msgid "Windows printer drivers."
 msgstr "Windows printer drivers."
 
-msgid "Windows Drivers"
-msgstr "Windows Drivers"
+msgid "AirPrint Controls"
+msgstr "AirPrint Controls"
+
+msgid "AirPrint controls."
+msgstr "AirPrint controls."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Configure printing with Savapage."
@@ -4106,12 +4127,6 @@ msgstr "The disk usage logs show the overall usage for each partition on your se
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Import Enrollment Numbers or staff codes"
 
-msgid "View New Passwords"
-msgstr "View New Passwords"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "View the passwords set for newly created accounts."
-
 msgid "CSV file"
 msgstr "CSV file"
 
@@ -4375,6 +4390,15 @@ msgstr "The UPS port cannot be blank."
 
 msgid "Add a UPS"
 msgstr "Add a UPS"
+
+msgid "Airprint"
+msgstr "Airprint"
+
+msgid "Manage AirPrint"
+msgstr "Manage AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Click on the icons to control Airprint availability."
 
 msgid "User Information"
 msgstr "User Information"
@@ -5543,6 +5567,9 @@ msgstr "Change Theme"
 msgid "Current theme"
 msgstr "Current theme"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Choose the username style and primary group for the users you want to create."
+
 msgid "Select the following options to create your users"
 msgstr "Select the following options to create your users"
 
@@ -5552,29 +5579,29 @@ msgstr "This server is part of a federated system. Users must be created on the 
 msgid "Style"
 msgstr "Style"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Enrollment number as username"
@@ -6068,41 +6095,17 @@ msgstr "Java and Libre Office will automatically be installed as part of this se
 msgid "Add new users to your system."
 msgstr "Add new users to your system."
 
-msgid "Enrolment number / staff code"
-msgstr "Enrolment number / staff code"
+msgid "Advanced"
+msgstr "Advanced"
 
-msgid "Primary group"
-msgstr "Primary group"
+msgid "Show advanced fields."
+msgstr "Show advanced fields."
 
-msgid "Username style"
-msgstr "Username style"
+msgid "Basic"
+msgstr "Basic"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Enrollment number"
+msgid "Hide advanced fields."
+msgstr "Hide advanced fields."
 
 msgid "Enter the firstname for this user."
 msgstr "Enter the firstname for this user."
@@ -6113,8 +6116,38 @@ msgstr "Enter the surname for this user."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Enter a password and confirm it in the box below."
 
+msgid "User code"
+msgstr "User code"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Student enrolment number or staff code. This field can be left blank."
+
+msgid "Room Number"
+msgstr "Room Number"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "The room number for the user. This field can be left blank."
+
+msgid "Telephone Number"
+msgstr "Telephone Number"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "The telephone number for the user. This field can be left blank."
+
+msgid "Fax Number"
+msgstr "Fax Number"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "The fax number for the user. This field can be left blank."
+
+msgid "Mobile Number"
+msgstr "Mobile Number"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "The mobile number for the user. This field can be left blank."
+
+msgid "Primary group"
+msgstr "Primary group"
 
 msgid "The groups give different levels of access."
 msgstr "The groups give different levels of access."
@@ -6124,6 +6157,9 @@ msgstr "The itadmin group is for the network administrator."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
+
+msgid "Username style"
+msgstr "Username style"
 
 msgid "Choose the username style you require."
 msgstr "Choose the username style you require."
@@ -6521,45 +6557,6 @@ msgstr "You have not chosen an action."
 msgid "You have not chosen an asset."
 msgstr "You have not chosen an asset."
 
-msgid "The user style must not be blank."
-msgstr "The user style must not be blank."
-
-msgid "The primary group must not be blank."
-msgstr "The primary group must not be blank."
-
-msgid "Blank forename"
-msgstr "Blank forename"
-
-msgid "Blank surname"
-msgstr "Blank surname"
-
-msgid "Blank enrolment number"
-msgstr "Blank enrolment number"
-
-msgid "Blank username"
-msgstr "Blank username"
-
-msgid "The username is greater than 20 characters"
-msgstr "The username is greater than 20 characters"
-
-msgid "Blank Primary Group"
-msgstr "Blank Primary Group"
-
-msgid "Failed"
-msgstr "Failed"
-
-msgid "CSV file error."
-msgstr "CSV file error."
-
-msgid "This username is already in use."
-msgstr "This username is already in use."
-
-msgid "Creating"
-msgstr "Creating"
-
-msgid "Bulk user creation completed."
-msgstr "Bulk user creation completed."
-
 msgid "View Event Logs"
 msgstr "View Event Logs"
 
@@ -6844,6 +6841,9 @@ msgstr "If you have not already done so you may want to add a printer server to 
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
+
+msgid "Show Servers"
+msgstr "Show Servers"
 
 msgid "Control Printers"
 msgstr "Control Printers"
@@ -7433,8 +7433,17 @@ msgstr "Schedule a job for this server."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 
-msgid "Import Enrollment Numbers"
-msgstr "Import Enrollment Numbers"
+msgid "CSV file format without the first row as headers"
+msgstr "CSV file format without the first row as headers"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+
+msgid "CSV file format with the first row as headers"
+msgstr "CSV file format with the first row as headers"
+
+msgid "Possible column headers are"
+msgstr "Possible column headers are"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
@@ -7949,8 +7958,8 @@ msgstr "Add staff name"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 
-msgid "Retricted Staff"
-msgstr "Retricted Staff"
+msgid "Restricted Staff"
+msgstr "Restricted Staff"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
 msgstr "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -9217,18 +9226,6 @@ msgstr "Given Name"
 
 msgid "Display Name"
 msgstr "Display Name"
-
-msgid "Room Number"
-msgstr "Room Number"
-
-msgid "Telephone Number"
-msgstr "Telephone Number"
-
-msgid "Fax Number"
-msgstr "Fax Number"
-
-msgid "Mobile Number"
-msgstr "Mobile Number"
 
 msgid "E-Mail address"
 msgstr "E-Mail address"
@@ -10616,6 +10613,9 @@ msgstr "No access"
 msgid "Change Status"
 msgstr "Change Status"
 
+msgid "Change Student Password"
+msgstr "Change Student Password"
+
 msgid "Internet Logs"
 msgstr "Internet Logs"
 
@@ -10738,9 +10738,6 @@ msgstr "Upload images of your users from an archived file."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Import enrollment numbers or staff codes from a CSV file."
-
-msgid "Set User Passwords"
-msgstr "Set User Passwords"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Set user's passwords from a CSV file."
@@ -11111,6 +11108,9 @@ msgstr "Configure Savapage."
 msgid "View assigned printers."
 msgstr "View assigned printers."
 
+msgid "View the Airprint status."
+msgstr "View the Airprint status."
+
 msgid "Generate Windows printer drivers."
 msgstr "Generate Windows printer drivers."
 
@@ -11374,6 +11374,9 @@ msgstr "Adding group"
 
 msgid "Creating home folders"
 msgstr "Creating home folders"
+
+msgid "Creating"
+msgstr "Creating"
 
 msgid "Copying in logon files"
 msgstr "Copying in logon files"

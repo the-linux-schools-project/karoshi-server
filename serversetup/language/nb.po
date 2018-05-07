@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Xibo er installert og kan nås fra"
 
 msgid "Please login and change this password immediately."
 msgstr "Vennligst logg inn og endre dette passordet umiddelbart."
-
-msgid "Setup Airprint"
-msgstr "Oppsett Lufttrykk"
-
-msgid "Updating repositories"
-msgstr "Oppdaterer lagre"
-
-msgid "Installing Avahi Daemon"
-msgstr "Installere Avahi Daemon"
-
-msgid "Installing python-cups"
-msgstr "Installere python-kopper"
 
 msgid "The main server cannot be contacted."
 msgstr "Hovedserveren kan ikke kontaktes."
@@ -1511,11 +1499,11 @@ msgstr "Legg til server"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Oppsett en ssh-tilkobling til en Karoshi-server slik at den kan styres av webadministratoren."
 
-msgid "Show Servers"
-msgstr "Vis servere"
+msgid "View Servers"
+msgstr "Se servere"
 
-msgid "Show the servers and roles."
-msgstr "Vis serverne og rollene."
+msgid "View the servers and roles."
+msgstr "Se serverne og rollene."
 
 msgid "Server name"
 msgstr "Server navn"
@@ -1624,6 +1612,36 @@ msgstr "Angir standardinnstillingene for brukerkontoer."
 
 msgid "Upload User Image"
 msgstr "Last opp brukerbilde"
+
+msgid "Import User Image"
+msgstr "Importer brukerbilde"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Dette lar deg laste opp brukerbilder som kan brukes til å identifisere brukerne."
+
+msgid "Bulk User Creation"
+msgstr "Bulk User Creation"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Opprett brukerkontoer fra en CSV-fil."
+
+msgid "View New Passwords"
+msgstr "Vis nye passord"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Se passordene som er angitt for nyopprettede kontoer."
+
+msgid "Import Enrollment Numbers"
+msgstr "Import innskrivningsnumre"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Import innmeldingsnumre for brukerkontoene dine."
+
+msgid "Set User Passwords"
+msgstr "Angi brukerpassord"
+
+msgid "Set User Passwords."
+msgstr "Angi brukerpassord."
 
 msgid "User Image or compressed file"
 msgstr "Brukerbilde eller komprimert fil"
@@ -2111,17 +2129,14 @@ msgstr "CSV-filformatet er"
 msgid "username, enrollment number or staff code"
 msgstr "brukernavn, påmeldingsnummer eller personalkode"
 
-msgid "Bulk User Creation"
-msgstr "Bulk User Creation"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Opprett brukerkontoer fra en CSV-fil."
-
 msgid "Import enrollment numbers"
 msgstr "Import innmeldingsnumre"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Import innmeldingsnumre for brukerkontoene dine."
+msgid "Import User Images"
+msgstr "Importer brukerbilder"
+
+msgid "Import user images for your user accounts."
+msgstr "Importer brukerbilder for brukerkontoene dine."
 
 msgid "View the new passwords for a group of users."
 msgstr "Se de nye passordene for en gruppe brukere."
@@ -3545,9 +3560,6 @@ msgstr "Loggtype"
 msgid "Choose the log type that you would like to view."
 msgstr "Velg loggtypen du vil vise."
 
-msgid "View Servers"
-msgstr "Se servere"
-
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Ingen Karoshi-servere er satt opp med ssh."
 
@@ -3698,11 +3710,20 @@ msgstr "Rediger PPD"
 msgid "Edit a printer driver."
 msgstr "Rediger en skriverdriver."
 
+msgid "Windows Drivers"
+msgstr "Windows-drivere"
+
 msgid "Windows printer drivers."
 msgstr "Windows skriverdrivere."
 
-msgid "Windows Drivers"
-msgstr "Windows-drivere"
+msgid "AirPrint Controls"
+msgstr "AirPrint kontroller"
+
+msgid "AirPrint controls."
+msgstr "AirPrint kontroller."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Konfigurer utskrift med Savapage."
@@ -4106,12 +4127,6 @@ msgstr "Diskbrukerloggene viser den totale bruken for hver partisjon på servere
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Importer innskrivningsnumre eller personalkoder"
 
-msgid "View New Passwords"
-msgstr "Vis nye passord"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Se passordene som er angitt for nyopprettede kontoer."
-
 msgid "CSV file"
 msgstr "CSV-fil"
 
@@ -4375,6 +4390,15 @@ msgstr "UPS-porten kan ikke være tom."
 
 msgid "Add a UPS"
 msgstr "Legg til en UPS"
+
+msgid "Airprint"
+msgstr "AirPrint"
+
+msgid "Manage AirPrint"
+msgstr "Administrer AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Klikk på ikonene for å kontrollere tilgjengelighet for Airprint."
 
 msgid "User Information"
 msgstr "brukerinformasjon"
@@ -5280,7 +5304,7 @@ msgid "The password for each exam account will be changed to a different random 
 msgstr "Passordet for hver eksamenskonto blir endret til et annet tilfeldig passord."
 
 msgid "Enter in any exam accounts that you do not want to have the passwords reset for separated by spaces."
-msgstr "Skriv inn noen eksamenskontoer som du ikke vil ha passordene tilbakestilt for å skille mellom mellomrom."
+msgstr "Skriv inn eventuelle eksamenskontoer som du ikke vil ha passordene tilbakestilt for å skille mellom mellomrom."
 
 msgid "Top Sites"
 msgstr "Toppsider"
@@ -5475,7 +5499,7 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "Skriv inn adressen til e-postserveren du vil sende e-posten til."
 
 msgid "Banned E-mail Domains"
-msgstr "Bannrede e-postdomener"
+msgstr "Bannede e-postdomener"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr "Eventuelle e-postdomener som vises i listen nedenfor, er enten tillatt og har ingen DNS-sjekker plassert på dem eller forbudt fra å sende e-post til serveren din."
@@ -5543,6 +5567,9 @@ msgstr "Endre tema"
 msgid "Current theme"
 msgstr "Nåværende tema"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Velg brukernavnet og primærgruppen for brukerne du vil opprette."
+
 msgid "Select the following options to create your users"
 msgstr "Velg følgende alternativer for å opprette brukerne"
 
@@ -5552,29 +5579,29 @@ msgstr "Denne serveren er en del av et føderalt system. Brukere må opprettes p
 msgid "Style"
 msgstr "Stil"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "Arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Registreringsnummer som brukernavn"
@@ -6068,41 +6095,17 @@ msgstr "Java og Libre Office vil automatisk bli installert som en del av dette o
 msgid "Add new users to your system."
 msgstr "Legg til nye brukere på systemet ditt."
 
-msgid "Enrolment number / staff code"
-msgstr "Påmeldingsnummer / personalkode"
+msgid "Advanced"
+msgstr "Avansert"
 
-msgid "Primary group"
-msgstr "Primærgruppe"
+msgid "Show advanced fields."
+msgstr "Vis avanserte felt."
 
-msgid "Username style"
-msgstr "Brukernavn stil"
+msgid "Basic"
+msgstr "grunn~~POS=TRUNC"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Registreringsnummer"
+msgid "Hide advanced fields."
+msgstr "Skjul avanserte felt."
 
 msgid "Enter the firstname for this user."
 msgstr "Skriv inn fornavn for denne brukeren."
@@ -6113,8 +6116,38 @@ msgstr "Skriv inn etternavnet for denne brukeren."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Skriv inn et passord og bekreft det i boksen under."
 
+msgid "User code"
+msgstr "Brukerkode"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Studentregistreringsnummer eller personalkode. Dette feltet kan stå tomt."
+
+msgid "Room Number"
+msgstr "Romnummer"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Romnummeret til brukeren. Dette feltet kan stå tomt."
+
+msgid "Telephone Number"
+msgstr "Telefonnummer"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Telefonnummeret til brukeren. Dette feltet kan stå tomt."
+
+msgid "Fax Number"
+msgstr "Faksnummer"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Faksnummeret til brukeren. Dette feltet kan stå tomt."
+
+msgid "Mobile Number"
+msgstr "Mobilnummer"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Mobilnummeret til brukeren. Dette feltet kan stå tomt."
+
+msgid "Primary group"
+msgstr "Primærgruppe"
 
 msgid "The groups give different levels of access."
 msgstr "Gruppene gir forskjellige nivåer av tilgang."
@@ -6124,6 +6157,9 @@ msgstr "Itadmin-gruppen er for nettverksadministratoren."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Bare medlemmer av itadmin og de tekniske gruppene får administrator tilgang til Windows-datamaskiner som er sluttet til domenet."
+
+msgid "Username style"
+msgstr "Brukernavn stil"
 
 msgid "Choose the username style you require."
 msgstr "Velg brukernavnet stilen du trenger."
@@ -6521,45 +6557,6 @@ msgstr "Du har ikke valgt en handling."
 msgid "You have not chosen an asset."
 msgstr "Du har ikke valgt en eiendel."
 
-msgid "The user style must not be blank."
-msgstr "Brukerstilen må ikke være tom."
-
-msgid "The primary group must not be blank."
-msgstr "Den primære gruppen må ikke være tom."
-
-msgid "Blank forename"
-msgstr "Blank fornavn"
-
-msgid "Blank surname"
-msgstr "Blank etternavn"
-
-msgid "Blank enrolment number"
-msgstr "Tomt påmeldingsnummer"
-
-msgid "Blank username"
-msgstr "Blank brukernavn"
-
-msgid "The username is greater than 20 characters"
-msgstr "Brukernavnet er større enn 20 tegn"
-
-msgid "Blank Primary Group"
-msgstr "Blank Primary Group"
-
-msgid "Failed"
-msgstr "mislyktes"
-
-msgid "CSV file error."
-msgstr "CSV-filfeil."
-
-msgid "This username is already in use."
-msgstr "Dette brukernavnet er allerede i bruk."
-
-msgid "Creating"
-msgstr "Opprette"
-
-msgid "Bulk user creation completed."
-msgstr "Bulk brukeropprettelse fullført."
-
 msgid "View Event Logs"
 msgstr "Se hendelseslogger"
 
@@ -6642,7 +6639,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Bannede e-postdomener"
+msgstr "Bannrede e-postdomener"
 
 msgid "Whitelists"
 msgstr "hvitelister"
@@ -6844,6 +6841,9 @@ msgstr "Hvis du ikke allerede har gjort det, vil du kanskje legge til en skriver
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Viseserverene koblingen nedenfor viser alle tilgjengelige servere. Velg serveren du vil legge til skrivermodulen til, ved å klikke på add-role-knappen."
+
+msgid "Show Servers"
+msgstr "Vis servere"
 
 msgid "Control Printers"
 msgstr "Kontroll skrivere"
@@ -7203,7 +7203,7 @@ msgid "This will setup a reverse proxy server that allows incoming web traffic t
 msgstr "Dette vil sette opp en omvendt proxy-server som gjør det mulig å omdirigere innkommende webtrafikk til andre servere på nettverket ditt."
 
 msgid "The redirect is based on the trailing slash after the end of the domain of your site."
-msgstr "Viderekoblingen er basert på den etterfølgende slashen etter slutten av domenet til nettstedet ditt."
+msgstr "Viderekoblingen er basert på den etterfølgende skråstreken etter slutten av domenet til nettstedet ditt."
 
 msgid "This module cannot be applied to a server running modules that use the apache web server."
 msgstr "Denne modulen kan ikke brukes på en server som kjører moduler som bruker apache webserveren."
@@ -7433,8 +7433,17 @@ msgstr "Planlegg en jobb for denne serveren."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Fornavn, etternavn, påmeldingsnummer eller personalkode - valgfritt, brukernavn - valgfritt, hovedgruppe - valgfritt, sekundære grupper separert av kolonner - valgfritt, endre passord ved første pålogging - valgfritt (y / n), passord - valgfritt"
 
-msgid "Import Enrollment Numbers"
-msgstr "Import innskrivningsnumre"
+msgid "CSV file format without the first row as headers"
+msgstr "CSV-filformat uten den første raden som overskrifter"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Fornavn, etternavn, påmeldingsnummer eller personalkode - valgfritt, brukernavn - valgfritt, hovedgruppe - valgfritt, sekundære grupper separert av kolonner - valgfritt, endre passord ved første pålogging - valgfritt (y / n), romnummer - valgfritt, telefon- nummer - valgfritt, faksnummer - valgfritt, mobilnummer - valgfritt, passord - valgfritt"
+
+msgid "CSV file format with the first row as headers"
+msgstr "CSV filformat med den første raden som overskrifter"
+
+msgid "Possible column headers are"
+msgstr "Mulige kolonneoverskrifter er"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Dette vil sette opp en radiusserver for nettverket ditt som kan brukes til å konfigurere trådløse tilgangspunkter ved hjelp av WPA2-bedrift."
@@ -7857,7 +7866,7 @@ msgid "Moodle update guide which this feature automates."
 msgstr "Moodle oppdateringsveiledning som denne funksjonen automatiserer."
 
 msgid "IMPORTANT - Make sure that you have a working backup of the following areas on your moodle server before carrying out an upgrade"
-msgstr "VIKTIG - Kontroller at du har en sikker sikkerhetskopiering av følgende områder på moodle-serveren din før du utfører en oppgradering"
+msgstr "VIKTIG - Kontroller at du har en sikker sikkerhetskopi av følgende områder på moodle-serveren din før du utfører en oppgradering"
 
 msgid "Choose the moodle archive to upgrade from. The archive MUST be a .tgz."
 msgstr "Velg moodle arkivet for å oppgradere fra. Arkivet må være en .tgz."
@@ -7949,7 +7958,7 @@ msgstr "Legg til navn på ansatte"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Skriv inn brukernavnene til noen medarbeiderne som du ikke vil ha tilgang til i personalseksjonen i webadministrasjonen."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Begrenset stab"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -9039,7 +9048,7 @@ msgid "Ports"
 msgstr "porter"
 
 msgid "Enter in the ports that you want to allow or deny separated by commas."
-msgstr "Skriv inn i portene som du vil tillate eller nekte adskilt med kommaer."
+msgstr "Skriv inn i portene du vil tillate eller nekte adskilt med kommaer."
 
 msgid "Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."
 msgstr "Skriv inn en TCPIP-adresse du vil tillate eller nekte. La dette være tomt hvis du vil at regelen skal gjelde for alle enheter."
@@ -9218,18 +9227,6 @@ msgstr "Fornavn"
 msgid "Display Name"
 msgstr "Visningsnavn"
 
-msgid "Room Number"
-msgstr "Romnummer"
-
-msgid "Telephone Number"
-msgstr "Telefonnummer"
-
-msgid "Fax Number"
-msgstr "Faksnummer"
-
-msgid "Mobile Number"
-msgstr "Mobilnummer"
-
 msgid "E-Mail address"
 msgstr "Epostadresse"
 
@@ -9264,7 +9261,7 @@ msgid "Select the drives that you want to be added to the raid array."
 msgstr "Velg de stasjonene du vil bli lagt til i raid-arrayen."
 
 msgid "Drives will only be shown if they are currently not mounted and are not already being used in a raid."
-msgstr "Drev vil bare bli vist hvis de ikke er montert for øyeblikket og ikke allerede brukes i et raid."
+msgstr "Disker vises kun hvis de ikke er montert for øyeblikket og ikke allerede brukes i et raid."
 
 msgid "Spare drives can be added after the raid has been created."
 msgstr "Spare-stasjoner kan legges til etter at raidet er opprettet."
@@ -9498,7 +9495,7 @@ msgid "Usernames"
 msgstr "brukernavn"
 
 msgid "Enter in the usernames that you want to ban from the internet separated by spaces."
-msgstr "Skriv inn brukernavnene du vil forbyte fra internett, adskilt av mellomrom."
+msgstr "Skriv inn brukernavnene du vil forbyte fra internett, skilt av mellomrom."
 
 msgid "Ban duration"
 msgstr "Forbudsperiode"
@@ -9579,7 +9576,7 @@ msgid "Change password on first login"
 msgstr "Endre passord ved første innlogging"
 
 msgid "This forces a user to change their password the first time they log in."
-msgstr "Dette tvinger en bruker til å endre passordet første gangen de logger inn."
+msgstr "Dette tvinger en bruker til å endre passordet sitt første gang de logger inn."
 
 msgid "Password Expiry"
 msgstr "Passordets utløp"
@@ -10530,7 +10527,7 @@ msgid "Removing this disk from the raid."
 msgstr "Fjerner denne disken fra raidet."
 
 msgid "This drive cannot be removed because there will not be enough drives left in the raid array."
-msgstr "Denne stasjonen kan ikke fjernes fordi det ikke er nok stasjoner igjen i raid-arrayen."
+msgstr "Denne stasjonen kan ikke fjernes fordi det ikke er nok stasjoner igjen i raid-arrayet."
 
 msgid "Adding this disk to the raid."
 msgstr "Legge til denne disken i raid."
@@ -10615,6 +10612,9 @@ msgstr "Ingen adgang"
 
 msgid "Change Status"
 msgstr "Endre status"
+
+msgid "Change Student Password"
+msgstr "Endre studentpassord"
 
 msgid "Internet Logs"
 msgstr "Internett-logger"
@@ -10738,9 +10738,6 @@ msgstr "Last opp bilder av brukerne fra en arkivert fil."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importer innmelding numre eller stab koder fra en CSV-fil."
-
-msgid "Set User Passwords"
-msgstr "Angi brukerpassord"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Angi brukerens passord fra en CSV-fil."
@@ -11111,6 +11108,9 @@ msgstr "Konfigurer Savapage."
 msgid "View assigned printers."
 msgstr "Se tilordnede skrivere."
 
+msgid "View the Airprint status."
+msgstr "Se Airprint-statusen."
+
 msgid "Generate Windows printer drivers."
 msgstr "Generer Windows-skriverdrivere."
 
@@ -11374,6 +11374,9 @@ msgstr "Legge til gruppe"
 
 msgid "Creating home folders"
 msgstr "Opprette hjemmemapper"
+
+msgid "Creating"
+msgstr "Opprette"
 
 msgid "Copying in logon files"
 msgstr "Kopiering i påloggingsfiler"

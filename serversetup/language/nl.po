@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,7 +159,7 @@ msgid "Provisioning openchange for mysql."
 msgstr "Provisioning openchange voor mysql."
 
 msgid "Restarting Samba4"
-msgstr "Samba4 herstarten"
+msgstr "Samba4 herstart"
 
 msgid "Starting OCSManager"
 msgstr "OCSManager starten"
@@ -283,18 +283,6 @@ msgstr "Xibo is geïnstalleerd en is toegankelijk vanaf"
 
 msgid "Please login and change this password immediately."
 msgstr "Meld u aan en wijzig dit wachtwoord onmiddellijk."
-
-msgid "Setup Airprint"
-msgstr "Luchtdruk instellen"
-
-msgid "Updating repositories"
-msgstr "Update van repositories"
-
-msgid "Installing Avahi Daemon"
-msgstr "Avahi Daemon installeren"
-
-msgid "Installing python-cups"
-msgstr "Python-cups installeren"
 
 msgid "The main server cannot be contacted."
 msgstr "Er kan geen contact worden gemaakt met de hoofdserver."
@@ -846,7 +834,7 @@ msgid "Password changed for"
 msgstr "Wachtwoord gewijzigd voor"
 
 msgid "The password was not changed for"
-msgstr "Het wachtwoord is niet veranderd voor"
+msgstr "Het wachtwoord is niet gewijzigd voor"
 
 msgid "User Menu"
 msgstr "gebruikersmenu"
@@ -1511,11 +1499,11 @@ msgstr "Server toevoegen"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Stel een ssh-verbinding in met een Karoshi-server zodat deze kan worden beheerd door het webbeheer."
 
-msgid "Show Servers"
-msgstr "Servers weergeven"
+msgid "View Servers"
+msgstr "Servers bekijken"
 
-msgid "Show the servers and roles."
-msgstr "Toon de servers en rollen."
+msgid "View the servers and roles."
+msgstr "Bekijk de servers en rollen."
 
 msgid "Server name"
 msgstr "Server naam"
@@ -1533,7 +1521,7 @@ msgid "Root Password"
 msgstr "Root wachtwoord"
 
 msgid "Enter the root password for the server you are setting up ssh for and confirm it in the box below."
-msgstr "Voer het root-wachtwoord in voor de server waarvoor u ssh instelt en bevestig dit in het onderstaande vak."
+msgstr "Voer het root-wachtwoord in voor de server waarop u ssh instelt en bevestig dit in het onderstaande vak."
 
 msgid "Confirm Root Password"
 msgstr "Bevestig root-wachtwoord"
@@ -1624,6 +1612,36 @@ msgstr "Stelt de standaardinstellingen in voor gebruikersaccounts."
 
 msgid "Upload User Image"
 msgstr "Upload gebruikersafbeelding"
+
+msgid "Import User Image"
+msgstr "Importeer gebruikersafbeelding"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Hiermee kunt u gebruikersafbeeldingen uploaden die kunnen worden gebruikt om uw gebruikers te identificeren."
+
+msgid "Bulk User Creation"
+msgstr "Bulk-gebruikerscreatie"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Maak gebruikersaccounts aan vanuit een CSV-bestand."
+
+msgid "View New Passwords"
+msgstr "Bekijk nieuwe wachtwoorden"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Bekijk de wachtwoorden die zijn ingesteld voor nieuw gemaakte accounts."
+
+msgid "Import Enrollment Numbers"
+msgstr "Importeer registratienummers"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Importeer registratienummers voor uw gebruikersaccounts."
+
+msgid "Set User Passwords"
+msgstr "Stel gebruikerswachtwoorden in"
+
+msgid "Set User Passwords."
+msgstr "Stel gebruikerswachtwoorden in."
 
 msgid "User Image or compressed file"
 msgstr "Gebruikersafbeelding of gecomprimeerd bestand"
@@ -2031,7 +2049,7 @@ msgid "Wake a location"
 msgstr "Een locatie wakker maken"
 
 msgid "This will turn on all of the computers in your selected location."
-msgstr "Hiermee worden alle computers op uw geselecteerde locatie ingeschakeld."
+msgstr "Hiermee worden alle computers op de door u geselecteerde locatie ingeschakeld."
 
 msgid "The computers have to be declared in the asset register with a valid mac address."
 msgstr "De computers moeten in het activaregister worden aangegeven met een geldig mac-adres."
@@ -2111,17 +2129,14 @@ msgstr "Het CSV-bestandsformaat is"
 msgid "username, enrollment number or staff code"
 msgstr "gebruikersnaam, inschrijvingsnummer of personeelscode"
 
-msgid "Bulk User Creation"
-msgstr "Bulk-gebruikerscreatie"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Maak gebruikersaccounts aan vanuit een CSV-bestand."
-
 msgid "Import enrollment numbers"
 msgstr "Importeer registratienummer"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Importeer registratienummers voor uw gebruikersaccounts."
+msgid "Import User Images"
+msgstr "Gebruikersfoto's importeren"
+
+msgid "Import user images for your user accounts."
+msgstr "Importeer gebruikersafbeeldingen voor uw gebruikersaccounts."
 
 msgid "View the new passwords for a group of users."
 msgstr "Bekijk de nieuwe wachtwoorden voor een groep gebruikers."
@@ -2277,7 +2292,7 @@ msgid "View the whitelist."
 msgstr "Bekijk de witte lijst."
 
 msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
-msgstr "Door een witte lijst toe te voegen kunnen e-mails van het aliasadres worden ontvangen zonder dat ze op spam worden gecontroleerd."
+msgstr "Door een witte lijst toe te voegen, kunnen e-mails van het aliasadres worden ontvangen zonder dat ze op spam worden gecontroleerd."
 
 msgid "Add an entry to whitelist."
 msgstr "Voeg een item toe aan de witte lijst."
@@ -2394,7 +2409,7 @@ msgid "Archive exam accounts"
 msgstr "Archief-examenaccounts"
 
 msgid "All data will be archived from the exam accounts to an examfiles folder in the network share that you choose."
-msgstr "Alle gegevens worden gearchiveerd van de examenaccounts naar een examenmap in de netwerkshare die u kiest."
+msgstr "Alle gegevens worden gearchiveerd van de examenaccounts naar een examenbestand in de netwerkshare die u kiest."
 
 msgid "Only a member of the selected group can access this folder."
 msgstr "Alleen een lid van de geselecteerde groep heeft toegang tot deze map."
@@ -2952,7 +2967,7 @@ msgid "DNS Settings"
 msgstr "DNS-instellingen"
 
 msgid "This allows you to view, edit, and delete the local dns entries on your system."
-msgstr "Hiermee kunt u de lokale dns-vermeldingen op uw systeem bekijken, bewerken en verwijderen."
+msgstr "Hiermee kunt u de lokale dns-vermeldingen op uw systeem weergeven, bewerken en verwijderen."
 
 msgid "View DNS entries"
 msgstr "DNS-vermeldingen bekijken"
@@ -3180,7 +3195,7 @@ msgid "Enter in the mac address of the client computer or device that you want t
 msgstr "Voer het MAC-adres in van de clientcomputer of het apparaat waaraan u een statisch TCP-adres wilt geven."
 
 msgid "Enter in the tcpip address that you want the client computer or device to have."
-msgstr "Voer het TCP-adres in dat u op de clientcomputer of het apparaat wilt hebben."
+msgstr "Voer het TCP-adres in dat u wilt dat de clientcomputer of het apparaat heeft."
 
 msgid "Group Membership"
 msgstr "Groepslidmaatschap"
@@ -3545,9 +3560,6 @@ msgstr "Log type"
 msgid "Choose the log type that you would like to view."
 msgstr "Kies het logtype dat u wilt bekijken."
 
-msgid "View Servers"
-msgstr "Servers bekijken"
-
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Er zijn geen Karoshi-servers opgezet met SSH."
 
@@ -3698,11 +3710,20 @@ msgstr "Bewerk PPD"
 msgid "Edit a printer driver."
 msgstr "Bewerk een printerstuurprogramma."
 
+msgid "Windows Drivers"
+msgstr "Windows-stuurprogramma's"
+
 msgid "Windows printer drivers."
 msgstr "Windows printerstuurprogramma's."
 
-msgid "Windows Drivers"
-msgstr "Windows-stuurprogramma's"
+msgid "AirPrint Controls"
+msgstr "AirPrint-bedieningselementen"
+
+msgid "AirPrint controls."
+msgstr "AirPrint-bedieningselementen."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Configureer afdrukken met Savapage."
@@ -4106,12 +4127,6 @@ msgstr "De logboeken voor schijfgebruik tonen het algemene gebruik voor elke par
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Importeer registratienummers of personeelscodes"
 
-msgid "View New Passwords"
-msgstr "Bekijk nieuwe wachtwoorden"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Bekijk de wachtwoorden die zijn ingesteld voor nieuw gemaakte accounts."
-
 msgid "CSV file"
 msgstr "CSV-bestand"
 
@@ -4353,7 +4368,7 @@ msgid "This module is for advanced use for users that want ssh access to the mai
 msgstr "Deze module is voor geavanceerd gebruik voor gebruikers die SSH-toegang tot de hoofdserver willen."
 
 msgid "It can also be used to join this server to another Karoshi system via the federated server module so that when users are created on the master system they will also be created here."
-msgstr "Het kan ook worden gebruikt om via de federated servermodule deze server met een ander Karoshi-systeem te verbinden, zodat wanneer gebruikers op het mastersysteem worden gemaakt, deze hier ook worden gemaakt."
+msgstr "Het kan ook worden gebruikt om via de federated servermodule deze server met een ander Karoshi-systeem te verbinden, zodat wanneer gebruikers op het mastersysteem worden gemaakt, ze hier ook worden gemaakt."
 
 msgid "MAC"
 msgstr "MAC"
@@ -4375,6 +4390,15 @@ msgstr "De UPS-poort mag niet leeg zijn."
 
 msgid "Add a UPS"
 msgstr "Voeg een UPS toe"
+
+msgid "Airprint"
+msgstr "Airprint"
+
+msgid "Manage AirPrint"
+msgstr "Beheer AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Klik op de pictogrammen om de beschikbaarheid van Airprint te regelen."
 
 msgid "User Information"
 msgstr "gebruikers informatie"
@@ -4707,7 +4731,7 @@ msgid "The monitor type cannot be blank."
 msgstr "Het monitortype mag niet leeg zijn."
 
 msgid "You must fill in all of the time interval boxes if you do not want continuous monitoring."
-msgstr "U moet alle tijdsintervalvakjes invullen als u geen continue monitoring wenst."
+msgstr "U moet alle tijdsintervalvakjes invullen als u geen continue bewaking wenst."
 
 msgid "Monitor added."
 msgstr "Monitor toegevoegd."
@@ -4791,7 +4815,7 @@ msgid "Make sure that you change the windows permissions on your chosen profile 
 msgstr "Zorg ervoor dat u de Windows-machtigingen voor het door u gekozen profiel wijzigt in alle gebruikers."
 
 msgid "Select the compressed profile that you want to upload in .zip or .tar.gz format."
-msgstr "Selecteer het gecomprimeerde profiel dat u in .zip- of .tar.gz-indeling wilt uploaden."
+msgstr "Selecteer het gecomprimeerde profiel dat u wilt uploaden in .zip- of .tar.gz-indeling."
 
 msgid "Compressed profile"
 msgstr "Gecomprimeerd profiel"
@@ -4866,7 +4890,7 @@ msgid "Remove Server Role"
 msgstr "Serverrole verwijderen"
 
 msgid "The module cannot be blank."
-msgstr "De module kan niet leeg zijn."
+msgstr "De module mag niet leeg zijn."
 
 msgid "The code cannot be blank."
 msgstr "De code mag niet leeg zijn."
@@ -5322,7 +5346,7 @@ msgid "Setup Web Server"
 msgstr "Webserver instellen"
 
 msgid "This will ensure that apache and mysql are running on the server and that the correct ports are open. It will also create a mysql database of your choice to use with your website."
-msgstr "Dit zorgt ervoor dat apache en mysql op de server worden uitgevoerd en dat de juiste poorten open zijn. Het zal ook een mysql-database van uw keuze maken om te gebruiken met uw website."
+msgstr "Dit zorgt ervoor dat apache en mysql op de server worden uitgevoerd en dat de juiste poorten open zijn. Het zal ook een MySQL-database van uw keuze maken om te gebruiken met uw website."
 
 msgid "Leave the database fields blank if you do not require a database to be created."
 msgstr "Laat de databasevelden leeg als u niet wilt dat er een database wordt aangemaakt."
@@ -5543,6 +5567,9 @@ msgstr "Thema veranderen"
 msgid "Current theme"
 msgstr "Huidig ​​thema"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Kies de gebruikersnaamstijl en de primaire groep voor de gebruikers die u wilt maken."
+
 msgid "Select the following options to create your users"
 msgstr "Selecteer de volgende opties om uw gebruikers te maken"
 
@@ -5552,29 +5579,29 @@ msgstr "Deze server maakt deel uit van een federatief systeem. Gebruikers moeten
 msgid "Style"
 msgstr "Stijl"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "Arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Inschrijvingsnummer als gebruikersnaam"
@@ -5817,7 +5844,7 @@ msgid "You have not chosen a server master."
 msgstr "U hebt geen servermaster gekozen."
 
 msgid "This is a protected path and cannot be added as a share."
-msgstr "Dit is een beveiligd pad en kan niet als een share worden toegevoegd."
+msgstr "Dit is een beschermd pad en kan niet als een share worden toegevoegd."
 
 msgid "This drive letter is already in use for"
 msgstr "Deze stationsletter is al in gebruik voor"
@@ -5943,7 +5970,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Als u een netwerkkaart moet wijzigen, moet u eerst het mac-adres uit uw statische arps verwijderen."
 
 msgid "View E-Mail Statistics"
-msgstr "Bekijk e-mailstatistieken"
+msgstr "Bekijk e-mail statistieken"
 
 msgid "The log view must not be blank."
 msgstr "De logweergave mag niet leeg zijn."
@@ -6068,41 +6095,17 @@ msgstr "Java en Libre Office worden automatisch geïnstalleerd als onderdeel van
 msgid "Add new users to your system."
 msgstr "Voeg nieuwe gebruikers toe aan uw systeem."
 
-msgid "Enrolment number / staff code"
-msgstr "Inschrijvingsnummer / personeelscode"
+msgid "Advanced"
+msgstr "gevorderd"
 
-msgid "Primary group"
-msgstr "Primaire groep"
+msgid "Show advanced fields."
+msgstr "Toon geavanceerde velden."
 
-msgid "Username style"
-msgstr "Gebruikersnaam stijl"
+msgid "Basic"
+msgstr "basis-"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Inschrijvingsnummer"
+msgid "Hide advanced fields."
+msgstr "Verberg geavanceerde velden."
 
 msgid "Enter the firstname for this user."
 msgstr "Voer de voornaam in voor deze gebruiker."
@@ -6113,8 +6116,38 @@ msgstr "Voer de achternaam in voor deze gebruiker."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Voer een wachtwoord in en bevestig dit in het onderstaande vak."
 
+msgid "User code"
+msgstr "Gebruikerscode"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Studenteninschrijvingsnummer of personeelsnummer. Dit veld kan leeg worden gelaten."
+
+msgid "Room Number"
+msgstr "Kamernummer"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Het kamernummer voor de gebruiker. Dit veld kan leeg worden gelaten."
+
+msgid "Telephone Number"
+msgstr "Telefoon nummer"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Het telefoonnummer voor de gebruiker. Dit veld kan leeg worden gelaten."
+
+msgid "Fax Number"
+msgstr "Faxnummer"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Het faxnummer voor de gebruiker. Dit veld kan leeg worden gelaten."
+
+msgid "Mobile Number"
+msgstr "Mobiel nummer"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Het mobiele nummer voor de gebruiker. Dit veld kan leeg worden gelaten."
+
+msgid "Primary group"
+msgstr "Primaire groep"
 
 msgid "The groups give different levels of access."
 msgstr "De groepen geven verschillende toegangsniveaus."
@@ -6124,6 +6157,9 @@ msgstr "De itadmin-groep is voor de netwerkbeheerder."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Alleen leden van itadmin en de technische groepen krijgen beheerderstoegang tot Windows-computers die lid zijn van het domein."
+
+msgid "Username style"
+msgstr "Gebruikersnaam stijl"
 
 msgid "Choose the username style you require."
 msgstr "Kies de gewenste gebruikersnaamstijl."
@@ -6429,7 +6465,7 @@ msgid "Subnet Error"
 msgstr "Subnet-fout"
 
 msgid "Subnet Mask Error"
-msgstr "Subnet Mask Error"
+msgstr "Fout subnetmasker"
 
 msgid "Range Error"
 msgstr "Bereik Fout"
@@ -6521,45 +6557,6 @@ msgstr "Je hebt geen actie gekozen."
 msgid "You have not chosen an asset."
 msgstr "U hebt geen item gekozen."
 
-msgid "The user style must not be blank."
-msgstr "De gebruikersstijl mag niet leeg zijn."
-
-msgid "The primary group must not be blank."
-msgstr "De primaire groep mag niet leeg zijn."
-
-msgid "Blank forename"
-msgstr "Lege voornaam"
-
-msgid "Blank surname"
-msgstr "Lege achternaam"
-
-msgid "Blank enrolment number"
-msgstr "Leeg inschrijvingsnummer"
-
-msgid "Blank username"
-msgstr "Lege gebruikersnaam"
-
-msgid "The username is greater than 20 characters"
-msgstr "De gebruikersnaam is meer dan 20 tekens"
-
-msgid "Blank Primary Group"
-msgstr "Lege primaire groep"
-
-msgid "Failed"
-msgstr "mislukt"
-
-msgid "CSV file error."
-msgstr "CSV-bestandsfout."
-
-msgid "This username is already in use."
-msgstr "Deze gebruikersnaam is al in gebruik."
-
-msgid "Creating"
-msgstr "Creëren"
-
-msgid "Bulk user creation completed."
-msgstr "Bulk-gebruikerscreatie voltooid."
-
 msgid "View Event Logs"
 msgstr "Bekijk event logs"
 
@@ -6642,7 +6639,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Geblokkeerde e-maildomeinen"
+msgstr "Verboden EMail-domeinen"
 
 msgid "Whitelists"
 msgstr "Whitelists"
@@ -6844,6 +6841,9 @@ msgstr "Als u dit nog niet hebt gedaan, wilt u misschien een printerserver aan u
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "De link van de showservers hieronder toont alle beschikbare servers. Kies de server waaraan u de printermodule wilt toevoegen door op de knop Rol toevoegen te klikken."
+
+msgid "Show Servers"
+msgstr "Servers weergeven"
 
 msgid "Control Printers"
 msgstr "Bedien Printers"
@@ -7161,7 +7161,7 @@ msgid "Users will be able to access their network shares over the internet."
 msgstr "Gebruikers hebben via internet toegang tot hun netwerkshares."
 
 msgid "This will provide a cloud file storage system for web access to files."
-msgstr "Dit levert een opslagsysteem voor cloudbestanden op voor webtoegang tot bestanden."
+msgstr "Dit levert een opslagsysteem voor cloudbestanden voor webtoegang tot bestanden."
 
 msgid "This module needs the DHCP module functioning to allow the clients to be able to network boot."
 msgstr "Deze module heeft de DHCP-module nodig om te kunnen opstarten via het netwerk."
@@ -7374,7 +7374,7 @@ msgid "This will create an ssl certificate signed by the root signing authority 
 msgstr "Hiermee wordt een SSL-certificaat gemaakt dat is ondertekend door de autoriteit voor het ondertekenen van de root op uw server."
 
 msgid "Your client computers will need to have the root signing authority installed into their web browsers."
-msgstr "Op uw clientcomputers moet de ondertekenaar van root zijn geïnstalleerd in hun webbrowser."
+msgstr "Op uw clientcomputers moet de root-signingmachtiging in hun webbrowser zijn geïnstalleerd."
 
 msgid "Apply Certificate"
 msgstr "Certificaat toepassen"
@@ -7416,7 +7416,7 @@ msgid "Karoshi Linux Clients"
 msgstr "Karoshi Linux-clients"
 
 msgid "Karoshi linux clients can be joined to the domain using the icons provided on the desktop for the local administrator user account on the linux client."
-msgstr "Karoshi linux-clients kunnen aan het domein worden gekoppeld met behulp van de pictogrammen op het bureaublad voor het lokale beheerdersgebruikersaccount op de linux-client."
+msgstr "Karoshi linux-clients kunnen met het domein worden verbonden met behulp van de pictogrammen op het bureaublad voor de lokale beheerdersgebruikersaccount op de linux-client."
 
 msgid "You have 60 seconds to save this archive before it is deleted from the server."
 msgstr "U hebt 60 seconden om dit archief op te slaan voordat het van de server wordt verwijderd."
@@ -7433,8 +7433,17 @@ msgstr "Plan een taak voor deze server."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Voornaam, achternaam, inschrijvingsnummer of personeelscode - optioneel, gebruikersnaam - optioneel, primaire groep - optioneel, secundaire groepen gescheiden door dubbele punten - optioneel, wachtwoord wijzigen bij eerste aanmelding - optioneel (j / n), wachtwoord - optioneel"
 
-msgid "Import Enrollment Numbers"
-msgstr "Importeer registratienummers"
+msgid "CSV file format without the first row as headers"
+msgstr "CSV-bestandsindeling zonder de eerste rij als headers"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Voornaam, achternaam, inschrijvingsnummer of personeelscode - optioneel, gebruikersnaam - optioneel, primaire groep - optioneel, secundaire groepen gescheiden door dubbele punten - optioneel, wachtwoord wijzigen bij eerste aanmelding - optioneel (j / n), kamernummer - optioneel, telefoon- nummer - optioneel, faxnummer - optioneel, mobiel nummer - optioneel, wachtwoord - optioneel"
+
+msgid "CSV file format with the first row as headers"
+msgstr "CSV-bestandsformaat met de eerste rij als headers"
+
+msgid "Possible column headers are"
+msgstr "Mogelijke kolomkoppen zijn"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Hiermee wordt een radiusserver voor uw netwerk ingesteld die kan worden gebruikt voor het instellen van draadloze toegangspunten met WPA2 enterprise."
@@ -7548,7 +7557,7 @@ msgid "This will set up a print server for your network allowing printer queues 
 msgstr "Hiermee wordt een afdrukserver voor uw netwerk ingesteld waarmee printerwachtrijen kunnen worden gemaakt en beheerd."
 
 msgid "Printer drivers can be added to the printer queues so that your client computers do not need to have the printer drivers installed on them."
-msgstr "Printerstuurprogramma's kunnen aan de printerwachtrijen worden toegevoegd zodat uw clientcomputers de printerstuurprogramma's niet hoeven te installeren."
+msgstr "Printerstuurprogramma's kunnen aan de printerwachtrijen worden toegevoegd, zodat uw clientcomputers de printerstuurprogramma's niet hoeven te installeren."
 
 msgid "The lockout duration cannot be blank."
 msgstr "De uitsluitingsduur mag niet leeg zijn."
@@ -7881,7 +7890,7 @@ msgid "Read only"
 msgstr "Alleen lezen"
 
 msgid "This will set the exam_files folder and the uploaded files to read only in each account. Students will need to copy the files out of the folder to use them."
-msgstr "Hiermee worden de map exam_files en de geüploade bestanden ingesteld om alleen in elk account te worden gelezen. Studenten moeten de bestanden uit de map kopiëren om ze te gebruiken."
+msgstr "Hierdoor worden de map exam_files en de geüploade bestanden ingesteld om alleen in elk account te worden gelezen. Studenten moeten de bestanden uit de map kopiëren om ze te gebruiken."
 
 msgid "View and edit the DHCP setttings"
 msgstr "Bekijk en bewerk de DHCP-instellingen"
@@ -7949,7 +7958,7 @@ msgstr "Voeg de naam van het personeel toe"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Voer de gebruikersnamen in van alle personeelsleden waarvan u niet wilt dat deze toegang hebben tot de personeelssectie van het webbeheer."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Beperkt personeel"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -7971,7 +7980,7 @@ msgid "Upload PPD File"
 msgstr "Upload PPD-bestand"
 
 msgid "Choose the make of your printer from this list. If the printer make is not listed you will need to get a PPD from the internet and use the Upload PPD option."
-msgstr "Kies het merk van uw printer in deze lijst. Als het merk van de printer niet wordt vermeld, moet u een PPD van internet downloaden en de PPD-optie Uploaden gebruiken."
+msgstr "Kies het merk van uw printer in deze lijst. Als het merk van de printer niet wordt vermeld, moet u een PPD van internet ontvangen en de PPD-optie voor uploaden gebruiken."
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "Dit geeft de server weer die de basismappen host voor elke groep."
@@ -9218,18 +9227,6 @@ msgstr "Gegeven naam"
 msgid "Display Name"
 msgstr "Weergavenaam"
 
-msgid "Room Number"
-msgstr "Kamernummer"
-
-msgid "Telephone Number"
-msgstr "Telefoon nummer"
-
-msgid "Fax Number"
-msgstr "Faxnummer"
-
-msgid "Mobile Number"
-msgstr "Mobiel nummer"
-
 msgid "E-Mail address"
 msgstr "E-mailadres"
 
@@ -10371,7 +10368,7 @@ msgid "There are no assets allocated to this location."
 msgstr "Er zijn geen activa toegewezen aan deze locatie."
 
 msgid "Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."
-msgstr "Voer de zoekcriteria in. Dit kan onderdeel zijn van het mac-adres, het serienummer, de aankoopdatum, het TCP-IP-nummer enz."
+msgstr "Voer de zoekcriteria in. Dit kan onderdeel zijn van het mac-adres, het serienummer, de aankoopdatum, het TCP-IP-nummer, enz."
 
 msgid "Search Assets"
 msgstr "Zoek activa"
@@ -10616,6 +10613,9 @@ msgstr "Geen toegang"
 msgid "Change Status"
 msgstr "Verander status"
 
+msgid "Change Student Password"
+msgstr "Wijzig studentwachtwoord"
+
 msgid "Internet Logs"
 msgstr "Internet logs"
 
@@ -10738,9 +10738,6 @@ msgstr "Upload afbeeldingen van uw gebruikers vanuit een gearchiveerd bestand."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importeer registratienummers of personeelscodes uit een CSV-bestand."
-
-msgid "Set User Passwords"
-msgstr "Stel gebruikerswachtwoorden in"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Stel gebruikerswachtwoorden in vanuit een CSV-bestand."
@@ -11111,6 +11108,9 @@ msgstr "Configureer Savapage."
 msgid "View assigned printers."
 msgstr "Bekijk toegewezen printers."
 
+msgid "View the Airprint status."
+msgstr "Bekijk de Airprint-status."
+
 msgid "Generate Windows printer drivers."
 msgstr "Genereer Windows-printerstuurprogramma's."
 
@@ -11374,6 +11374,9 @@ msgstr "Groep toevoegen"
 
 msgid "Creating home folders"
 msgstr "Thuismappen maken"
+
+msgid "Creating"
+msgstr "Creëren"
 
 msgid "Copying in logon files"
 msgstr "Kopiëren in aanmeldingsbestanden"

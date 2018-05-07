@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Xibo è stato installato e si può accedere da"
 
 msgid "Please login and change this password immediately."
 msgstr "Effettua il login e cambia questa password immediatamente."
-
-msgid "Setup Airprint"
-msgstr "Imposta Airprint"
-
-msgid "Updating repositories"
-msgstr "Aggiornamento dei repository"
-
-msgid "Installing Avahi Daemon"
-msgstr "Installazione di Daemon Avahi"
-
-msgid "Installing python-cups"
-msgstr "Installazione di Python-cups"
 
 msgid "The main server cannot be contacted."
 msgstr "Il server principale non può essere contattato."
@@ -804,7 +792,7 @@ msgid "Primary Group"
 msgstr "Gruppo primario"
 
 msgid "Enter in the year group if this is a student or the role if it is a member of staff."
-msgstr "Inserire il gruppo di anni se si tratta di uno studente o il ruolo se è un membro dello staff."
+msgstr "Inserisci il gruppo dell'anno se si tratta di uno studente o il ruolo se è un membro dello staff."
 
 msgid "Admission Number"
 msgstr "Numero di ammissione"
@@ -984,7 +972,7 @@ msgid "Generate the italc lists from the asset register"
 msgstr "Genera gli elenchi italc dal registro delle risorse"
 
 msgid "This will generate Italc files from the asset register."
-msgstr "Questo genererà file Italc dal registro delle risorse."
+msgstr "Questo genererà i file Italc dal registro delle risorse."
 
 msgid "Update Web Management"
 msgstr "Aggiorna la gestione web"
@@ -1395,7 +1383,7 @@ msgid "Access Name"
 msgstr "Nome di accesso"
 
 msgid "Enter in a name for your set of wireless access points."
-msgstr "Inserisci un nome per il tuo set di punti di accesso wireless."
+msgstr "Inserisci un nome per il set di punti di accesso wireless."
 
 msgid "TCP IP"
 msgstr "IP TCP"
@@ -1511,11 +1499,11 @@ msgstr "Aggiungi server"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Configura una connessione ssh con un server Karoshi in modo che possa essere controllata dalla gestione web."
 
-msgid "Show Servers"
-msgstr "Mostra server"
+msgid "View Servers"
+msgstr "Visualizza server"
 
-msgid "Show the servers and roles."
-msgstr "Mostra server e ruoli."
+msgid "View the servers and roles."
+msgstr "Visualizza i server e i ruoli."
 
 msgid "Server name"
 msgstr "Nome del server"
@@ -1625,6 +1613,36 @@ msgstr "Imposta le impostazioni predefinite per gli account utente."
 msgid "Upload User Image"
 msgstr "Carica l'immagine dell'utente"
 
+msgid "Import User Image"
+msgstr "Importa immagine utente"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Ciò ti consente di caricare immagini dell'utente che possono essere utilizzate per identificare i tuoi utenti."
+
+msgid "Bulk User Creation"
+msgstr "Creazione utente collettiva"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Crea account utente da un file CSV."
+
+msgid "View New Passwords"
+msgstr "Visualizza nuove password"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Visualizza le password impostate per gli account appena creati."
+
+msgid "Import Enrollment Numbers"
+msgstr "Importa i numeri di iscrizione"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Importa i numeri di iscrizione per i tuoi account utente."
+
+msgid "Set User Passwords"
+msgstr "Imposta le password dell'utente"
+
+msgid "Set User Passwords."
+msgstr "Imposta le password dell'utente."
+
 msgid "User Image or compressed file"
 msgstr "Immagine utente o file compresso"
 
@@ -1635,7 +1653,7 @@ msgid "Example"
 msgstr "Esempio"
 
 msgid "User images default to width 120px height 150px."
-msgstr "Le immagini dell'utente sono predefinite per larghezza 120 px altezza 150 px."
+msgstr "Le immagini dell'utente sono predefinite in larghezza 120 px altezza 150 px."
 
 msgid "Linux Client - Upload Distribution"
 msgstr "Client Linux - Upload Distribution"
@@ -2111,17 +2129,14 @@ msgstr "Il formato del file CSV è"
 msgid "username, enrollment number or staff code"
 msgstr "nome utente, numero di iscrizione o codice staff"
 
-msgid "Bulk User Creation"
-msgstr "Creazione utente collettiva"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Crea account utente da un file CSV."
-
 msgid "Import enrollment numbers"
 msgstr "Importa i numeri di iscrizione"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Importa i numeri di iscrizione per i tuoi account utente."
+msgid "Import User Images"
+msgstr "Importa immagini utente"
+
+msgid "Import user images for your user accounts."
+msgstr "Importa immagini utente per i tuoi account utente."
 
 msgid "View the new passwords for a group of users."
 msgstr "Visualizza le nuove password per un gruppo di utenti."
@@ -3545,9 +3560,6 @@ msgstr "Tipo di registro"
 msgid "Choose the log type that you would like to view."
 msgstr "Scegli il tipo di registro che desideri visualizzare."
 
-msgid "View Servers"
-msgstr "Visualizza server"
-
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Nessun server Karoshi è stato impostato con ssh."
 
@@ -3698,11 +3710,20 @@ msgstr "Modifica PPD"
 msgid "Edit a printer driver."
 msgstr "Modifica un driver di stampa."
 
+msgid "Windows Drivers"
+msgstr "Driver Windows"
+
 msgid "Windows printer drivers."
 msgstr "Driver di stampa per Windows."
 
-msgid "Windows Drivers"
-msgstr "Driver Windows"
+msgid "AirPrint Controls"
+msgstr "AirPrint Controls"
+
+msgid "AirPrint controls."
+msgstr "Controlli AirPrint."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Configura la stampa con Savapage."
@@ -4106,12 +4127,6 @@ msgstr "I registri di utilizzo del disco mostrano l'utilizzo complessivo di cias
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Importa numeri di iscrizione o codici staff"
 
-msgid "View New Passwords"
-msgstr "Visualizza nuove password"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Visualizza le password impostate per gli account appena creati."
-
 msgid "CSV file"
 msgstr "File CSV"
 
@@ -4376,6 +4391,15 @@ msgstr "La porta UPS non può essere vuota."
 msgid "Add a UPS"
 msgstr "Aggiungi un UPS"
 
+msgid "Airprint"
+msgstr "AirPrint"
+
+msgid "Manage AirPrint"
+msgstr "Gestisci AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Fare clic sulle icone per controllare la disponibilità di Airprint."
+
 msgid "User Information"
 msgstr "informazioni utente"
 
@@ -4569,7 +4593,7 @@ msgid "This is the maximum file size that users can have on the system."
 msgstr "Questa è la dimensione massima del file che gli utenti possono avere sul sistema."
 
 msgid "Users who reach this limit will not be able to save any more files until they have deleted some files."
-msgstr "Gli utenti che raggiungono questo limite non saranno in grado di salvare altri file finché non avranno eliminato alcuni file."
+msgstr "Gli utenti che raggiungono tale limite non saranno in grado di salvare altri file finché non avranno eliminato alcuni file."
 
 msgid "Setting this value to 0 will disable this option."
 msgstr "L'impostazione di questo valore su 0 disabiliterà questa opzione."
@@ -5475,7 +5499,7 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "Inserire l'indirizzo del server di posta a cui si desidera inviare l'e-mail."
 
 msgid "Banned E-mail Domains"
-msgstr "Domini e-mail bannati"
+msgstr "Domini email bannati"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr "Tutti i domini di posta elettronica mostrati nell'elenco sotto sono consentiti e non dispongono di alcun controllo DNS su di essi o non sono autorizzati a inviare e-mail al server."
@@ -5543,6 +5567,9 @@ msgstr "Cambia tema"
 msgid "Current theme"
 msgstr "Tema attuale"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Scegli lo stile del nome utente e il gruppo principale per gli utenti che desideri creare."
+
 msgid "Select the following options to create your users"
 msgstr "Seleziona le seguenti opzioni per creare i tuoi utenti"
 
@@ -5552,29 +5579,29 @@ msgstr "Questo server fa parte di un sistema federato. Gli utenti devono essere 
 msgid "Style"
 msgstr "Stile"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09astudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "Arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Numero di iscrizione come nome utente"
@@ -5943,7 +5970,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Se è necessario modificare una scheda di rete, rimuovere prima l'indirizzo mac dalle arter statiche."
 
 msgid "View E-Mail Statistics"
-msgstr "Visualizza statistiche di posta elettronica"
+msgstr "Visualizza le statistiche di posta elettronica"
 
 msgid "The log view must not be blank."
 msgstr "La vista registro non deve essere vuota."
@@ -6068,41 +6095,17 @@ msgstr "Java e Libre Office verranno installati automaticamente come parte di qu
 msgid "Add new users to your system."
 msgstr "Aggiungi nuovi utenti al tuo sistema."
 
-msgid "Enrolment number / staff code"
-msgstr "Numero di iscrizione / codice del personale"
+msgid "Advanced"
+msgstr "Avanzate"
 
-msgid "Primary group"
-msgstr "Gruppo primario"
+msgid "Show advanced fields."
+msgstr "Mostra campi avanzati."
 
-msgid "Username style"
-msgstr "Stile del nome utente"
+msgid "Basic"
+msgstr "Di base"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Numero di iscrizione"
+msgid "Hide advanced fields."
+msgstr "Nascondi campi avanzati."
 
 msgid "Enter the firstname for this user."
 msgstr "Inserisci il nome per questo utente."
@@ -6111,10 +6114,40 @@ msgid "Enter the surname for this user."
 msgstr "Inserisci il cognome per questo utente."
 
 msgid "Enter a password and confirm it in the box below."
-msgstr "Inserisci una password e confermala nella casella sottostante."
+msgstr "Inserire una password e confermarla nella casella sottostante."
+
+msgid "User code"
+msgstr "Codice utente"
 
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Numero di iscrizione dello studente o codice dello staff. Questo campo può essere lasciato vuoto."
+
+msgid "Room Number"
+msgstr "Numero di Camera"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Il numero della stanza per l'utente. Questo campo può essere lasciato vuoto."
+
+msgid "Telephone Number"
+msgstr "Numero di telefono"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Il numero di telefono per l'utente. Questo campo può essere lasciato vuoto."
+
+msgid "Fax Number"
+msgstr "Numero di fax"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Il numero di fax per l'utente. Questo campo può essere lasciato vuoto."
+
+msgid "Mobile Number"
+msgstr "Numero di cellulare"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Il numero di cellulare per l'utente. Questo campo può essere lasciato vuoto."
+
+msgid "Primary group"
+msgstr "Gruppo primario"
 
 msgid "The groups give different levels of access."
 msgstr "I gruppi danno diversi livelli di accesso."
@@ -6124,6 +6157,9 @@ msgstr "Il gruppo itadmin è destinato all'amministratore di rete."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Solo i membri di itadmin e i gruppi tecnici ottengono l'accesso di amministratore ai computer Windows aggiunti al dominio."
+
+msgid "Username style"
+msgstr "Stile del nome utente"
 
 msgid "Choose the username style you require."
 msgstr "Scegli lo stile del nome utente richiesto."
@@ -6521,45 +6557,6 @@ msgstr "Non hai scelto un'azione."
 msgid "You have not chosen an asset."
 msgstr "Non hai scelto una risorsa."
 
-msgid "The user style must not be blank."
-msgstr "Lo stile utente non deve essere vuoto."
-
-msgid "The primary group must not be blank."
-msgstr "Il gruppo principale non deve essere vuoto."
-
-msgid "Blank forename"
-msgstr "Nome in bianco"
-
-msgid "Blank surname"
-msgstr "Cognome vuoto"
-
-msgid "Blank enrolment number"
-msgstr "Numero di iscrizione vuoto"
-
-msgid "Blank username"
-msgstr "Nome utente vuoto"
-
-msgid "The username is greater than 20 characters"
-msgstr "Il nome utente è maggiore di 20 caratteri"
-
-msgid "Blank Primary Group"
-msgstr "Gruppo primario vuoto"
-
-msgid "Failed"
-msgstr "mancato"
-
-msgid "CSV file error."
-msgstr "Errore nel file CSV."
-
-msgid "This username is already in use."
-msgstr "Questo nome utente è già in uso."
-
-msgid "Creating"
-msgstr "Creazione"
-
-msgid "Bulk user creation completed."
-msgstr "Creazione utente collettiva completata."
-
 msgid "View Event Logs"
 msgstr "Visualizza i registri degli eventi"
 
@@ -6642,7 +6639,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Domini di posta elettronica vietati"
+msgstr "Domini di posta elettronica bannati"
 
 msgid "Whitelists"
 msgstr "whitelist"
@@ -6844,6 +6841,9 @@ msgstr "Se non lo hai già fatto, potresti voler aggiungere un server di stampa 
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Il link show server sotto mostrerà tutti i server disponibili. Scegliere il server a cui si desidera aggiungere il modulo stampante facendo clic sul pulsante Aggiungi ruolo."
+
+msgid "Show Servers"
+msgstr "Mostra server"
 
 msgid "Control Printers"
 msgstr "Stampanti di controllo"
@@ -7431,10 +7431,19 @@ msgid "Schedule a job for this server."
 msgstr "Pianifica un lavoro per questo server."
 
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
-msgstr "Nome, cognome, numero di iscrizione o codice staff - facoltativo, nome utente - facoltativo, gruppo principale - facoltativo, gruppi secondari separati da due punti - facoltativo, modifica password al primo accesso - facoltativo (y / n), password - facoltativo"
+msgstr "Nome, cognome, numero di iscrizione o codice staff - facoltativo, nome utente - facoltativo, gruppo primario - facoltativo, gruppi secondari separati da due punti - facoltativo, modifica password al primo accesso - facoltativo (y / n), password - facoltativo"
 
-msgid "Import Enrollment Numbers"
-msgstr "Importa i numeri di iscrizione"
+msgid "CSV file format without the first row as headers"
+msgstr "Formato file CSV senza prima riga come intestazioni"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Nome, cognome, numero di iscrizione o codice staff - opzionale, nome utente - facoltativo, gruppo principale - facoltativo, gruppi secondari separati da due punti - facoltativo, modifica password al primo accesso - facoltativo (y / n), numero civico - opzionale, telefono- numero - opzionale, numero di fax - opzionale, numero di cellulare - opzionale, password - opzionale"
+
+msgid "CSV file format with the first row as headers"
+msgstr "Formato file CSV con la prima riga come intestazioni"
+
+msgid "Possible column headers are"
+msgstr "Possibili intestazioni di colonna sono"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Questo configurerà un server radius per la tua rete che può essere utilizzato per impostare punti di accesso wireless usando l'impresa WPA2."
@@ -7949,7 +7958,7 @@ msgstr "Aggiungi il nome del personale"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Inserisci i nomi utente di tutti i membri dello staff che non vuoi essere in grado di accedere alla sezione staff della gestione web."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Staff ristretto"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -8145,7 +8154,7 @@ msgid "Add Site"
 msgstr "Aggiungi sito"
 
 msgid "Add in a site that you want to allow for the clients to connect to."
-msgstr "Aggiungi in un sito che desideri consentire ai client di connettersi."
+msgstr "Aggiungi in un sito a cui desideri consentire la connessione dei client."
 
 msgid "Applying update"
 msgstr "Applicazione dell'aggiornamento"
@@ -9218,18 +9227,6 @@ msgstr "Nome di battesimo"
 msgid "Display Name"
 msgstr "Nome da visualizzare"
 
-msgid "Room Number"
-msgstr "Numero di Camera"
-
-msgid "Telephone Number"
-msgstr "Numero di telefono"
-
-msgid "Fax Number"
-msgstr "Numero di fax"
-
-msgid "Mobile Number"
-msgstr "Numero di cellulare"
-
 msgid "E-Mail address"
 msgstr "Indirizzo email"
 
@@ -9633,7 +9630,7 @@ msgid "By default acl permissions are set on the network share to allow the sele
 msgstr "Per impostazione predefinita, le autorizzazioni acl sono impostate sulla condivisione di rete per consentire agli utenti selezionati di accedere alla condivisione."
 
 msgid "If you do not want any permissions changed or you want to set them yourself then deselect this option."
-msgstr "Se non si desidera modificare alcuna autorizzazione o se si desidera impostarla da sé, deselezionare questa opzione."
+msgstr "Se non si desidera modificare alcuna autorizzazione o si desidera impostarla da sé, deselezionare questa opzione."
 
 msgid "Full Audit Logs"
 msgstr "Registri di controllo completo"
@@ -9951,7 +9948,7 @@ msgid "Deny Mime Type"
 msgstr "Rifiuta il tipo Mime"
 
 msgid "This allows you to view and add in websites that you want to deny access to."
-msgstr "Ciò consente di visualizzare e aggiungere siti Web ai quali si desidera negare l'accesso."
+msgstr "Questo ti consente di visualizzare e aggiungere siti web ai quali negare l'accesso."
 
 msgid "This allows you to view and add in websites that you want to allow access to."
 msgstr "Ciò consente di visualizzare e aggiungere siti Web a cui si desidera consentire l'accesso."
@@ -10176,7 +10173,7 @@ msgid "No UPS Data"
 msgstr "Nessun dato UPS"
 
 msgid "Restart UPS deamon"
-msgstr "Riavvia il daemon CUPS"
+msgstr "Riavvia il daemon di CUPS"
 
 msgid "Curriculum Computer"
 msgstr "Curriculum Computer"
@@ -10616,6 +10613,9 @@ msgstr "Nessun accesso"
 msgid "Change Status"
 msgstr "Cambiare stato"
 
+msgid "Change Student Password"
+msgstr "Cambia password dello studente"
+
 msgid "Internet Logs"
 msgstr "Registri di Internet"
 
@@ -10738,9 +10738,6 @@ msgstr "Carica le immagini dei tuoi utenti da un file archiviato."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importa numeri di iscrizione o codici staff da un file CSV."
-
-msgid "Set User Passwords"
-msgstr "Imposta le password dell'utente"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Imposta le password dell'utente da un file CSV."
@@ -11111,6 +11108,9 @@ msgstr "Configura Savapage."
 msgid "View assigned printers."
 msgstr "Visualizza le stampanti assegnate."
 
+msgid "View the Airprint status."
+msgstr "Visualizza lo stato dell'Airprint."
+
 msgid "Generate Windows printer drivers."
 msgstr "Genera driver di stampa per Windows."
 
@@ -11374,6 +11374,9 @@ msgstr "Aggiungere un gruppo"
 
 msgid "Creating home folders"
 msgstr "Creazione di cartelle domestiche"
+
+msgid "Creating"
+msgstr "Creazione"
 
 msgid "Copying in logon files"
 msgstr "Copia nei file di accesso"

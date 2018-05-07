@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Mae Xibo wedi'i osod a gellir cael mynediad ato"
 
 msgid "Please login and change this password immediately."
 msgstr "Mewngofnodwch a newid y cyfrinair hwn ar unwaith."
-
-msgid "Setup Airprint"
-msgstr "Setup Airprint"
-
-msgid "Updating repositories"
-msgstr "Diweddaru ystadelloedd"
-
-msgid "Installing Avahi Daemon"
-msgstr "Gosod Avahi Daemon"
-
-msgid "Installing python-cups"
-msgstr "Gosod cwpanau python"
 
 msgid "The main server cannot be contacted."
 msgstr "Ni ellir cysylltu â'r prif weinyddwr."
@@ -747,7 +735,7 @@ msgid "Log Date"
 msgstr "Dyddiad Log"
 
 msgid "Enter in the name of the student that you want to check the internet logs for."
-msgstr "Rhowch enw'r myfyriwr yr hoffech edrych ar y cofnodau rhyngrwyd ar gyfer."
+msgstr "Rhowch enw'r myfyriwr yr hoffech wirio'r cofnodau rhyngrwyd ar gyfer."
 
 msgid "Request Delete Users"
 msgstr "Cais Dileu Defnyddwyr"
@@ -810,7 +798,7 @@ msgid "Admission Number"
 msgstr "Rhif Derbyn"
 
 msgid "Enter in the admission number for a student or leave blank for a member of staff."
-msgstr "Rhowch y rhif derbyn ar gyfer myfyriwr neu gadewch yn wag i aelod o staff."
+msgstr "Rhowch yn y rhif derbyn ar gyfer myfyriwr neu gadewch yn wag i aelod o staff."
 
 msgid "This will forward a request to the network manager for users to be deleted with the details that you provide."
 msgstr "Bydd hyn yn anfon cais at reolwr y rhwydwaith i ddefnyddwyr gael eu dileu gyda'r manylion a roddwch."
@@ -1374,7 +1362,7 @@ msgid "Windows Desktop Icons - Select"
 msgstr "Icons Desktop Desktop - Dewiswch"
 
 msgid "Choose the profiles that you want to upload the desktop icons to."
-msgstr "Dewiswch y proffiliau yr ydych am eu llwytho i fyny'r eiconau bwrdd gwaith."
+msgstr "Dewiswch y proffiliau yr ydych am eu llwytho i fyny'r eiconau penbwrdd."
 
 msgid "You have not uploaded a file."
 msgstr "Nid ydych chi wedi llwytho i fyny ffeil."
@@ -1511,11 +1499,11 @@ msgstr "Ychwanegu Gweinyddwr"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Sefydlu cysylltiad ssh â gweinydd Karoshi fel y gellir ei reoli gan y we."
 
-msgid "Show Servers"
-msgstr "Dangos Gweinyddwyr"
+msgid "View Servers"
+msgstr "Gweld Gweinyddwyr"
 
-msgid "Show the servers and roles."
-msgstr "Dangoswch y gweinyddwyr a'r rolau."
+msgid "View the servers and roles."
+msgstr "Edrychwch ar y gweinyddwyr a'r rolau."
 
 msgid "Server name"
 msgstr "Enw gweinyddwr"
@@ -1624,6 +1612,36 @@ msgstr "Yn gosod y gosodiadau diofyn ar gyfer cyfrifon defnyddwyr."
 
 msgid "Upload User Image"
 msgstr "Delwedd Delwedd Defnyddiwr"
+
+msgid "Import User Image"
+msgstr "Mewnforio Delwedd Defnyddiwr"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Mae hyn yn eich galluogi i lwytho delweddau defnyddwyr y gellir eu defnyddio i adnabod eich defnyddwyr."
+
+msgid "Bulk User Creation"
+msgstr "Creu Defnydd Uchel"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Creu cyfrifon defnyddwyr o ffeil CSV."
+
+msgid "View New Passwords"
+msgstr "Gweld Cyfrineiriau Newydd"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Edrychwch ar y cyfrineiriau a osodwyd ar gyfer cyfrifon newydd eu creu."
+
+msgid "Import Enrollment Numbers"
+msgstr "Mewnforio Rhifau Cofrestru"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Mewnforio rhifau cofrestru ar gyfer eich cyfrifon defnyddwyr."
+
+msgid "Set User Passwords"
+msgstr "Gosod Cyfrineiriau Defnyddwyr"
+
+msgid "Set User Passwords."
+msgstr "Gosod Cyfrineiriau Defnyddwyr."
 
 msgid "User Image or compressed file"
 msgstr "Delwedd Defnyddiwr neu ffeil wedi'i gywasgu"
@@ -2111,17 +2129,14 @@ msgstr "Fformat ffeil CSV yw"
 msgid "username, enrollment number or staff code"
 msgstr "enw defnyddiwr, rhif cofrestru neu god staff"
 
-msgid "Bulk User Creation"
-msgstr "Creu Defnydd Uchel"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Creu cyfrifon defnyddwyr o ffeil CSV."
-
 msgid "Import enrollment numbers"
 msgstr "Mewnforio rhifau cofrestru"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Mewnforio rhifau cofrestru ar gyfer eich cyfrifon defnyddwyr."
+msgid "Import User Images"
+msgstr "Mewnforio Delweddau Defnyddwyr"
+
+msgid "Import user images for your user accounts."
+msgstr "Mewnforio delweddau defnyddwyr ar gyfer eich cyfrifon defnyddwyr."
 
 msgid "View the new passwords for a group of users."
 msgstr "Edrychwch ar y cyfrineiriau newydd ar gyfer grŵp o ddefnyddwyr."
@@ -2421,7 +2436,7 @@ msgid "Clean home areas"
 msgstr "Ardaloedd cartref glân"
 
 msgid "Select this to delete all files and folders inside the exam account home areas."
-msgstr "Dewiswch hyn i ddileu'r holl ffeiliau a ffolderi y tu mewn i gartrefi'r cyfrif arholiadau."
+msgstr "Dewiswch hyn i ddileu'r holl ffeiliau a ffolderi y tu mewn i gartrefi cyfrif y cyfrif arholiad."
 
 msgid "The upload folder cannot be blank."
 msgstr "Ni all y ffolder llwytho i fyny fod yn wag."
@@ -2565,7 +2580,7 @@ msgid "Gitlab Domain"
 msgstr "Gitlab Parth"
 
 msgid "View Network Backup Logs"
-msgstr "Gweld Logiau wrth gefn y Rhwydwaith"
+msgstr "Edrychwch ar Logiau wrth gefn y Rhwydwaith"
 
 msgid "You must choose a server to enable or disable."
 msgstr "Rhaid i chi ddewis gweinydd i alluogi neu analluogi."
@@ -2877,7 +2892,7 @@ msgid "Quotas have been enabled on /home for this server."
 msgstr "Mae cwotâu wedi'u galluogi ar / gartref i'r gweinydd hwn."
 
 msgid "You do not have a partition for /home on this server."
-msgstr "Nid oes gennych chi raniad ar gyfer / cartref ar y gweinydd hwn."
+msgstr "Nid oes gennych chi raniad ar gyfer / gartref ar y gweinydd hwn."
 
 msgid "The /home partition is listed more than once in fstab on this server."
 msgstr "Mae'r rhaniad cartref / wedi'i restru fwy nag unwaith yn fstab ar y gweinydd hwn."
@@ -3522,7 +3537,7 @@ msgid "The TCPIP number is not corrrect."
 msgstr "Nid yw'r rhif IP TCP yn gywir."
 
 msgid "This allows you to add a domain trust so that users from other domains can log into this domain."
-msgstr "Mae hyn yn eich galluogi i ychwanegu ymddiriedolaeth parth fel y gall defnyddwyr o barthau eraill logio i mewn i'r parth hwn."
+msgstr "Mae hyn yn caniatáu ichi ychwanegu ymddiriedolaeth parth fel y gall defnyddwyr o barthau eraill logio i mewn i'r parth hwn."
 
 msgid "Add a domain trust"
 msgstr "Ychwanegu ymddiriedolaeth parth"
@@ -3544,9 +3559,6 @@ msgstr "Math o gofnod"
 
 msgid "Choose the log type that you would like to view."
 msgstr "Dewiswch y math o log yr hoffech ei weld."
-
-msgid "View Servers"
-msgstr "Gweld Gweinyddwyr"
 
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "Nid oes unrhyw Weinyddwyr Karoshi wedi'u sefydlu gyda ssh."
@@ -3600,7 +3612,7 @@ msgid "Wake Location"
 msgstr "Lleoliad Wake"
 
 msgid "Please enter in the time that you want the computers in your selected location to be turned on."
-msgstr "Nodwch yn yr amser rydych chi eisiau i'r cyfrifiaduron yn eich lleoliad dethol gael eu troi ymlaen."
+msgstr "Nodwch yn yr amser yr ydych am i'r cyfrifiaduron yn eich lleoliad dethol gael eu troi ymlaen."
 
 msgid "Select the location that you want. All computers in this location will be turned on at the time you specify."
 msgstr "Dewiswch y lleoliad yr ydych ei eisiau. Bydd pob cyfrifiadur yn y lleoliad hwn yn cael ei droi ar yr adeg rydych chi'n pennu."
@@ -3698,11 +3710,20 @@ msgstr "Golygu PPD"
 msgid "Edit a printer driver."
 msgstr "Golygu gyrrwr argraffydd."
 
+msgid "Windows Drivers"
+msgstr "Gyrwyr Windows"
+
 msgid "Windows printer drivers."
 msgstr "Gyrwyr argraffydd Windows."
 
-msgid "Windows Drivers"
-msgstr "Gyrwyr Windows"
+msgid "AirPrint Controls"
+msgstr "Rheolaethau AirPrint"
+
+msgid "AirPrint controls."
+msgstr "AirPrint yn rheoli."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Ffurfweddu argraffu gyda Savapage."
@@ -4056,7 +4077,7 @@ msgid "This will not affect other web management users."
 msgstr "Ni fydd hyn yn effeithio ar ddefnyddwyr rheoli gwe eraill."
 
 msgid "This will upload files so that they are available on a web server You can choose the server you wish to upload the files to."
-msgstr "Bydd hyn yn llwytho ffeiliau i fyny fel eu bod ar gael ar weinydd gwe Gallwch ddewis y gweinydd yr hoffech chi ei lanlwytho i."
+msgstr "Bydd hyn yn llwytho ffeiliau i fyny fel eu bod ar gael ar weinydd gwe. Gallwch ddewis y gweinydd yr hoffech chi ei lanlwytho i."
 
 msgid "Use the create subfolders option to create extra locations."
 msgstr "Defnyddiwch y dewis is-ddosbarthu creu i greu lleoliadau ychwanegol."
@@ -4105,12 +4126,6 @@ msgstr "Mae'r logiau defnydd disg yn dangos y defnydd cyffredinol ar gyfer pob r
 
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Mewnforio Rhifau Cofrestriad neu godau staff"
-
-msgid "View New Passwords"
-msgstr "Gweld Cyfrineiriau Newydd"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Edrychwch ar y cyfrineiriau a osodwyd ar gyfer cyfrifon newydd eu creu."
 
 msgid "CSV file"
 msgstr "Ffeil CSV"
@@ -4353,13 +4368,13 @@ msgid "This module is for advanced use for users that want ssh access to the mai
 msgstr "Mae'r modiwl hwn ar gyfer defnydd uwch ar gyfer defnyddwyr sydd eisiau mynediad ssh i'r prif weinyddwr."
 
 msgid "It can also be used to join this server to another Karoshi system via the federated server module so that when users are created on the master system they will also be created here."
-msgstr "Gellir ei ddefnyddio hefyd i ymuno â'r gweinydd hwn i system Karoshi arall trwy'r modiwl gweinydd ffederal fel y bydd defnyddwyr yn cael eu creu ar y meistr system, a chânt eu creu yma hefyd."
+msgstr "Gellir ei ddefnyddio hefyd i ymuno â'r gweinydd hwn i system Karoshi arall trwy'r modiwl gweinydd ffederal fel y bydd defnyddwyr yn cael eu creu ar y system feistroli hefyd byddant hefyd yn cael eu creu yma."
 
 msgid "MAC"
 msgstr "MAC"
 
 msgid "Enter in TCPIP numbers or MAC addresses (separated by commas) for machines you want to restrict access to. Leave this blank for unrestricted access."
-msgstr "Rhowch rifau TCPIP neu gyfeiriadau MAC (wedi'u gwahanu gan gomiau) ar gyfer peiriannau yr ydych am gyfyngu ar fynediad atynt. Gadewch hyn yn wag am fynediad anghyfyngedig."
+msgstr "Rhowch rifau TCPIP neu gyfeiriadau MAC (wedi'u gwahanu gan gomiau) ar gyfer peiriannau rydych am gyfyngu ar fynediad. Gadewch hyn yn wag am fynediad anghyfyngedig."
 
 msgid "Assign Printers to Locations"
 msgstr "Asein Argraffwyr i Lleoliadau"
@@ -4375,6 +4390,15 @@ msgstr "Ni all porthladd UPS fod yn wag."
 
 msgid "Add a UPS"
 msgstr "Ychwanegu UPS"
+
+msgid "Airprint"
+msgstr "Awyrlun"
+
+msgid "Manage AirPrint"
+msgstr "Rheoli AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Cliciwch ar yr eiconau i reoli argaeledd Aerbrint."
 
 msgid "User Information"
 msgstr "Gwybodaeth Defnyddwyr"
@@ -5085,7 +5109,7 @@ msgid "Internet logs are normally generated at midnight at the end of every day.
 msgstr "Fel arfer caiff logiau rhyngrwyd eu cynhyrchu am hanner nos ar ddiwedd pob dydd."
 
 msgid "Use this feature only if you urgently need to see today's internet logs."
-msgstr "Defnyddiwch y nodwedd hon dim ond os ydych chi ar frys angen gweld logiau rhyngrwyd heddiw."
+msgstr "Defnyddiwch y nodwedd hon yn unig os ydych chi ar frys yn gweld logiau rhyngrwyd heddiw."
 
 msgid "Linux Client software packages"
 msgstr "Pecynnau meddalwedd Linux Client"
@@ -5475,7 +5499,7 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "Rhowch gyfeiriad y gweinydd post yr hoffech chi anfon yr e-bost ato."
 
 msgid "Banned E-mail Domains"
-msgstr "Parthau E-bost Gwaharddedig"
+msgstr "Parthau Ebost Gwaharddedig"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr "Mae unrhyw barthau E-bost a ddangosir yn y rhestr isod naill ai'n cael eu caniatáu ac nid oes ganddynt unrhyw wiriadau DNS a roddir arnynt neu eu gwahardd rhag anfon E-Bost at eich gweinydd."
@@ -5543,6 +5567,9 @@ msgstr "Thema Newid"
 msgid "Current theme"
 msgstr "Thema gyfredol"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Dewiswch arddull enw defnyddiwr a grŵp cynradd ar gyfer y defnyddwyr rydych chi am eu creu."
+
 msgid "Select the following options to create your users"
 msgstr "Dewiswch yr opsiynau canlynol i greu eich defnyddwyr"
 
@@ -5552,29 +5579,29 @@ msgstr "Mae'r gweinydd hwn yn rhan o system ffederal. Rhaid creu defnyddwyr ar y
 msgid "Style"
 msgstr "Arddull"
 
-msgid "astudent09"
-msgstr "astudydd09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09 munud"
+msgid "09auser"
+msgstr "09awser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "myfyriwr.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Rhif cofrestru fel enw defnyddiwr"
@@ -5604,7 +5631,7 @@ msgid "Windows Roaming Profiles"
 msgstr "Proffiliau Fframio Windows"
 
 msgid "Show Menu"
-msgstr "Dangoswch Ddewislen"
+msgstr "Dangoswch ddewislen"
 
 msgid "Choose a different group to view."
 msgstr "Dewiswch grŵp gwahanol i'w weld."
@@ -5673,7 +5700,7 @@ msgid "Use this option to allow or deny access to all of the exam accounts."
 msgstr "Defnyddiwch yr opsiwn hwn i ganiatáu neu wrthod mynediad i bob un o'r cyfrifon arholiad."
 
 msgid "Enter in any exam accounts that you do not want to be enabled or disabled."
-msgstr "Rhowch mewn unrhyw gyfrifon arholiad nad ydych chi am alluogi neu anabl."
+msgstr "Rhowch mewn unrhyw gyfrifon arholiad nad ydych am gael eu galluogi neu eu hannog."
 
 msgid "Choose the server that you want to control services on."
 msgstr "Dewiswch y gweinydd yr ydych am reoli gwasanaethau arno."
@@ -5940,10 +5967,10 @@ msgid "Be careful using this feature."
 msgstr "Byddwch yn ofalus gan ddefnyddio'r nodwedd hon."
 
 msgid "If you need to change a network card remove the mac address from your static arps first."
-msgstr "Os bydd angen i chi newid cerdyn rhwydwaith, tynnwch y cyfeiriad mac oddi wrth eich arpau sefydlog yn gyntaf."
+msgstr "Os oes angen i chi newid cerdyn rhwydwaith, tynnwch y cyfeiriad mac oddi wrth eich arpau sefydlog yn gyntaf."
 
 msgid "View E-Mail Statistics"
-msgstr "Edrychwch ar Ystadegau E-bost"
+msgstr "Gweld Ystadegau EMail"
 
 msgid "The log view must not be blank."
 msgstr "Ni ddylai'r farn log fod yn wag."
@@ -6068,41 +6095,17 @@ msgstr "Bydd Java a Libre Office yn cael eu gosod yn awtomatig fel rhan o'r goso
 msgid "Add new users to your system."
 msgstr "Ychwanegu defnyddwyr newydd i'ch system."
 
-msgid "Enrolment number / staff code"
-msgstr "Rhif cofrestru / cod staff"
+msgid "Advanced"
+msgstr "Uwch"
 
-msgid "Primary group"
-msgstr "Grŵp cynradd"
+msgid "Show advanced fields."
+msgstr "Dangos caeau datblygedig."
 
-msgid "Username style"
-msgstr "Enw defnyddiwr"
+msgid "Basic"
+msgstr "Syml"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09awser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Rhif cofrestru"
+msgid "Hide advanced fields."
+msgstr "Cuddio meysydd datblygedig."
 
 msgid "Enter the firstname for this user."
 msgstr "Rhowch enw cyntaf y defnyddiwr hwn."
@@ -6113,8 +6116,38 @@ msgstr "Rhowch y cyfenw ar gyfer y defnyddiwr hwn."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Rhowch gyfrinair a'i gadarnhau yn y blwch isod."
 
+msgid "User code"
+msgstr "Cod defnyddiwr"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Rhif cofrestru myfyrwyr neu god staff. Gellir gadael y maes hwn yn wag."
+
+msgid "Room Number"
+msgstr "Rhif yr Ystafell"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "Rhif yr ystafell ar gyfer y defnyddiwr. Gellir gadael y maes hwn yn wag."
+
+msgid "Telephone Number"
+msgstr "Rhif Ffon"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "Rhif ffôn y defnyddiwr. Gellir gadael y maes hwn yn wag."
+
+msgid "Fax Number"
+msgstr "Rhif Ffacs"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "Rhif ffacs y defnyddiwr. Gellir gadael y maes hwn yn wag."
+
+msgid "Mobile Number"
+msgstr "Rhif ffôn Symudol"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "Rhif symudol y defnyddiwr. Gellir gadael y maes hwn yn wag."
+
+msgid "Primary group"
+msgstr "Grŵp cynradd"
 
 msgid "The groups give different levels of access."
 msgstr "Mae'r grwpiau yn rhoi gwahanol lefelau mynediad."
@@ -6124,6 +6157,9 @@ msgstr "Mae'r grŵp itadmin ar gyfer gweinyddwr y rhwydwaith."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Dim ond aelodau o itadmin a'r grwpiau technoleg sy'n cael mynediad gweinyddwyr i gyfrifiaduron ffenestri sydd wedi ymuno â'r parth."
+
+msgid "Username style"
+msgstr "Enw defnyddiwr"
 
 msgid "Choose the username style you require."
 msgstr "Dewiswch yr arddull enw defnyddiwr yr ydych ei angen."
@@ -6363,7 +6399,7 @@ msgid "You have not entered in a username."
 msgstr "Nid ydych chi wedi cofrestru enw defnyddiwr."
 
 msgid "This shows the groups that the user is a member of."
-msgstr "Mae hyn yn dangos y grwpiau y mae'r defnyddiwr yn aelod ohonynt."
+msgstr "Mae hyn yn dangos y grwpiau y mae'r defnyddiwr yn aelod ohono."
 
 msgid "Choose User"
 msgstr "Dewis Defnyddiwr"
@@ -6521,45 +6557,6 @@ msgstr "Nid ydych chi wedi dewis gweithredu."
 msgid "You have not chosen an asset."
 msgstr "Nid ydych chi wedi dewis ased."
 
-msgid "The user style must not be blank."
-msgstr "Ni ddylai'r arddull defnyddiwr fod yn wag."
-
-msgid "The primary group must not be blank."
-msgstr "Ni ddylai'r grŵp cynradd fod yn wag."
-
-msgid "Blank forename"
-msgstr "Enw cyntaf gwag"
-
-msgid "Blank surname"
-msgstr "Cyfenw gwag"
-
-msgid "Blank enrolment number"
-msgstr "Rhif cofrestru gwag"
-
-msgid "Blank username"
-msgstr "Enw defnyddiwr gwag"
-
-msgid "The username is greater than 20 characters"
-msgstr "Mae'r enw defnyddiwr yn fwy na 20 o gymeriadau"
-
-msgid "Blank Primary Group"
-msgstr "Grwp Cynradd Blank"
-
-msgid "Failed"
-msgstr "Wedi methu"
-
-msgid "CSV file error."
-msgstr "Gwall ffeil CSV."
-
-msgid "This username is already in use."
-msgstr "Mae'r enw defnyddiwr hwn eisoes yn cael ei ddefnyddio."
-
-msgid "Creating"
-msgstr "Creu"
-
-msgid "Bulk user creation completed."
-msgstr "Crynswth creu defnyddiwr wedi'i gwblhau."
-
 msgid "View Event Logs"
 msgstr "Gweld Logiadau Digwyddiad"
 
@@ -6642,7 +6639,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Parthau E-bost Gwaharddedig"
+msgstr "Parthau EMail gwaharddedig"
 
 msgid "Whitelists"
 msgstr "Whitelists"
@@ -6720,7 +6717,7 @@ msgid "Logs for all user internet access can be viewed in the web management."
 msgstr "Gellir gweld logiau ar gyfer pob mynediad i'r rhyngrwyd i ddefnyddwyr yn y we."
 
 msgid "This will add the name of your institution to the top of the web management and to the show servers page."
-msgstr "Bydd hyn yn ychwanegu enw eich sefydliad i frig y we ac i dudalen y gweinyddwyr sioe."
+msgstr "Bydd hyn yn ychwanegu enw'ch sefydliad i frig y we ac i dudalen y gweinyddwyr sioe."
 
 msgid "Enter in the site name."
 msgstr "Rhowch enw'r safle."
@@ -6844,6 +6841,9 @@ msgstr "Os nad ydych chi eisoes wedi gwneud hynny, efallai y byddwch am ychwaneg
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Bydd y gweinyddwyr sioe yn cysylltu isod yn dangos pob gweinyddwr sydd ar gael. Dewiswch y gweinydd yr hoffech ychwanegu'r modiwl argraffydd iddo trwy glicio ar y botwm ychwanegu rôl."
+
+msgid "Show Servers"
+msgstr "Dangos Gweinyddwyr"
 
 msgid "Control Printers"
 msgstr "Argraffwyr Rheoli"
@@ -7044,7 +7044,7 @@ msgid "Add Web Management User"
 msgstr "Ychwanegu Defnyddiwr Rheoli Gwe"
 
 msgid "These accounts are used by your technical staff to access the web managagement. The usernames and passwords used here are totally separate from normal network users."
-msgstr "Defnyddir y cyfrifon hyn gan eich staff technegol i gael mynediad at reolaeth y we. Mae'r enwau a chyfrineiriau a ddefnyddir yma yn hollol ar wahân i ddefnyddwyr rhwydwaith arferol."
+msgstr "Defnyddir y cyfrifon hyn gan eich staff technegol i gael mynediad at reoli'r we. Mae'r enwau a chyfrineiriau a ddefnyddir yma yn hollol ar wahân i ddefnyddwyr rhwydwaith arferol."
 
 msgid "View Web Management users."
 msgstr "Gweld defnyddwyr Rheoli Gwe."
@@ -7433,8 +7433,17 @@ msgstr "Rhestrwch swydd ar gyfer y gweinydd hwn."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Enw cyntaf, cyfenw, rhif cofrestru neu god staff - dewisol, enw defnyddiwr - dewisol, grŵp cynradd - grwpiau dewisol, eilaidd wedi'u gwahanu gan eiconau - dewisol, newid cyfrinair ar y tro cyntaf i mewn - dewisol (y / n), cyfrinair - dewisol"
 
-msgid "Import Enrollment Numbers"
-msgstr "Mewnforio Rhifau Cofrestru"
+msgid "CSV file format without the first row as headers"
+msgstr "Fformat ffeil CSV heb y rhes gyntaf â phenawdau"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Enw cyntaf, cyfenw, rhif cofrestru neu god staff - dewisol, enw defnyddiwr - dewisol, grŵp cynradd - grwpiau dewisol, eilaidd wedi'u gwahanu gan eiconau - dewisol, newid cyfrinair ar y logon cyntaf - dewisol (y / n), rhif ystafell - dewisol, ffôn- rhif - dewisol, ffacs-rif - dewisol, rhif ffôn symudol - dewisol, cyfrinair - dewisol"
+
+msgid "CSV file format with the first row as headers"
+msgstr "Fformat ffeil CSV gyda'r rhes gyntaf â phenawdau"
+
+msgid "Possible column headers are"
+msgstr "Penawdau colofn posib yw"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Bydd hyn yn sefydlu gweinydd radiws ar gyfer eich rhwydwaith y gellir ei ddefnyddio ar gyfer gosod pwyntiau mynediad di-wifr gan ddefnyddio menter WPA2."
@@ -7656,7 +7665,7 @@ msgid "Upload Windows Profile"
 msgstr "Llwythwch Windows Profile"
 
 msgid "The Karoshi Linux clients download an updated skel from the main server each time that the client is booted. "
-msgstr "Mae cleientiaid Karoshi Linux yn lawrlwytho esgel wedi'i ddiweddaru o'r prif weinydd bob tro y caiff y cleient ei chlysu."
+msgstr "Mae cleientiaid Karoshi Linux yn lawrlwytho esgel wedi'i ddiweddaru o'r prif weinydd bob tro y caiff y cleient ei chwyddo."
 
 msgid "Users logging onto the client then use the skel from the local machines."
 msgstr "Defnyddwyr yn mewngofnodi i'r cleient yna defnyddiwch y sglein o'r peiriannau lleol."
@@ -7949,7 +7958,7 @@ msgstr "Ychwanegu enw'r staff"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Rhowch enwau enwau unrhyw aelod o staff nad ydych am gael mynediad at adran staff y we."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Staff Cyfyngedig"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -8184,7 +8193,7 @@ msgid "The archive is not valid."
 msgstr "Nid yw'r archif yn ddilys."
 
 msgid "No errors detected in this archive."
-msgstr "Ni chafwyd unrhyw gamgymeriadau yn yr archif hon."
+msgstr "Ni chanfuwyd unrhyw wallau yn yr archif hon."
 
 msgid "Copying profile to"
 msgstr "Proffil copïo i"
@@ -9144,7 +9153,7 @@ msgid "Enter in the name that you want. This can be the name of a server or an a
 msgstr "Rhowch yr enw rydych chi ei eisiau. Gall hyn fod yn enw gweinydd neu alias."
 
 msgid "Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."
-msgstr "Rhowch yn y wybodaeth dns yr ydych ei eisiau. Byddai hwn yn rhif tpip ar gyfer cofnod A neu byddai'n gofnod alias ar gyfer CNAME."
+msgstr "Rhowch yn y wybodaeth dns yr ydych ei eisiau. Byddai hwn yn rhif tppip ar gyfer cofnod A neu byddai'n gofnod alias ar gyfer CNAME."
 
 msgid "Edit entry"
 msgstr "Golygu cofnod"
@@ -9217,18 +9226,6 @@ msgstr "Enw a Roddwyd"
 
 msgid "Display Name"
 msgstr "Enw Arddangos"
-
-msgid "Room Number"
-msgstr "Rhif yr Ystafell"
-
-msgid "Telephone Number"
-msgstr "Rhif Ffon"
-
-msgid "Fax Number"
-msgstr "Rhif Ffacs"
-
-msgid "Mobile Number"
-msgstr "Rhif ffôn Symudol"
 
 msgid "E-Mail address"
 msgstr "Cyfeiriad ebost"
@@ -9744,7 +9741,7 @@ msgid "Triple Redundancy"
 msgstr "Diswyddo Triphlyg"
 
 msgid "Choose the redundancy type that you want."
-msgstr "Dewiswch y math diswyddo rydych chi ei eisiau."
+msgstr "Dewiswch y math o ddileu swydd rydych chi ei eisiau."
 
 msgid "Mirror allows for the failure of one drive without losing any data and only needs two drives."
 msgstr "Mae Mirror yn caniatáu methiant un gyrru heb golli unrhyw ddata a dim ond dau ddisg sydd ei hangen arno."
@@ -10101,7 +10098,7 @@ msgid "Copying data to"
 msgstr "Copïo data i"
 
 msgid "IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."
-msgstr "PWYSIG - Sicrhewch nad yw defnyddwyr wedi mewngofnodi i sicrhau nad yw'r data'n cael ei golli."
+msgstr "PWYSIG - Gwnewch yn siŵr nad yw defnyddwyr wedi mewngofnodi i sicrhau nad yw'r data'n cael ei golli."
 
 msgid "Enter in the full path that you want to add to the gluster volume."
 msgstr "Rhowch y llwybr llawn yr hoffech ei ychwanegu at y gyfrol glwstwr."
@@ -10500,7 +10497,7 @@ msgid "All servers backed up in turn starting at"
 msgstr "Pob gweinydd yn cael ei gefnogi yn ei dro yn dechrau yn"
 
 msgid "Select the server you want to backup to."
-msgstr "Dewiswch y gweinydd yr ydych am ei gefnogi."
+msgstr "Dewiswch y gweinydd rydych chi am ei gefnogi."
 
 msgid "Change Time"
 msgstr "Newid Amser"
@@ -10615,6 +10612,9 @@ msgstr "Dim mynediad"
 
 msgid "Change Status"
 msgstr "Newid Statws"
+
+msgid "Change Student Password"
+msgstr "Newid Cyfrinair Myfyrwyr"
 
 msgid "Internet Logs"
 msgstr "Logiau Rhyngrwyd"
@@ -10738,9 +10738,6 @@ msgstr "Llwythwch luniau o'ch defnyddwyr o ffeil archif."
 
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Mewnforio rhifau cofrestru neu godau staff o ffeil CSV."
-
-msgid "Set User Passwords"
-msgstr "Gosod Cyfrineiriau Defnyddwyr"
 
 msgid "Set user's passwords from a CSV file."
 msgstr "Gosod cyfrineiriau defnyddiwr o ffeil CSV."
@@ -10929,7 +10926,7 @@ msgid "Enable or disable a backup for a server."
 msgstr "Galluogi neu analluoga wrth gefn i weinyddwr."
 
 msgid "View the backup log for a server."
-msgstr "Edrychwch ar y log wrth gefn i weinyddwr."
+msgstr "Edrychwch ar y log wrth gefn ar gyfer gweinydd."
 
 msgid "Run a backup for a server."
 msgstr "Rhedeg wrth gefn i weinyddwr."
@@ -11111,6 +11108,9 @@ msgstr "Ffurfweddu Savapage."
 msgid "View assigned printers."
 msgstr "Gweld argraffwyr penodedig."
 
+msgid "View the Airprint status."
+msgstr "Edrychwch ar statws yr Awyrlun."
+
 msgid "Generate Windows printer drivers."
 msgstr "Cynhyrchu gyrwyr argraffydd Windows."
 
@@ -11226,7 +11226,7 @@ msgid "Creating an SSL certificate"
 msgstr "Creu tystysgrif SSL"
 
 msgid "Restarting nginx to apply the ssl certificate"
-msgstr "Ailgychwyn nginx i gymhwyso'r dystysgrif ssl"
+msgstr "Ailgofrestru nginx i gymhwyso'r dystysgrif ssl"
 
 msgid "Enabling Certificate"
 msgstr "Tystysgrif Galluogi"
@@ -11374,6 +11374,9 @@ msgstr "Ychwanegu grŵp"
 
 msgid "Creating home folders"
 msgstr "Creu ffolderi cartref"
+
+msgid "Creating"
+msgstr "Creu"
 
 msgid "Copying in logon files"
 msgstr "Copïo mewn ffeiliau logon"
@@ -11547,7 +11550,7 @@ msgid "Home"
 msgstr "Cartref"
 
 msgid "Choose the server install version."
-msgstr "Dewiswch y fersiwn gosod gweinyddwr."
+msgstr "Dewiswch fersiwn gosod y gweinydd."
 
 msgid "Ok"
 msgstr "Iawn"

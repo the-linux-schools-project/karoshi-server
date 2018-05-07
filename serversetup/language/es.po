@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2018-03-30 14:40+0100\n"
+"POT-Creation-Date: 2018-05-06 21:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,18 +283,6 @@ msgstr "Xibo se ha instalado y se puede acceder desde"
 
 msgid "Please login and change this password immediately."
 msgstr "Por favor inicie sesión y cambie esta contraseña de inmediato."
-
-msgid "Setup Airprint"
-msgstr "Configurar Airprint"
-
-msgid "Updating repositories"
-msgstr "Actualización de repositorios"
-
-msgid "Installing Avahi Daemon"
-msgstr "Instalación de Avahi Daemon"
-
-msgid "Installing python-cups"
-msgstr "Instalación de python-cups"
 
 msgid "The main server cannot be contacted."
 msgstr "El servidor principal no puede ser contactado."
@@ -1511,11 +1499,11 @@ msgstr "Agregar servidor"
 msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr "Configure una conexión ssh a un servidor Karoshi para que pueda ser controlada por la administración web."
 
-msgid "Show Servers"
-msgstr "Mostrar servidores"
+msgid "View Servers"
+msgstr "Ver servidores"
 
-msgid "Show the servers and roles."
-msgstr "Mostrar los servidores y roles."
+msgid "View the servers and roles."
+msgstr "Ver los servidores y roles"
 
 msgid "Server name"
 msgstr "Nombre del servidor"
@@ -1624,6 +1612,36 @@ msgstr "Establece la configuración predeterminada para las cuentas de usuario."
 
 msgid "Upload User Image"
 msgstr "Cargar imagen de usuario"
+
+msgid "Import User Image"
+msgstr "Importar imagen de usuario"
+
+msgid "This allows you to upload user images that can be used to identify your users."
+msgstr "Esto le permite cargar imágenes de usuario que pueden usarse para identificar a sus usuarios."
+
+msgid "Bulk User Creation"
+msgstr "Creación masiva de usuarios"
+
+msgid "Create user accounts from a CSV file."
+msgstr "Crear cuentas de usuario desde un archivo CSV."
+
+msgid "View New Passwords"
+msgstr "Ver nuevas contraseñas"
+
+msgid "View the passwords set for newly created accounts."
+msgstr "Ver las contraseñas establecidas para las cuentas recién creadas."
+
+msgid "Import Enrollment Numbers"
+msgstr "Importar números de inscripción"
+
+msgid "Import enrollment numbers for your user accounts."
+msgstr "Importe números de inscripción para sus cuentas de usuario."
+
+msgid "Set User Passwords"
+msgstr "Establecer contraseñas de usuario"
+
+msgid "Set User Passwords."
+msgstr "Establecer contraseñas de usuario."
 
 msgid "User Image or compressed file"
 msgstr "Imagen de usuario o archivo comprimido"
@@ -1845,7 +1863,7 @@ msgid "Add Monitors"
 msgstr "Agregar monitores"
 
 msgid "You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."
-msgstr "Necesitará tener un servidor de monitoreo configurado para usar esta característica. Esto le permitirá agregar monitores adicionales para su red."
+msgstr "Tendrá que tener un servidor de monitoreo configurado para usar esta función. Esto le permitirá agregar monitores adicionales para su red."
 
 msgid "View Monitors"
 msgstr "Ver monitores"
@@ -2111,17 +2129,14 @@ msgstr "El formato de archivo CSV es"
 msgid "username, enrollment number or staff code"
 msgstr "nombre de usuario, número de inscripción o código de personal"
 
-msgid "Bulk User Creation"
-msgstr "Creación masiva de usuarios"
-
-msgid "Create user accounts from a CSV file."
-msgstr "Crear cuentas de usuario desde un archivo CSV."
-
 msgid "Import enrollment numbers"
 msgstr "Importar números de inscripción"
 
-msgid "Import enrollment numbers for your user accounts."
-msgstr "Importe números de inscripción para sus cuentas de usuario."
+msgid "Import User Images"
+msgstr "Importación de imágenes de usuario"
+
+msgid "Import user images for your user accounts."
+msgstr "Importe imágenes de usuario para sus cuentas de usuario."
 
 msgid "View the new passwords for a group of users."
 msgstr "Ver las nuevas contraseñas para un grupo de usuarios."
@@ -2667,7 +2682,7 @@ msgid "The tcpip number cannot be blank."
 msgstr "El número de tcpip no puede estar en blanco."
 
 msgid "Connection failure using the supplied username/password details."
-msgstr "Error de conexión utilizando los detalles de nombre de usuario / contraseña provistos."
+msgstr "Error de conexión usando los detalles de nombre de usuario / contraseña provistos."
 
 msgid "Client Connections"
 msgstr "Conexiones del cliente"
@@ -2748,7 +2763,7 @@ msgid "Windows Background - Select"
 msgstr "Fondo de Windows - Seleccionar"
 
 msgid "You have not uploaded a bmp file."
-msgstr "No ha subido un archivo bmp."
+msgstr "No has subido un archivo bmp."
 
 msgid "The background has been copied to all of the chosen groups."
 msgstr "El fondo se ha copiado a todos los grupos elegidos."
@@ -3545,9 +3560,6 @@ msgstr "Tipo de registro"
 msgid "Choose the log type that you would like to view."
 msgstr "Elija el tipo de registro que le gustaría ver."
 
-msgid "View Servers"
-msgstr "Ver servidores"
-
 msgid "No Karoshi Servers have been set up with ssh."
 msgstr "No se han configurado servidores Karoshi con ssh."
 
@@ -3698,11 +3710,20 @@ msgstr "Editar PPD"
 msgid "Edit a printer driver."
 msgstr "Edite un controlador de impresora."
 
+msgid "Windows Drivers"
+msgstr "Controladores de Windows"
+
 msgid "Windows printer drivers."
 msgstr "Controladores de impresora de Windows."
 
-msgid "Windows Drivers"
-msgstr "Controladores de Windows"
+msgid "AirPrint Controls"
+msgstr "Controles de AirPrint"
+
+msgid "AirPrint controls."
+msgstr "Controles de AirPrint."
+
+msgid "AirPrint"
+msgstr "AirPrint"
 
 msgid "Configure printing with Savapage."
 msgstr "Configure la impresión con Savapage."
@@ -3945,7 +3966,7 @@ msgid "You must enter in a username."
 msgstr "Debes ingresar un nombre de usuario."
 
 msgid "You cannot leave the date or time blank."
-msgstr "No puede dejar la fecha u hora en blanco."
+msgstr "No puede dejar la fecha o la fecha en blanco."
 
 msgid "You have not entered a correct month."
 msgstr "No ingresaste el mes correcto."
@@ -4056,7 +4077,7 @@ msgid "This will not affect other web management users."
 msgstr "Esto no afectará a otros usuarios de administración web."
 
 msgid "This will upload files so that they are available on a web server You can choose the server you wish to upload the files to."
-msgstr "Esto cargará archivos para que estén disponibles en un servidor web. Puede elegir el servidor en el que desea cargar los archivos."
+msgstr "Esto cargará archivos para que estén disponibles en un servidor web. Puede elegir el servidor al que desea cargar los archivos."
 
 msgid "Use the create subfolders option to create extra locations."
 msgstr "Use la opción crear subcarpetas para crear ubicaciones adicionales."
@@ -4083,7 +4104,7 @@ msgid "Current Server"
 msgstr "Servidor actual"
 
 msgid "Copy Home Areas"
-msgstr "Copie las áreas de inicio"
+msgstr "Copiar áreas de inicio"
 
 msgid "This will copy any existing user home areas to the new server. This could take some time if there are a large amount of files to transfer."
 msgstr "Esto copiará las áreas de inicio de cualquier usuario existente al nuevo servidor. Esto podría llevar algún tiempo si hay una gran cantidad de archivos para transferir."
@@ -4105,12 +4126,6 @@ msgstr "Los registros de uso del disco muestran el uso general de cada partició
 
 msgid "Import Enrollment Numbers or staff codes"
 msgstr "Importar números de inscripción o códigos de personal"
-
-msgid "View New Passwords"
-msgstr "Ver nuevas contraseñas"
-
-msgid "View the passwords set for newly created accounts."
-msgstr "Ver las contraseñas establecidas para las cuentas recién creadas."
 
 msgid "CSV file"
 msgstr "Archivo CSV"
@@ -4375,6 +4390,15 @@ msgstr "El puerto de UPS no puede estar en blanco."
 
 msgid "Add a UPS"
 msgstr "Agregar un UPS"
+
+msgid "Airprint"
+msgstr "Airprint"
+
+msgid "Manage AirPrint"
+msgstr "Administrar AirPrint"
+
+msgid "Click on the icons to control Airprint availability."
+msgstr "Haga clic en los iconos para controlar la disponibilidad de Airprint."
 
 msgid "User Information"
 msgstr "informacion del usuario"
@@ -4746,7 +4770,7 @@ msgid "Reset Room Controls"
 msgstr "Restablecer controles de habitación"
 
 msgid "This will schedule times when all internet room controls are reset to allow internet access."
-msgstr "Esto programará las horas en que se restablecerán todos los controles de la sala de Internet para permitir el acceso a Internet."
+msgstr "Esto programará las horas cuando todos los controles de la sala de Internet se restablecen para permitir el acceso a Internet."
 
 msgid "Room Controls"
 msgstr "Controles de habitación"
@@ -4827,7 +4851,7 @@ msgid "View Assigned Printers"
 msgstr "Ver impresoras asignadas"
 
 msgid "This shows the printers that have been assigned to locations."
-msgstr "Esto muestra las impresoras que han sido asignadas a ubicaciones."
+msgstr "Esto muestra las impresoras que se han asignado a las ubicaciones."
 
 msgid "Delete network printer queues."
 msgstr "Eliminar colas de impresora de red."
@@ -4923,7 +4947,7 @@ msgid "richdocuments"
 msgstr "richdocuments"
 
 msgid "Removes the richdocuments plugin for Owncloud and removes the LibreOffice Online Server."
-msgstr "Elimina el complemento richdocuments para Owncloud y elimina el servidor en línea de LibreOffice."
+msgstr "Elimina el complemento richdocuments para Owncloud y elimina el LibreOffice Online Server."
 
 msgid "OCS Inventory"
 msgstr "Inventario de OCS"
@@ -5040,7 +5064,7 @@ msgid "View server DNS Settings"
 msgstr "Ver la configuración DNS del servidor"
 
 msgid "Apply Self Signed SSL Certificate"
-msgstr "Aplicar certificado autofirmado SSL"
+msgstr "Aplicar certificado SSL autofirmado"
 
 msgid "The server option cannot be blank."
 msgstr "La opción del servidor no puede estar en blanco."
@@ -5543,6 +5567,9 @@ msgstr "Cambiar de tema"
 msgid "Current theme"
 msgstr "Tema actual"
 
+msgid "Choose the username style and primary group for the users you want to create."
+msgstr "Elija el estilo de nombre de usuario y el grupo principal para los usuarios que desea crear."
+
 msgid "Select the following options to create your users"
 msgstr "Seleccione las siguientes opciones para crear sus usuarios"
 
@@ -5552,29 +5579,29 @@ msgstr "Este servidor es parte de un sistema federado. Los usuarios deben crears
 msgid "Style"
 msgstr "Estilo"
 
-msgid "astudent09"
-msgstr "astudent09"
+msgid "auser09"
+msgstr "auser09"
 
-msgid "09astudent"
-msgstr "09entudent"
+msgid "09auser"
+msgstr "09auser"
 
-msgid "studenta09"
-msgstr "studenta09"
+msgid "usera09"
+msgstr "usera09"
 
-msgid "arnold.student09"
-msgstr "arnold.student09"
+msgid "arnold.user09"
+msgstr "arnold.user09"
 
-msgid "student.arnold09"
-msgstr "student.arnold09"
+msgid "user.arnold09"
+msgstr "user.arnold09"
 
-msgid "09studenta"
-msgstr "09studenta"
+msgid "09usera"
+msgstr "09usera"
 
-msgid "09arnolds"
-msgstr "09arnolds"
+msgid "09arnoldu"
+msgstr "09arnoldu"
 
-msgid "arnolds"
-msgstr "arnolds"
+msgid "arnoldu"
+msgstr "arnoldu"
 
 msgid "Enrollment number as username"
 msgstr "Número de inscripción como nombre de usuario"
@@ -5943,7 +5970,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Si necesita cambiar una tarjeta de red, primero elimine la dirección MAC de sus archivos estáticos."
 
 msgid "View E-Mail Statistics"
-msgstr "Ver estadísticas de correo electrónico"
+msgstr "Ver las estadísticas de correo electrónico"
 
 msgid "The log view must not be blank."
 msgstr "La vista de registro no debe estar en blanco."
@@ -6068,41 +6095,17 @@ msgstr "Java y Libre Office se instalarán automáticamente como parte de esta c
 msgid "Add new users to your system."
 msgstr "Agrega nuevos usuarios a tu sistema."
 
-msgid "Enrolment number / staff code"
-msgstr "Número de inscripción / código de personal"
+msgid "Advanced"
+msgstr "Avanzado"
 
-msgid "Primary group"
-msgstr "Grupo primario"
+msgid "Show advanced fields."
+msgstr "Mostrar campos avanzados"
 
-msgid "Username style"
-msgstr "Estilo de nombre de usuario"
+msgid "Basic"
+msgstr "BASIC"
 
-msgid "auser09"
-msgstr "auser09"
-
-msgid "09auser"
-msgstr "09auser"
-
-msgid "usera09"
-msgstr "usera09"
-
-msgid "arnold.user09"
-msgstr "arnold.user09"
-
-msgid "user.arnold09"
-msgstr "user.arnold09"
-
-msgid "09usera"
-msgstr "09usera"
-
-msgid "09arnoldu"
-msgstr "09arnoldu"
-
-msgid "arnoldu"
-msgstr "arnoldu"
-
-msgid "Enrollment number"
-msgstr "Numero de inscripcion"
+msgid "Hide advanced fields."
+msgstr "Ocultar campos avanzados"
 
 msgid "Enter the firstname for this user."
 msgstr "Ingrese el nombre para este usuario."
@@ -6113,8 +6116,38 @@ msgstr "Ingrese el apellido para este usuario."
 msgid "Enter a password and confirm it in the box below."
 msgstr "Ingrese una contraseña y confírmela en el cuadro a continuación."
 
+msgid "User code"
+msgstr "Codigo de usuario"
+
 msgid "Student enrolment number or staff code. This field can be left blank."
 msgstr "Número de inscripción estudiantil o código de personal. Este campo puede dejarse en blanco."
+
+msgid "Room Number"
+msgstr "Número de habitación"
+
+msgid "The room number for the user. This field can be left blank."
+msgstr "El número de habitación para el usuario. Este campo puede dejarse en blanco."
+
+msgid "Telephone Number"
+msgstr "Número de teléfono"
+
+msgid "The telephone number for the user. This field can be left blank."
+msgstr "El número de teléfono para el usuario. Este campo puede dejarse en blanco."
+
+msgid "Fax Number"
+msgstr "Número de fax"
+
+msgid "The fax number for the user. This field can be left blank."
+msgstr "El número de fax para el usuario. Este campo puede dejarse en blanco."
+
+msgid "Mobile Number"
+msgstr "Número de teléfono móvil"
+
+msgid "The mobile number for the user. This field can be left blank."
+msgstr "El número de teléfono móvil para el usuario. Este campo puede dejarse en blanco."
+
+msgid "Primary group"
+msgstr "Grupo primario"
 
 msgid "The groups give different levels of access."
 msgstr "Los grupos brindan diferentes niveles de acceso."
@@ -6124,6 +6157,9 @@ msgstr "El grupo itadmin es para el administrador de red."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Solo los miembros de itadmin y los grupos tecnológicos obtienen acceso de administrador a las computadoras con Windows unidas al dominio."
+
+msgid "Username style"
+msgstr "Estilo de nombre de usuario"
 
 msgid "Choose the username style you require."
 msgstr "Elija el estilo de nombre de usuario que necesita."
@@ -6521,45 +6557,6 @@ msgstr "No has elegido una acción."
 msgid "You have not chosen an asset."
 msgstr "No has elegido un activo."
 
-msgid "The user style must not be blank."
-msgstr "El estilo del usuario no debe estar en blanco."
-
-msgid "The primary group must not be blank."
-msgstr "El grupo primario no debe estar en blanco."
-
-msgid "Blank forename"
-msgstr "Nombre de pila en blanco"
-
-msgid "Blank surname"
-msgstr "Apellido en blanco"
-
-msgid "Blank enrolment number"
-msgstr "Número de inscripción en blanco"
-
-msgid "Blank username"
-msgstr "Usuario en blanco"
-
-msgid "The username is greater than 20 characters"
-msgstr "El nombre de usuario tiene más de 20 caracteres"
-
-msgid "Blank Primary Group"
-msgstr "Grupo primario en blanco"
-
-msgid "Failed"
-msgstr "Ha fallado"
-
-msgid "CSV file error."
-msgstr "Error de archivo CSV."
-
-msgid "This username is already in use."
-msgstr "Este nombre de usuario ya está en uso."
-
-msgid "Creating"
-msgstr "Creando"
-
-msgid "Bulk user creation completed."
-msgstr "Creación masiva de usuarios completada."
-
 msgid "View Event Logs"
 msgstr "Ver registros de eventos"
 
@@ -6845,6 +6842,9 @@ msgstr "Si aún no lo ha hecho, puede agregar un servidor de impresora a su red 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "El enlace de los servidores de la demostración mostrará todos los servidores disponibles. Elija el servidor al que desea agregar el módulo de impresora haciendo clic en el botón Agregar rol."
 
+msgid "Show Servers"
+msgstr "Mostrar servidores"
+
 msgid "Control Printers"
 msgstr "Impresoras de control"
 
@@ -7065,7 +7065,7 @@ msgid "Primary Admins have full control of the web management."
 msgstr "Los administradores primarios tienen control total de la administración web."
 
 msgid "Admins have full control of the web management but cannot add or delete other admins."
-msgstr "Los administradores tienen control total de la administración web pero no pueden agregar o eliminar otros administradores."
+msgstr "Los administradores tienen control total de la administración web, pero no pueden agregar o eliminar otros administradores."
 
 msgid "Technicians can access a limited set of controls for day to day running of the system such as changing passwords."
 msgstr "Los técnicos pueden acceder a un conjunto limitado de controles para el funcionamiento diario del sistema, como cambiar las contraseñas."
@@ -7433,8 +7433,17 @@ msgstr "Programe un trabajo para este servidor."
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
 msgstr "Nombre de pila, apellido, número de inscripción o código de personal - opcional, nombre de usuario - opcional, grupo primario - opcional, grupos secundarios separados por dos puntos - opcional, cambiar contraseña en el primer inicio de sesión - opcional (y / n), contraseña - opcional"
 
-msgid "Import Enrollment Numbers"
-msgstr "Importar números de inscripción"
+msgid "CSV file format without the first row as headers"
+msgstr "Formato de archivo CSV sin la primera fila como encabezados"
+
+msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"
+msgstr "Nombre, apellido, número de inscripción o código de personal - opcional, nombre de usuario - opcional, grupo primario - opcional, grupos secundarios separados por dos puntos - opcional, cambiar contraseña el primer inicio de sesión - opcional (y / n), número de habitación - opcional, teléfono- número - opcional, número de fax - opcional, número móvil - opcional, contraseña - opcional"
+
+msgid "CSV file format with the first row as headers"
+msgstr "Formato de archivo CSV con la primera fila como encabezados"
+
+msgid "Possible column headers are"
+msgstr "Posibles encabezados de columna son"
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
 msgstr "Esto configurará un servidor de radio para su red que se puede usar para configurar puntos de acceso inalámbrico utilizando la empresa WPA2."
@@ -7545,7 +7554,7 @@ msgid "Enter the usernames you want to ban from the system separated by spaces:"
 msgstr "Ingrese los nombres de usuario que desea excluir del sistema separados por espacios:"
 
 msgid "This will set up a print server for your network allowing printer queues to be created and controlled."
-msgstr "Esto configurará un servidor de impresión para su red que permite crear y controlar colas de impresión."
+msgstr "Esto configurará un servidor de impresión para su red que permite crear y controlar colas de impresora."
 
 msgid "Printer drivers can be added to the printer queues so that your client computers do not need to have the printer drivers installed on them."
 msgstr "Los controladores de impresora se pueden agregar a las colas de impresión para que las computadoras de sus clientes no necesiten tener instalados los controladores de impresora."
@@ -7949,7 +7958,7 @@ msgstr "Añadir nombre del personal"
 msgid "Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."
 msgstr "Ingrese los nombres de usuario de los miembros del personal que no desea que puedan acceder a la sección de personal de la administración web."
 
-msgid "Retricted Staff"
+msgid "Restricted Staff"
 msgstr "Personal restringido"
 
 msgid "A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."
@@ -9218,18 +9227,6 @@ msgstr "Nombre de pila"
 msgid "Display Name"
 msgstr "Nombre para mostrar"
 
-msgid "Room Number"
-msgstr "Número de habitación"
-
-msgid "Telephone Number"
-msgstr "Número de teléfono"
-
-msgid "Fax Number"
-msgstr "Número de fax"
-
-msgid "Mobile Number"
-msgstr "Número de teléfono móvil"
-
 msgid "E-Mail address"
 msgstr "Dirección de correo electrónico"
 
@@ -9669,7 +9666,7 @@ msgid "Map drive"
 msgstr "Unidad de mapa"
 
 msgid "Choose the group that you want to allow access to the folder."
-msgstr "Elija el grupo que desea permitir el acceso a la carpeta."
+msgstr "Elija el grupo al que desea permitir el acceso a la carpeta."
 
 msgid "Add group"
 msgstr "Añadir grupo"
@@ -10616,6 +10613,9 @@ msgstr "Sin acceso"
 msgid "Change Status"
 msgstr "Cambiar Estado"
 
+msgid "Change Student Password"
+msgstr "Cambiar la contraseña del estudiante"
+
 msgid "Internet Logs"
 msgstr "Registros de Internet"
 
@@ -10713,7 +10713,7 @@ msgid "Archive Exam Accounts"
 msgstr "Archive Exam Accounts"
 
 msgid "Archve the exam accounts so that they can be used for a new exam."
-msgstr "Archive las cuentas del examen para que puedan ser usadas para un nuevo examen."
+msgstr "Archive las cuentas de examen para que puedan ser utilizadas para un nuevo examen."
 
 msgid "Copy Data to Accounts"
 msgstr "Copiar datos en cuentas"
@@ -10739,9 +10739,6 @@ msgstr "Sube imágenes de tus usuarios desde un archivo archivado."
 msgid "Import enrollment numbers or staff codes from a CSV file."
 msgstr "Importe números de inscripción o códigos de personal desde un archivo CSV."
 
-msgid "Set User Passwords"
-msgstr "Establecer contraseñas de usuario"
-
 msgid "Set user's passwords from a CSV file."
 msgstr "Establecer las contraseñas del usuario desde un archivo CSV."
 
@@ -10764,7 +10761,7 @@ msgid "View the services that are running on a server."
 msgstr "Ver los servicios que se ejecutan en un servidor."
 
 msgid "View the firewall rules that are set on your server."
-msgstr "Vea las reglas de firewall que están configuradas en su servidor."
+msgstr "Vea las reglas de firewall que están establecidas en su servidor."
 
 msgid "Change management passwords on a server."
 msgstr "Cambiar las contraseñas de administración en un servidor."
@@ -11111,6 +11108,9 @@ msgstr "Configura Savapage."
 msgid "View assigned printers."
 msgstr "Ver impresoras asignadas."
 
+msgid "View the Airprint status."
+msgstr "Ver el estado de Airprint."
+
 msgid "Generate Windows printer drivers."
 msgstr "Generar controladores de impresora de Windows."
 
@@ -11142,7 +11142,7 @@ msgid "Configure the E-Mail server to send out going E-Mail via an E-Mail relay.
 msgstr "Configure el servidor de correo electrónico para enviar un correo electrónico en curso a través de un reenvío de correo electrónico."
 
 msgid "Add E-Mails or domains to a whitelist that bypasses spam checks."
-msgstr "Agregue correos electrónicos o dominios a una lista blanca que evite las verificaciones de spam."
+msgstr "Agregue E-Mails o dominios a una lista blanca que evite las verificaciones de spam."
 
 msgid "Configure TCP-IP addresses that can send E-Mail without user authentication."
 msgstr "Configure las direcciones TCP-IP que pueden enviar correos electrónicos sin autenticación de usuario."
@@ -11374,6 +11374,9 @@ msgstr "Agregar grupo"
 
 msgid "Creating home folders"
 msgstr "Crear carpetas de inicio"
+
+msgid "Creating"
+msgstr "Creando"
 
 msgid "Copying in logon files"
 msgstr "Copia en archivos de inicio de sesión"
