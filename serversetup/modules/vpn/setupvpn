@@ -167,7 +167,7 @@ sed -i '/CA_EXPIRE=/c\export CA_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 sed -i '/KEY_EXPIRE=/c\export KEY_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 
 #Generate Diffie Hellmam parameters
-/opt/karoshi/serversetup/all/scripts/create_diffie_hellman/etc/openvpn dh2048.pem 2048 html
+/opt/karoshi/serversetup/all/scripts/create_diffie_hellman /etc/openvpn dh2048.pem 2048 html
 
 if [ ! -f /etc/openvpn/server.key ] || [ ! -f /etc/openvpn/server.crt ]
 then
