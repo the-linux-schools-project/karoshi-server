@@ -247,6 +247,9 @@ then
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/tftpd
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/rpcbind
 else
+
+	scp -r /opt/karoshi/serversetup/modules/distributionserver/tftpboot root@"$SERVERNAME:/opt/karoshi/serversetup/modules/distributionserver/"
+
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 
 	##########################
