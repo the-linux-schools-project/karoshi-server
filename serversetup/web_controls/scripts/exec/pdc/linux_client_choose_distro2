@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_cgi
 then
-	echo `date`: linux_client_choose_distro - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1)
 [ -z "$Checksum" ] && Checksum=not_set
-if [ $Checksum'check' != $linux_client_choose_distro_cgi'check' ]
+if [ "$Checksum"'check' != "$linux_client_choose_distro_cgi"'check' ]
 then
-	echo `date`: linux_client_choose_distro - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -45,67 +45,67 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: linux_client_choose_distro - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: linux_client_choose_distro - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
-DISTROCHOICE=`echo "$DATA" | cut -s -d: -f4`
-CONTROL=`echo "$DATA" | cut -s -d: -f5`
-NETBOOT=`echo "$DATA" | cut -s -d: -f6`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
+DistributionChoice=$(echo "$DATA" | cut -s -d: -f4)
+Control=$(echo "$DATA" | cut -s -d: -f5)
+NetBoot=$(echo "$DATA" | cut -s -d: -f6)
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: linux_client_choose_distro - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: linux_client_choose_distro - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ -z "$DISTROCHOICE" ]
+if [ -z "$DistributionChoice" ]
 then
-	echo `date`: linux_client_choose_distro - Blank distribution choice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	exit 101
-fi
-
-if [ -z "$CONTROL" ]
-then
-	echo `date`: linux_client_choose_distro - Blank control choice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Blank distribution choice by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ $CONTROL = copy ] || [ $CONTROL = delete ]
+if [ -z "$Control" ]
 then
-	if [ -z "$NETBOOT" ]
+	echo "$(date): linux_client_choose_distro - Blank control choice by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [ "$Control" = copy ] || [ "$Control" = delete ]
+then
+	if [ -z "$NetBoot" ]
 	then
-		echo `date`: linux_client_choose_distro - Blank netboot by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): linux_client_choose_distro - Blank netboot by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -113,251 +113,253 @@ fi
 #Language
 ##########################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 #Get distribution server
-DISTRIBUTIONSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
+DistributionServer=$(sed -n 1,1p /opt/karoshi/server_network/distribution_server)
 #Get Distro server ip
-DISTROSERVERIP=`net lookup $DISTRIBUTIONSERVER`
-DISTROFOLDER=`echo $DISTROCHOICE | sed 's/.iso//g'`
+DistributionServerIP=$(net lookup "$DistributionServer")
+DistributionFolder="${DistributionChoice//.iso/}"
 
-if [ $CONTROL = copy ]
+
+if [ "$Control" = copy ]
 then
-	DEFAULTISO=no
 	#Copy iso to /home/distributions/iso
 	#Mount iso
 
 	[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
 
-	[ -f /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
-	ln -s /home/itadminshare/distributions/linux/"$DISTROCHOICE" /home/distributions/linux_iso/"$DISTROCHOICE"
-	#Get distribution server
+	[ -f /home/distributions/linux_iso/"$DistributionChoice" ] && rm -f /home/distributions/linux_iso/"$DistributionChoice"
+	ln -s /home/itadminshare/distributions/linux/"$DistributionChoice" /home/distributions/linux_iso/"$DistributionChoice"
+	
+	#Set additional kernel parameters for ubuntu 18.04 - temporary fix
+	if [ "$NetBoot" = Ubuntu-18.04 ]
+	then
+		AdditionalKernelParameters="systemd.mask=dev-hugepages.mount systemd.mask=dev-mqueue.mount systemd.mask=sys-fs-fuse-connections.mount systemd.mask=sys-kernel-config.mount systemd.mask=sys-kernel-debug.mount systemd.mask=tmp.mount"
+	else
+		AdditionalKernelParameters=""
+	fi
 
-	if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
+	if [[ "$DistributionServer" = $(hostname-fqdn) ]]
 	then
 
-		[ ! -d /media/iso.$$ ] && mkdir -p /media/iso.$$
-		[ -d /home/distributions/linux_distro/$DISTROFOLDER ] && rm -f -R /home/distributions/linux_distro/$DISTROFOLDER
-		mkdir -p /home/distributions/linux_distro/$DISTROFOLDER
+		[ ! -d /media/iso."$$" ] && mkdir -p /media/iso."$$"
+		[ -d /home/distributions/linux_distro/"$DistributionFolder" ] && rm -f -R /home/distributions/linux_distro/"$DistributionFolder"
+		mkdir -p /home/distributions/linux_distro/"$DistributionFolder"
 		#Mount iso
-		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li></ul>"
-		mount /home/distributions/linux_iso/"$DISTROCHOICE" /media/iso.$$ -o loop
+		echo "<ul><li>$DistributionServer - "$"Mounting iso""</li></ul>"
+		mount /home/distributions/linux_iso/"$DistributionChoice" /media/iso."$$" -o loop
 		#Copy files
-		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Copying files out of the iso image""</li></ul>"
-		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		cp -v -a /media/iso.$$/* /home/distributions/linux_distro/$DISTROFOLDER
-		cp -v -a -f -R /media/iso.$$/.disk /home/distributions/linux_distro/$DISTROFOLDER
+		echo "<ul><li>$DistributionServer - "$"Copying files out of the iso image""</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		cp -v -a /media/iso."$$"/* /home/distributions/linux_distro/"$DistributionFolder"
+		cp -v -a -f -R /media/iso."$$"/.disk /home/distributions/linux_distro/"$DistributionFolder"
 		echo "</pre>"
 		#Unmount iso
-		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li></ul>"
-		umount /media/iso.$$
-		rm -f -R /media/iso.$$
+		echo "<ul><li>$DistributionServer - "$"Unmounting iso""</li></ul>"
+		umount /media/iso."$$"
+		rm -f -R /media/iso."$$"
 
-		echo $NETBOOT > /home/distributions/linux_iso/"$DISTROCHOICE".netboot
+		echo "$NetBoot" > /home/distributions/linux_iso/"$DistributionChoice".netboot
 		#Copy out files
-		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Copying out files""</li></ul>"
+		echo "<ul><li>$DistributionServer - "$"Copying out files""</li></ul>"
 
-		[ -d /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/
-		mkdir -p /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/
+		[ -d "/home/tftpboot/$NetBoot/images/$DistributionFolder/" ] && rm -f -R "/home/tftpboot/$NetBoot/images/$DistributionFolder/"
+		mkdir -p "/home/tftpboot/$NetBoot/images/$DistributionFolder/"
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
-		cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/initrd.* /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/
+		cp -v -f /home/distributions/linux_distro/"$DistributionFolder"/casper/initrd.* "/home/tftpboot/$NetBoot/images/$DistributionFolder/"
 
 		#Get vmlinuz
-		VMLINUZ=`ls /home/distributions/linux_distro/$DISTROFOLDER/casper/vmlin* | sed -n 1,1p`
-		VMLINUZ=`basename "$VMLINUZ"`
-		cp -v -f /home/distributions/linux_distro/$DISTROFOLDER/casper/$VMLINUZ /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/
-		[ ! -f /home/tftpboot/$NETBOOT/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/preseed/$NETBOOT-preseed.cfg /home/tftpboot/$NETBOOT/preseed.cfg
-		cp -v -f /home/tftpboot/$NETBOOT/preseed.cfg /home/distributions/linux_distro/$DISTROFOLDER/casper/
-		sed -i "s%CHANGETHISLOCALE%$LANG%" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
+		VMLINUZ=$(ls /home/distributions/linux_distro/"$DistributionFolder"/casper/vmlin* | sed -n 1,1p)
+		VMLINUZ=$(basename "$VMLINUZ")
+		cp -v -f "/home/distributions/linux_distro/$DistributionFolder/casper/$VMLINUZ" "/home/tftpboot/$NetBoot/images/$DistributionFolder/"
+		[ ! -f /home/tftpboot/"$NetBoot"/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/DistributionServer/tftpboot/preseed/"$NetBoot"-preseed.cfg /home/tftpboot/"$NetBoot"/preseed.cfg
+		cp -v -f /home/tftpboot/"$NetBoot"/preseed.cfg /home/distributions/linux_distro/"$DistributionFolder"/casper/
+		sed -i "s%CHANGETHISLOCALE%$LANG%" /home/distributions/linux_distro/"$DistributionFolder"/casper/preseed.cfg
 		TIMEZONE=$(cat /etc/timezone)
-		sed -i "s%CHANGETHISTIMEZONE%$TIMEZONE%" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
+		sed -i "s%CHANGETHISTIMEZONE%$TIMEZONE%" /home/distributions/linux_distro/"$DistributionFolder"/casper/preseed.cfg
 		echo "</pre>"
 
 		#Find which initrd
-		INITRD=`ls /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/initrd.* | sed -n 1,1p`
-		INITRD=`basename "$INITRD"`
+		INITRD=$(ls "/home/tftpboot/$NetBoot/images/$DistributionFolder/initrd".* | sed -n 1,1p)
+		INITRD=$(basename "$INITRD")
 
 		#Create boot entry
-		[ ! -d /home/tftpboot/$NETBOOT/menus ] && mkdir -p /home/tftpboot/$NETBOOT/menus
+		[ ! -d /home/tftpboot/"$NetBoot"/menus ] && mkdir -p /home/tftpboot/"$NetBoot"/menus
 
-		echo 'LABEL '$DISTROFOLDER'' > /home/tftpboot/$NETBOOT/menus/$DISTROFOLDER
-		echo '	MENU LABEL ^'$DISTROFOLDER'' >> /home/tftpboot/$NETBOOT/menus/$DISTROFOLDER
-		echo '	KERNEL images/'$DISTROFOLDER'/'$VMLINUZ'' >> /home/tftpboot/$NETBOOT/menus/$DISTROFOLDER
-		echo '	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/'$INITRD' file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --' >> /home/tftpboot/$NETBOOT/menus/$DISTROFOLDER	
+		echo 'LABEL '"$DistributionFolder"'' > "/home/tftpboot/$NetBoot/menus/$DistributionFolder"
+		echo '	MENU LABEL ^'"$DistributionFolder"'' >> "/home/tftpboot/$NetBoot/menus/$DistributionFolder"
+		echo '	KERNEL images/'"$DistributionFolder"'/'"$VMLINUZ"'' >> "/home/tftpboot/$NetBoot/menus/$DistributionFolder"
+		echo '	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='"$DistributionServerIP"':/home/distributions/linux_distro/'"$DistributionFolder"' initrd=images/'"$DistributionFolder"'/'"$INITRD"' file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp '"$AdditionalKernelParameters"' --' >> "/home/tftpboot/$NetBoot/menus/$DistributionFolder"	
 
-		[ -f /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg
-		if [ `ls -1 /home/tftpboot/$NETBOOT/menus/ | wc -l` -gt 0 ]
+		[ -f /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg
+		if [[ $(ls -1 /home/tftpboot/"$NetBoot"/menus/ | wc -l) -gt 0 ]]
 		then
-			for MENUITEMS in /home/tftpboot/$NETBOOT/menus/*
+			for MENUITEMS in /home/tftpboot/"$NetBoot"/menus/*
 			do
-				MENUITEM=`basename $MENUITEMS`
-				cat /home/tftpboot/$NETBOOT/menus/$MENUITEM >> /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg
-				echo >> /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg
+				MENUITEM=$(basename "$MENUITEMS")
+				cat "/home/tftpboot/$NetBoot/menus/$MENUITEM" >> /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg
+				echo >> /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg
 			done
 		fi
 
 		#Restart nfs server
-		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
+		echo "<ul><li>$DistributionServer - "$"Restarting NFS Server""</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_stop
 		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_start
 		echo "</pre>"
 	else
-		scp -r /opt/karoshi/serversetup/modules/distributionserver/tftpboot/preseed root@$DISTRIBUTIONSERVER:"/opt/karoshi/serversetup/modules/distributionserver/tftpboot/"
-		ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+		scp -r /opt/karoshi/serversetup/modules/DistributionServer/tftpboot/preseed root@"$DistributionServer:/opt/karoshi/serversetup/modules/DistributionServer/tftpboot/"
+		ssh -x -o PasswordAuthentication=no "$DistributionServer" '
 		[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
-		[ -f /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
+		[ -f /home/distributions/linux_iso/"'"$DistributionChoice"'" ] && rm -f /home/distributions/linux_iso/"'"$DistributionChoice"'"
 		'
-		echo '<ul><li>'$HOSTNAME' - '$DISTRIBUTIONSERVER' - '$"Copying iso"'</li></ul>'
+		echo '<ul><li>'"$HOSTNAME"' - '"$DistributionServer"' - '$"Copying iso"'</li></ul>'
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		rsync -avL /home/distributions/linux_iso/"$DISTROCHOICE" root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/" 2>&1
+		rsync -avL /home/distributions/linux_iso/"$DistributionChoice" root@"$DistributionServer:/home/distributions/linux_iso/" 2>&1
 
 		echo "</pre>"
-		ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
-		[ ! -d /media/iso.'$$' ] && mkdir -p /media/iso.'$$'
-		[ -d /home/distributions/linux_distro/'$DISTROFOLDER' ] && rm -f -R /home/distributions/linux_distro/'$DISTROFOLDER'
-		mkdir -p /home/distributions/linux_distro/'$DISTROFOLDER'
+		ssh -x -o PasswordAuthentication=no "$DistributionServer" '
+		[ ! -d /media/iso.'"$$"' ] && mkdir -p /media/iso.'"$$"'
+		[ -d /home/distributions/linux_distro/'"$DistributionFolder"' ] && rm -f -R /home/distributions/linux_distro/'"$DistributionFolder"'
+		mkdir -p /home/distributions/linux_distro/'"$DistributionFolder"'
 		#Mount iso
-		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Mounting iso"'"</li></ul>"
-		mount /home/distributions/linux_iso/"'$DISTROCHOICE'" /media/iso.'$$' -o loop
+		echo "<ul><li>"'"$DistributionServer"' - '$"Mounting iso"'"</li></ul>"
+		mount /home/distributions/linux_iso/"'"$DistributionChoice"'" /media/iso.'"$$"' -o loop
 		#Copy files
-		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Copying files out of the iso image"'"</li></ul>"
+		echo "<ul><li>"'"$DistributionServer"' - '$"Copying files out of the iso image"'"</li></ul>"
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		cp -v -a /media/iso.'$$'/* /home/distributions/linux_distro/'$DISTROFOLDER'
-		cp -v -a -f -R /media/iso.'$$'/.disk /home/distributions/linux_distro/'$DISTROFOLDER'
+		cp -v -a /media/iso.'"$$"'/* /home/distributions/linux_distro/'"$DistributionFolder"'
+		cp -v -a -f -R /media/iso.'"$$"'/.disk /home/distributions/linux_distro/'"$DistributionFolder"'
 		echo "</pre>"
 		#Unmount iso
-		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Unmounting iso"'"</li></ul>"
-		umount /media/iso.'$$'
-		rm -f -R /media/iso.'$$'
-		echo '$NETBOOT' > /home/distributions/linux_iso/"'$DISTROCHOICE'".netboot
+		echo "<ul><li>"'"$DistributionServer"' - '$"Unmounting iso"'"</li></ul>"
+		umount /media/iso.'"$$"'
+		rm -f -R /media/iso.'"$$"'
+		echo '"$NetBoot"' > /home/distributions/linux_iso/"'"$DistributionChoice"'".netboot
 		#Copy out files
-		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Copying out files"'"</li></ul>"
+		echo "<ul><li>"'"$DistributionServer"' - '$"Copying out files"'"</li></ul>"
 
-		[ -d /home/tftpboot/'$NETBOOT'/images/'$DISTROFOLDER'/ ] && rm -f -R /home/tftpboot/'$NETBOOT'/images/'$DISTROFOLDER'/
-		mkdir -p /home/tftpboot/'$NETBOOT'/images/'$DISTROFOLDER'/
+		[ -d /home/tftpboot/'"$NetBoot"'/images/'"$DistributionFolder"'/ ] && rm -f -R /home/tftpboot/'"$NetBoot"'/images/'"$DistributionFolder"'/
+		mkdir -p /home/tftpboot/'"$NetBoot"'/images/'"$DistributionFolder"'/
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/initrd.* /home/tftpboot/'$NETBOOT'/images/'$DISTROFOLDER'/
+		cp -v -f /home/distributions/linux_distro/'"$DistributionFolder"'/casper/initrd.* /home/tftpboot/'"$NetBoot"'/images/'"$DistributionFolder"'/
 
 		#Get vmlinuz
-		VMLINUZ=`ls /home/distributions/linux_distro/'$DISTROFOLDER'/casper/vmlin* | sed -n 1,1p`
-		VMLINUZ=`basename "$VMLINUZ"`
-		cp -v -f /home/distributions/linux_distro/'$DISTROFOLDER'/casper/$VMLINUZ /home/tftpboot/'$NETBOOT'/images/'$DISTROFOLDER'/
-		[ ! -f /home/tftpboot/'$NETBOOT'/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/distributionserver/tftpboot/preseed/'$NETBOOT'-preseed.cfg /home/tftpboot/'$NETBOOT'/preseed.cfg
+		VMLINUZ=$(ls /home/distributions/linux_distro/'"$DistributionFolder"'/casper/vmlin* | sed -n 1,1p)
+		VMLINUZ=$(basename "$VMLINUZ")
+		cp -v -f /home/distributions/linux_distro/'"$DistributionFolder"'/casper/"$VMLINUZ" /home/tftpboot/'"$NetBoot"'/images/'"$DistributionFolder"'/
+		[ ! -f /home/tftpboot/'"$NetBoot"'/preseed.cfg ] && cp /opt/karoshi/serversetup/modules/DistributionServer/tftpboot/preseed/'"$NetBoot"'-preseed.cfg /home/tftpboot/'"$NetBoot"'/preseed.cfg
 
-		cp -v -f /home/tftpboot/'$NETBOOT'/preseed.cfg /home/distributions/linux_distro/'$DISTROFOLDER'/casper/
-		sed -i "s%CHANGETHISLOCALE%$LANG%" /home/distributions/linux_distro/'$DISTROFOLDER'/casper/preseed.cfg
+		cp -v -f /home/tftpboot/'"$NetBoot"'/preseed.cfg /home/distributions/linux_distro/'"$DistributionFolder"'/casper/
+		sed -i "s%CHANGETHISLOCALE%$LANG%" /home/distributions/linux_distro/'"$DistributionFolder"'/casper/preseed.cfg
 		TIMEZONE=$(cat /etc/timezone)
-		sed -i "s%CHANGETHISTIMEZONE%$TIMEZONE%" /home/distributions/linux_distro/'$DISTROFOLDER'/casper/preseed.cfg
+		sed -i "s%CHANGETHISTIMEZONE%$TIMEZONE%" /home/distributions/linux_distro/'"$DistributionFolder"'/casper/preseed.cfg
 		echo "</pre>"
 
 		#Find which initrd
-		INITRD=`ls /home/tftpboot/'$NETBOOT'/images/'$DISTROFOLDER'/initrd.* | sed -n 1,1p`
-		INITRD=`basename "$INITRD"`
+		INITRD=$(ls /home/tftpboot/'"$NetBoot"'/images/'"$DistributionFolder"'/initrd.* | sed -n 1,1p)
+		INITRD=$(basename "$INITRD")
 
 
 		#Create boot entry
-		[ ! -d /home/tftpboot/'$NETBOOT'/menus ] && mkdir -p /home/tftpboot/'$NETBOOT'/menus
+		[ ! -d /home/tftpboot/'"$NetBoot"'/menus ] && mkdir -p /home/tftpboot/'"$NetBoot"'/menus
 
-		echo "LABEL '$DISTROFOLDER'" > /home/tftpboot/'$NETBOOT'/menus/'$DISTROFOLDER'
-		echo "	MENU LABEL ^'$DISTROFOLDER'" >> /home/tftpboot/'$NETBOOT'/menus/'$DISTROFOLDER'
-		echo "	KERNEL images/'$DISTROFOLDER'/$VMLINUZ" >> /home/tftpboot/'$NETBOOT'/menus/'$DISTROFOLDER'
-		echo "	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='$DISTROSERVERIP':/home/distributions/linux_distro/'$DISTROFOLDER' initrd=images/'$DISTROFOLDER'/$INITRD file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp  --" >> /home/tftpboot/'$NETBOOT'/menus/'$DISTROFOLDER'
+		echo "LABEL '"$DistributionFolder"'" > /home/tftpboot/'"$NetBoot"'/menus/'"$DistributionFolder"'
+		echo "	MENU LABEL ^'"$DistributionFolder"'" >> /home/tftpboot/'"$NetBoot"'/menus/'"$DistributionFolder"'
+		echo "	KERNEL images/'"$DistributionFolder"'/$VMLINUZ" >> /home/tftpboot/'"$NetBoot"'/menus/'"$DistributionFolder"'
+		echo "	append	boot=casper automatic-ubiquity netboot=nfs nfsroot='"$DistributionServerIP"':/home/distributions/linux_distro/'"$DistributionFolder"' initrd=images/'"$DistributionFolder"'/"$INITRD" file=/cdrom/casper/preseed.cfg priority=critical ip=dhcp '"$AdditionalKernelParameters"' --" >> /home/tftpboot/'"$NetBoot"'/menus/'"$DistributionFolder"'
 
-		[ -f /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg
-		if [ `ls -1 /home/tftpboot/'$NETBOOT'/menus/ | wc -l` -gt 0 ]
+		[ -f /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg
+		if [ `ls -1 /home/tftpboot/'"$NetBoot"'/menus/ | wc -l` -gt 0 ]
 		then
-			for MENUITEMS in /home/tftpboot/'$NETBOOT'/menus/*
+			for MENUITEMS in /home/tftpboot/'"$NetBoot"'/menus/*
 			do
-				MENUITEM=`basename $MENUITEMS`
-				cat /home/tftpboot/'$NETBOOT'/menus/$MENUITEM >> /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg
-				echo >> /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg
+				MENUITEM=$(basename $MENUITEMS)
+				cat /home/tftpboot/'"$NetBoot"'/menus/"$MENUITEM" >> /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg
+				echo >> /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg
 			done
 		fi
 
 		#Restart nfs server
-		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
+		echo "<ul><li>"'"$DistributionServer"' - '$"Restarting NFS Server"'"</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		/opt/karoshi/serversetup/distro/$DistributionChoice/scripts/control_services/nfs_stop
 		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		/opt/karoshi/serversetup/distro/$DistributionChoice/scripts/control_services/nfs_start
 		echo "</pre>"
 		'
 
 	fi
 fi
 
-if [ $CONTROL = delete ]
+if [ "$Control" = delete ]
 then
-	#Delete iso from itadmin
-	#[ -e /home/itadminshare/distributions/linux/"$DISTROCHOICE" ] && rm -f /home/itadminshare/distributions/linux/"$DISTROCHOICE"
-	#Delete symlink
-	[ -e /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
-	[ -e /home/distributions/linux_iso/"$DISTROCHOICE".netboot ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE".netboot
-
-	if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
+	if [[ "$DistributionServer" = $(hostname-fqdn) ]]
 	then
-		NETBOOT=$(cat /home/distributions/linux_iso/$DISTROCHOICE.netboot)
-		[ -d /home/tftpboot/$NETBOOT/images/"$DISTROFOLDER"/ ] && rm -f -R /home/tftpboot/$NETBOOT/images/"$DISTROFOLDER"/
-		[ -e /home/tftpboot/$NETBOOT/menus/"$DISTROFOLDER" ] && rm -f /home/tftpboot/$NETBOOT/menus/"$DISTROFOLDER"
-		[ -d /home/distributions/linux_distro/"$DISTROFOLDER" ] && rm -f -R /home/distributions/linux_distro/"$DISTROFOLDER"
-
-		[ -f /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg
-		if [ `ls -1 /home/tftpboot/$NETBOOT/menus/ | wc -l` -gt 0 ]
+		NetBoot=$(cat /home/distributions/linux_iso/"$DistributionChoice".netboot)
+		[ -d "/home/tftpboot/$NetBoot/images/$DistributionFolder/" ] && rm -f -R "/home/tftpboot/$NetBoot/images/$DistributionFolder/"
+		[ -e "/home/tftpboot/$NetBoot/menus/$DistributionFolder" ] && rm -f "/home/tftpboot/$NetBoot/menus/$DistributionFolder"
+		[ -d "/home/distributions/linux_distro/$DistributionFolder" ] && rm -f -R "/home/distributions/linux_distro/$DistributionFolder"
+		[ -f /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg
+		if [[ $(ls -1 /home/tftpboot/"$NetBoot"/menus/ | wc -l) -gt 0 ]]
 		then
-			for MENUITEMS in /home/tftpboot/$NETBOOT/menus/*
+			for MENUITEMS in /home/tftpboot/"$NetBoot"/menus/*
 			do
-				MENUITEM=`basename $MENUITEMS`
-				cat /home/tftpboot/$NETBOOT/menus/$MENUITEM >> /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg
-				echo >> /home/tftpboot/$NETBOOT/ubuntu-installer/amd64/boot-screens/txt.cfg
+				MENUITEM=$(basename "$MENUITEMS")
+				cat "/home/tftpboot/$NetBoot/menus/$MENUITEM" >> /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg
+				echo >> /home/tftpboot/"$NetBoot"/ubuntu-installer/amd64/boot-screens/txt.cfg
 			done
 		fi
 
 		#Restart nfs server
-		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
+		echo "<ul><li>$DistributionServer - "$"Restarting NFS Server""</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_stop
 		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_start
 		echo "</pre>"
 	else
-		ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
-		NETBOOT=$(cat /home/distributions/linux_iso/'$DISTROCHOICE'.netboot)
-		[ -e /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
-		[ -e /home/distributions/linux_iso/"'$DISTROCHOICE'".netboot ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'".netboot
-		[ -d /home/tftpboot/$NETBOOT/images/"'$DISTROFOLDER'"/ ] && rm -f -R /home/tftpboot/$NETBOOT/images/"'$DISTROFOLDER'"/
-		[ -e /home/tftpboot/$NETBOOT/menus/"'$DISTROFOLDER'" ] && rm -f  /home/tftpboot/$NETBOOT/menus/"'$DISTROFOLDER'"
-		[ -d /home/distributions/linux_distro/"'$DISTROFOLDER'" ] && rm -f -R /home/distributions/linux_distro/"'$DISTROFOLDER'"
-
-		[ -f /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg
-		if [ `ls -1 /home/tftpboot/'$NETBOOT'/menus/ | wc -l` -gt 0 ]
+		ssh -x -o PasswordAuthentication=no "$DistributionServer" '
+		NetBoot=$(cat /home/distributions/linux_iso/'"$DistributionChoice"'.netboot)
+		[ -e /home/distributions/linux_iso/"'"$DistributionChoice"'" ] && rm -f /home/distributions/linux_iso/"'"$DistributionChoice"'"
+		[ -e /home/distributions/linux_iso/"'"$DistributionChoice"'".netboot ] && rm -f /home/distributions/linux_iso/"'"$DistributionChoice"'".netboot
+		[ -d /home/tftpboot/$NetBoot/images/"'"$DistributionFolder"'"/ ] && rm -f -R /home/tftpboot/$NetBoot/images/"'"$DistributionFolder"'"/
+		[ -e /home/tftpboot/$NetBoot/menus/"'"$DistributionFolder"'" ] && rm -f  /home/tftpboot/$NetBoot/menus/"'"$DistributionFolder"'"
+		[ -d /home/distributions/linux_distro/"'"$DistributionFolder"'" ] && rm -f -R /home/distributions/linux_distro/"'"$DistributionFolder"'"
+		[ -f /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg ] && rm -f /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg
+		if [ $(ls -1 /home/tftpboot/'"$NetBoot"'/menus/ | wc -l) -gt 0 ]
 		then
-			for MENUITEMS in /home/tftpboot/'$NETBOOT'/menus/*
+			for MENUITEMS in /home/tftpboot/'"$NetBoot"'/menus/*
 			do
-				MENUITEM=`basename $MENUITEMS`
-				cat /home/tftpboot/'$NETBOOT'/menus/$MENUITEM >> /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg
-				echo >> /home/tftpboot/'$NETBOOT'/ubuntu-installer/amd64/boot-screens/txt.cfg
+				MENUITEM=$(basename "$MENUITEMS")
+				cat /home/tftpboot/'"$NetBoot"'/menus/$MENUITEM >> /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg
+				echo >> /home/tftpboot/'"$NetBoot"'/ubuntu-installer/amd64/boot-screens/txt.cfg
 			done
 		fi
 
 		#Restart nfs server
-		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
+		echo "<ul><li>"'"$DistributionServer"' - '$"Restarting NFS Server"'"</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_stop
 		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_start
 		echo "</pre>"
 		'
 	fi
+
+	#Delete symlink
+	[ -e /home/distributions/linux_iso/"$DistributionChoice" ] && rm -f /home/distributions/linux_iso/"$DistributionChoice"
+	[ -e /home/distributions/linux_iso/"$DistributionChoice".netboot ] && rm -f /home/distributions/linux_iso/"$DistributionChoice".netboot
+
 fi
 
 exit
