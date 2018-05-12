@@ -235,9 +235,7 @@ then
 		then
 			echo '<ul><li>'$"Restarting"' shorewall</li></ul>'
 			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
-			echo "<br>"
 			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
-			echo "<br><br>"
 		fi
 
 		#Stop services
@@ -333,7 +331,6 @@ then
 	then
 		rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/federated_password_sync.cron
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-		echo "<br><br>"
 	fi
 
 	#Unflag server

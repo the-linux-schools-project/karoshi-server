@@ -761,6 +761,33 @@ samba-tool gpo setlink "$LDAPPATH" "$GPOREF" --username=Administrator --password
 
 function add_organisational_units {
 echo "$(date): Adding organisational units" >> /opt/karoshi/serversetup/install_log
+
+echo "$(date): Adding organisational units" 
+#Client computer subcontainers
+NAME="ClientComputers"
+DESC="Client Computers"
+LDAPPATH="OU=ClientComputers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="WindowsClients"
+DESC="Windows Clients"
+LDAPPATH="OU=WindowsClients,OU=ClientComputers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="LinuxClients"
+DESC="Linux Clients"
+LDAPPATH="OU=LinuxClients,OU=ClientComputers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="KaroshiClients"
+DESC="Karoshi Clients"
+LDAPPATH="OU=KaroshiClients,OU=LinuxClients,OU=ClientComputers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
 #People subcontainer
 NAME="People"
 DESC="People"
