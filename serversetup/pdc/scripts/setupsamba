@@ -762,31 +762,75 @@ samba-tool gpo setlink "$LDAPPATH" "$GPOREF" --username=Administrator --password
 function add_organisational_units {
 echo "$(date): Adding organisational units" >> /opt/karoshi/serversetup/install_log
 
-echo "$(date): Adding organisational units" 
-#Client computer subcontainers
-NAME="ClientComputers"
-DESC="Client Computers"
-LDAPPATH="OU=ClientComputers,$LDAPBASE"
+#Computer subcontainers
+NAME="Computers"
+DESC="Computers"
+LDAPPATH="OU=Computers,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-NAME="WindowsClients"
-DESC="Windows Clients"
-LDAPPATH="OU=WindowsClients,OU=ClientComputers,$LDAPBASE"
+NAME="Servers"
+DESC="Servers"
+LDAPPATH="OU=Servers,OU=Computers,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-NAME="LinuxClients"
-DESC="Linux Clients"
-LDAPPATH="OU=LinuxClients,OU=ClientComputers,$LDAPBASE"
+NAME="KaroshiServers"
+DESC="Karoshi Servers"
+LDAPPATH="OU=KaroshiServers,OU=Servers,OU=Computers,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-NAME="KaroshiClients"
-DESC="Karoshi Clients"
-LDAPPATH="OU=KaroshiClients,OU=LinuxClients,OU=ClientComputers,$LDAPBASE"
+NAME="WindowsServers"
+DESC="Windows Servers"
+LDAPPATH="OU=WIndowsServers,OU=Servers,OU=Computers,$LDAPBASE"
 add_organisational_unit
 creategpos
+
+NAME="Workstations"
+DESC="Workstations"
+LDAPPATH="OU=Workstations,OU=Computers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="Windows7"
+DESC="Windows 7"
+LDAPPATH="OU=Windows7,OU=Workstations,OU=Computers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="Windows8"
+DESC="Windows 8"
+LDAPPATH="OU=Windows8,OU=Workstations,OU=Computers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="Windows8.1"
+DESC="Windows 8.1"
+LDAPPATH="OU=Windows8.1,OU=Workstations,OU=Computers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="Windows10"
+DESC="Windows 10"
+LDAPPATH="OU=Windows10,OU=Workstations,OU=Computers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="KaroshiLinux"
+DESC="Karoshi Linux"
+LDAPPATH="OU=KaroshiLinux,OU=Workstations,OU=Computers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+NAME="Printers"
+DESC="Printers"
+LDAPPATH="OU=Printers,OU=Computers,$LDAPBASE"
+add_organisational_unit
+creategpos
+
+
+
 
 #People subcontainer
 NAME="People"

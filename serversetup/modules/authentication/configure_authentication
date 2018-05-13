@@ -253,8 +253,8 @@ then
 fi
 
 	#Join the domain
-	net ads join -S '"$KRBSERVER"' -U Administrator%'"$LDAPPASS"' 1>/dev/null
-	JOINDOMAINSTATUS=`echo $?`
+	net ads join createcomputer="Computers/Servers/KaroshiServers" -S '"$KRBSERVER"' -U Administrator%'"$LDAPPASS"' 1>/dev/null
+	JOINDOMAINSTATUS="$?"
 	if [ "$JOINDOMAINSTATUS" != 0 ]
 	then
 		exit 101
