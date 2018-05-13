@@ -775,15 +775,15 @@ LDAPPATH="OU=Servers,OU=Computers,$LDAPBASE"
 add_organisational_unit
 creategpos
 
-NAME="KaroshiServers"
-DESC="Karoshi Servers"
-LDAPPATH="OU=KaroshiServers,OU=Servers,OU=Computers,$LDAPBASE"
+NAME="KaroshiDomainMembers"
+DESC="Karoshi Domain Member Servers"
+LDAPPATH="OU=KaroshiDomainMembers,OU=Servers,OU=Computers,$LDAPBASE"
 add_organisational_unit
 creategpos
 
 NAME="WindowsServers"
 DESC="Windows Servers"
-LDAPPATH="OU=WIndowsServers,OU=Servers,OU=Computers,$LDAPBASE"
+LDAPPATH="OU=WindowsServers,OU=Servers,OU=Computers,$LDAPBASE"
 add_organisational_unit
 creategpos
 

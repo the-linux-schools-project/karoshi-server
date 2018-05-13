@@ -222,7 +222,7 @@ then
 		'
 		echo '<ul><li>'"$HOSTNAME"' - '"$DistributionServer"' - '$"Copying iso"'</li></ul>'
 		echo "<ul><li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-		rsync -avL --progress /home/distributions/linux_iso/"$DistributionChoice" root@"$DistributionServer:/home/distributions/linux_iso/" 2>&1
+		rsync -av --progress  /home/itadminshare/distributions/linux/"$DistributionChoice" root@"$DistributionServer:/home/distributions/linux_iso/" 2>&1
 
 		echo "</pre></li></ul>"
 
