@@ -214,7 +214,7 @@ then
 	then
 		CopyDistro
 	else
-		scp -r /opt/karoshi/serversetup/modules/DistributionServer/tftpboot/preseed root@"$DistributionServer:/opt/karoshi/serversetup/modules/DistributionServer/tftpboot/"
+		scp -r /opt/karoshi/serversetup/modules/distributionserver/tftpboot/preseed root@"$DistributionServer:/opt/karoshi/serversetup/modules/DistributionServer/tftpboot/"
 
 		ssh -x -o PasswordAuthentication=no "$DistributionServer" '
 		[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso

@@ -282,7 +282,7 @@ then
 fi
 if [ "$ASSETTYPE" = 19 ]
 then
-ASSETICON=/images/assets/monitor.png ; ASSETLABEL=$"Monitor"
+	ASSETICON=/images/assets/monitor.png ; ASSETLABEL=$"Monitor"
 fi
 if [ "$ASSETTYPE" = 20 ]
 then
@@ -290,7 +290,11 @@ then
 fi
 if [ "$ASSETTYPE" = 21 ]
 then
-	SSETICON=/images/assets/other.png ; ASSETLABEL=$"Other"
+	ASSETICON=/images/assets/other.png ; ASSETLABEL=$"Other"
+fi
+if [ "$ASSETTYPE" = 22 ]
+then
+	ASSETICON=/images/assets/server.png ; ASSETLABEL=$"Server"
 fi
 }
 
@@ -1109,29 +1113,30 @@ fi
 echo '<tr><td style="width: 180px;">'$"Type"'</td><td>'
 echo '<select name="_ASSETTYPE_" style="width: 200px;" tabindex= "1">'
 [ $ACTION = edit ] && echo '<option value="'$ASSETTYPE'" selected="selected">Current</option>'
-echo '<option value="1">'$"Curriculum Computer"'</option>'
-echo '<option value="2">'$"Admin Computer"'</option>'
-echo '<option value="3">'$"Curriculum Laptop"'</option>'
-echo '<option value="4">'$"Admin Laptop"'</option>'
-echo '<option value="5">'$"Curriculum Tablet"'</option>'
-echo '<option value="6">'$"Admin Tablet"'</option>'
-echo '<option value="7">'$"Curriculum PDA"'</option>'
-echo '<option value="8">'$"Admin PDA"'</option>'
-echo '<option value="9">'$"Curriculum Thin Client"'</option>'
-echo '<option value="10">'$"Admin Thin Client"'</option>'
-echo '<option value="11">'$"Printer"'</option>'
-echo '<option value="12">'$"Scanner"'</option>'
-echo '<option value="13">'$"Projector"'</option>'
-echo '<option value="14">'$"Whiteboard"'</option>'
-echo '<option value="15">'$"Network Switch"'</option>'
-echo '<option value="16">'$"Network Device"'</option>'
-echo '<option value="17">'$"Wireless Access Point"'</option>'
-echo '<option value="18">'$"Audio Visual"'</option>'
-echo '<option value="19">'$"Monitor"'</option>'
-echo '<option value="20">'$"Software"'</option>'
-echo '<option value="21">'$"Other"'</option>'
-echo '<option label="blank" value=""></option>'
-echo '</select></td>'
+echo '<option value="1">'$"Curriculum Computer"'</option>
+<option value="2">'$"Admin Computer"'</option>
+<option value="3">'$"Curriculum Laptop"'</option>
+<option value="4">'$"Admin Laptop"'</option>
+<option value="5">'$"Curriculum Tablet"'</option>
+<option value="6">'$"Admin Tablet"'</option>
+<option value="7">'$"Curriculum PDA"'</option>
+<option value="8">'$"Admin PDA"'</option>
+<option value="9">'$"Curriculum Thin Client"'</option>
+<option value="10">'$"Admin Thin Client"'</option>
+<option value="11">'$"Printer"'</option>
+<option value="12">'$"Scanner"'</option>
+<option value="13">'$"Projector"'</option>
+<option value="14">'$"Whiteboard"'</option>
+<option value="15">'$"Network Switch"'</option>
+<option value="16">'$"Network Device"'</option>
+<option value="17">'$"Wireless Access Point"'</option>
+<option value="18">'$"Audio Visual"'</option>
+<option value="19">'$"Monitor"'</option>
+<option value="20">'$"Software"'</option>
+<option value="21">'$"Other"'</option>
+<option value="22">'$"Server"'</option>
+<option label="blank" value=""></option>
+</select></td>'
 #Value
 echo '<td style="width: 180px;">'$"Value"'</td><td><input size="17" name="_VALUE_" value="'$VALUE'" style="width: 200px;" tabindex= "9" ></td></tr>'
 #Location
@@ -1146,8 +1151,8 @@ else
 fi
 while [ $COUNTER -lt $LOCATION_COUNT ]
 do
-	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
-	echo '<option value="'$LOCATION'">'$LOCATION'</option>'
+	LOCATIONS=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
+	echo '<option value="'$LOCATIONS'">'$LOCATIONS'</option>'
 	let COUNTER=$COUNTER+1
 done
 echo '</select></td>'
@@ -1216,7 +1221,7 @@ echo '</tbody></table><br>
 <button class="button" name="_Submit_" value="_">
 '$"Submit"'
 </button>
-</form><form <form style="display:inline;" action="asset_register_view.cgi" id="foo" method="post">
+</form><form style="display:inline;" action="asset_register_view.cgi" id="foo" method="post">
 <button class="button" name="_DoViewLocation_" value="_ACTION_view_LOCATION_'$LOCATION'_">
 <span>'$"Cancel"'</span>
 </button>'
@@ -1678,10 +1683,9 @@ then
 				<button class="info" name="_DoShowLogs_" value="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_">
 				<img src="'$ICON17'" alt="'$"Show logs"' '$IDENTITY'">
 				<span>'$"Show logs"' '$IDENTITY'</span>
-				</button>
-				</td>'
+				</button>'
 			fi
-			echo '<td style="vertical-align: top;">'$IDENTITY'</td>'
+			echo '</td><td style="vertical-align: top;">'$IDENTITY'</td>'
 			if [ $MOBILE = no ]
 			then
 				echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td></tr>'

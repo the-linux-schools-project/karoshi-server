@@ -1932,6 +1932,7 @@ then
 	echo "$SAMBADOMAIN" > /var/lib/samba/netlogon/domain_information/domain_name
 	#echo $HOSTNAME.$REALM > /var/lib/samba/netlogon/domain_information/main_server_fqdn
 	echo "$HOSTNAME" > /var/lib/samba/netlogon/domain_information/main_server
+	echo "$INSTALL_TYPE" > /var/lib/samba/netlogon/domain_information/install_type
 
 	#Copy printer info to netlogon
 	[ -f /opt/karoshi/server_network/printserver ] && cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
