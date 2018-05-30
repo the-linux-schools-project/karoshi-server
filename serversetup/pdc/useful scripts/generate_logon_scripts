@@ -317,7 +317,18 @@ sync /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
 #Add in pam_mount.conf.xml for karoshi v6 client
 [ ! -d /var/lib/samba/netlogon/linuxclient/karoshi6.0 ] && mkdir -p /var/lib/samba/netlogon/linuxclient/karoshi6.0
-sed 's/dir_mode=0700/dir_mode=0700,vers=3.0,domain='"$REALM"'/g' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5 > /var/lib/samba/netlogon/linuxclient/karoshi6.0/pam_mount.conf.xml
+echo '<?xml version="1.0" encoding="UTF-8"?>
+<pam_mount>
+<debug enable="0" />
+<mkmountpoint enable="1" />
+
+</pam_mount>' > /var/lib/samba/netlogon/linuxclient/karoshi6.0/pam_mount.conf.xml
+
+
+#sed 's/dir_mode=0700/dir_mode=0700,vers=3.0,domain='"$REALM"'/g' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5 > /var/lib/samba/netlogon/linuxclient/karoshi6.0/pam_mount.conf.xml
+
+#Create gvfs logon script for Karoshi 6.0 client
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_gvfs_scripts
 
 #Import json files to Nextcloud or Owncloud
 if [ "$CLOUDSTORAGE" = yes ]

@@ -1,0 +1,48 @@
+#!/bin/bash
+source /opt/karoshi/server_network/domain_information/domain_name
+[ -f /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares ] && rm -f /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares
+
+[ ! -d "$HOME"/network ] && mkdir -p "$HOME"/network
+
+#Add in network shares
+for SERVER in $(ls -1 /opt/karoshi/server_network/network_shares/)
+do
+	#Get data for network shares
+	for SHARE in $(ls -1 /opt/karoshi/server_network/network_shares/"$SERVER"/ | sort -r )
+	do
+		DRIVELETTER=""
+		source "/opt/karoshi/server_network/network_shares/$SERVER/$SHARE"
+		GROUPNAMES=( ${GROUPLIST//,/ } )
+		MAP_DRIVES=( ${MAP_DRIVE//,/ } )
+
+		if [ -z "$DRIVELETTER" ]
+		then
+			DRIVELETTER="*"
+		else
+			DRIVELETTER="$DRIVELETTER:"
+		fi
+		GROUPNAMECOUNT=${#GROUPNAMES[*]}
+		COUNTER=0
+		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
+		do
+			GROUPNAME=${GROUPNAMES[$COUNTER]}
+			DO_MAP=${MAP_DRIVES[$COUNTER]}
+			let COUNTER=$COUNTER+1
+
+			if [ "$DO_MAP" = 1 ]
+			then
+				echo "$SERVER,$SHARE,$GROUPNAME" >> /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares
+			fi
+
+		done
+	done
+done
+
+#Add in home folders
+for PGroup in $(ls -1 /opt/karoshi/server_network/group_information/)
+do
+	source /opt/karoshi/server_network/group_information/"$PGroup"
+	echo "$SERVER,HomeFolder,$PGroup" >> /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares
+done
+exit
+
