@@ -312,6 +312,11 @@ case "$ROLE_FILE" in
 	ROLE_NAME_STATUS=set
 	CONSEQUENCES=$"Unflags this server as an Nextcloud server. Deletes all owncloud files and user data."
 	;;
+	user_web_folders)
+	ROLE_NAME=$"User Web Folders"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Stops users from hosting web pages in their public_html folders in their home areas."
+	;;
 	savapage)
 	ROLE_NAME=$"Savapage"
 	ROLE_NAME_STATUS=set

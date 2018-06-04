@@ -144,7 +144,6 @@ then
 	WIDTH1=100
 	WIDTH2=180
 	WIDTH3=200
-	HEIGHT1=25
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -155,7 +154,6 @@ else
 	WIDTH1=90
 	WIDTH2=120
 	WIDTH3=140
-	HEIGHT1=30
 fi
 echo '<form name="myform" action="/cgi-bin/admin/user_web_folders.cgi" method="post">'
 
@@ -197,7 +195,7 @@ else
 				'$"Primary Group"'
 			</td>
 			<td>'
-				/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '"$WIDTH3"'px; height: '"$HEIGHT1"'px;">/g'
+				/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '"$WIDTH3"'px;">/g'
 	echo '		</td>
 			<td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a>
 			</td>

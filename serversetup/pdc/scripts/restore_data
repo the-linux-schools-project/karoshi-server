@@ -36,7 +36,7 @@ fi
 
 
 
-RESTORELIST="etc/cups etc/e2guardian etc/dhcp etc/postfix etc/mdadm etc/samba/extra_network_shares etc/samba/smb.conf etc/sogo etc/ssl/webmanagement etc/ssl/root-ca root/.ssh opt/karoshi/web_controls/web_access_admin opt/karoshi/web_controls/web_access_tech $SERVER_NETWORK $DFS $NETLOGON var/lib/samba/samba_backup/pdc_backup opt/karoshi/asset_register var/www/html_karoshi/images/user_images"
+RESTORELIST="etc/cups etc/e2guardian etc/dhcp etc/postfix etc/mdadm etc/samba/extra_network_shares etc/samba/smb.conf etc/sogo etc/ssl/webmanagement etc/ssl/root-ca root/.ssh opt/karoshi/web_controls/web_access_admin opt/karoshi/web_controls/web_access_tech opt/karoshi/web_controls/web_access_combined opt/karoshi/web_controls/remote_management_users $SERVER_NETWORK $DFS $NETLOGON var/lib/samba/samba_backup/pdc_backup opt/karoshi/asset_register var/www/html_karoshi/images/user_images"
 
 if [ ! -z "$RESTOREPATH" ]
 then

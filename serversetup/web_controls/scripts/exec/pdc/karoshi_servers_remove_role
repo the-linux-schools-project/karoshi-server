@@ -1478,6 +1478,43 @@ fi
 #ldapserver
 #Unflags this server as a slave ldap server. Stops ldap from running and turns of ldap authentication on the server.
 ##########################
+if [ $MODULE = user_web_folders ]
+then
+	echo "<ul><li>"$SERVERNAME: $"Disabling user web folders""</li></ul>"
+	#Remove server from user web folder list
+	touch /var/lib/samba/netlogon/domain_information/user_web_servers
+	if [[ $(grep -c "$SERVERNAME" /var/lib/samba/netlogon/domain_information/user_web_servers) != 0 ]]
+	then
+		sed -i 's/'"$SERVERNAME"'//g' /var/lib/samba/netlogon/domain_information/user_web_servers
+		sed -i '/^[[:space:]]*$/d' /var/lib/samba/netlogon/domain_information/user_web_servers
+	fi
+
+	#Disable user web folders
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+	then
+		a2dismod karoshi-userdir 1> /dev/null
+		a2dismod suphp 1> /dev/null
+		a2dismod suexec 1> /dev/null
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1> /dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1> /dev/null
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+		a2dismod karoshi-userdir 1> /dev/null
+		a2dismod suphp 1> /dev/null
+		a2dismod suexec 1> /dev/null
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1> /dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1> /dev/null
+		'
+	fi
+	rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/user_web_folders
+fi
+
 if [ $MODULE = ldapserver ]
 then
 	echo "<ul><li>"$SERVERNAME: $"Removing LDAP Server""</li></ul>"
