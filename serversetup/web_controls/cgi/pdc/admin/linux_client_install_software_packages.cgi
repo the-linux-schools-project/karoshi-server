@@ -151,7 +151,6 @@ then
 	TABLECLASS=standard
 	WIDTH1=200
 	WIDTH2=80
-	HEIGHT1=24
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -159,7 +158,6 @@ else
 	TABLECLASS=mobilestandard
 	WIDTH1=160
 	WIDTH2=50
-	HEIGHT1=30
 fi
 
 #########################
@@ -217,7 +215,7 @@ echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" 
 <table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody><tr><td style="width: '"$WIDTH1"'px;">'$"Location"'</td><td>'
 
 #Show current rooms
-echo '<select name="___LOCATION___" style="width: '"$WIDTH1"'px; height: '"$HEIGHT1"'px;">'
+echo '<select name="___LOCATION___" style="width: '"$WIDTH1"'px;">'
 echo '<option value="all">'$"All locations"'</option>'
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
@@ -227,7 +225,7 @@ then
 	done
 fi
 echo '</select></td><td></td></tr>
-<tr><td style="width: '"$WIDTH1"'px;">'$"Software Package"'</td><td><input style="width: '"$WIDTH1"'px; height: '"$HEIGHT1"'px;" tabindex= "1" name="___ACTION___add___SOFTWARE___"  size="20" type="text"></td></tr>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Software Package"'</td><td><input style="width: '"$WIDTH1"'px;" tabindex= "1" name="___ACTION___add___SOFTWARE___"  size="20" type="text"></td></tr>
 </tbody></table><br><br>
 
 <button class="button" name="___Install___" value="___INSTALL___install___">

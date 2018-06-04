@@ -2,7 +2,13 @@
 source /opt/karoshi/server_network/domain_information/domain_name
 [ -f /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares ] && rm -f /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares
 
-[ ! -d "$HOME"/network ] && mkdir -p "$HOME"/network
+#Add in home folders
+for PGroup in $(ls -1 /opt/karoshi/server_network/group_information/)
+do
+	source /opt/karoshi/server_network/group_information/"$PGroup"
+	SERVER=$(echo "$SERVER" | cut -d, -f1)
+	echo "$SERVER,home,$PGroup" >> /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares
+done
 
 #Add in network shares
 for SERVER in $(ls -1 /opt/karoshi/server_network/network_shares/)
@@ -38,11 +44,6 @@ do
 	done
 done
 
-#Add in home folders
-for PGroup in $(ls -1 /opt/karoshi/server_network/group_information/)
-do
-	source /opt/karoshi/server_network/group_information/"$PGroup"
-	echo "$SERVER,HomeFolder,$PGroup" >> /var/lib/samba/netlogon/linuxclient/gvfs_cifs_shares
-done
+
 exit
 

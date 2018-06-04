@@ -495,6 +495,12 @@ touch /etc/ldap.secret
 chmod 0400 /etc/ldap.secret
 echo "$SAMBAROOTPASSWORD1" > /etc/ldap.secret
 
+#Set the Administrator password if samba4 has been restored from backup.
+if [ "$INSTALL_TYPE" = archiverestore ]
+then
+	samba-tool user setpassword Administrator --newpassword="$SAMBAROOTPASSWORD1"
+fi
+
 #Configure kerberos
 echo "$(date): Configuring Kerberos" >> /opt/karoshi/serversetup/install_log
 echo Configuring kerberos >> /opt/karoshi/serversetup/install_log
