@@ -1,11 +1,11 @@
 Karoshi Server
 ==============
 
-*Repository for the Karoshi Server project*
+Karoshi Server is now at: 
+
+https://gitlab.com/the-linux-schools-project/karoshi-server
 
 
 - **Website** www.linuxschools.com
-- **Maintainer** Paul Sharrad
-- **Maintainer** Jo Sharrad
-- **Maintainer** Artie Ball
+
 
